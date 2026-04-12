@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=IBM+Plex+Mono:wght@400;500&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px; height: 630px;
+    background: #1e293b;
+    font-family: 'DM Sans', 'Zen Kaku Gothic New', sans-serif;
+    overflow: hidden; position: relative;
+  }
+  body::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 50% 50% at 15% 85%, rgba(56,189,248,0.08), transparent),
+      radial-gradient(ellipse 40% 40% at 85% 15%, rgba(99,102,241,0.06), transparent);
+  }
+  .accent { position: absolute; left: 0; top: 0; width: 6px; height: 100%;
+    background: linear-gradient(180deg, #38bdf8, #6366f1, #38bdf8); }
+  .container { position: relative; z-index: 1; display: flex; flex-direction: column;
+    justify-content: center; height: 100%; padding: 60px 80px 60px 60px; margin-left: 6px; }
+  .badge { display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(56,189,248,0.10); border: 1px solid rgba(56,189,248,0.25);
+    border-radius: 999px; padding: 8px 20px; width: fit-content; margin-bottom: 24px; }
+  .badge span { font-family: 'IBM Plex Mono', monospace; font-size: 14px;
+    font-weight: 500; color: #38bdf8; letter-spacing: 0.08em; text-transform: uppercase; }
+  h1 { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 600;
+    color: #f1f5f9; line-height: 1.2; margin-bottom: 16px; }
+  h1 em { font-style: normal; color: #38bdf8; }
+  .sub { font-size: 18px; color: #94a3b8; line-height: 1.7; max-width: 600px; }
+  .url { position: absolute; bottom: 40px; right: 60px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 16px; color: #475569; }
+  .emoji { position: absolute; top: 40px; right: 60px; font-size: 48px; opacity: 0.8; }
+  .features { display: flex; gap: 16px; margin-top: 24px; }
+  .feat { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #94a3b8;
+    background: rgba(56,189,248,0.08); border-radius: 6px; padding: 6px 14px; }
+</style>
+</head>
+<body>
+  <div class="accent"></div>
+  <div class="container">
+    <div class="badge"><span>Online Appointment System</span></div>
+    <h1><em>オンライン</em>予約システム</h1>
+    <p class="sub">患者が 24 時間予約できる Web アプリ<br/>管理ダッシュボード・メール通知・PDF出力対応</p>
+    <div class="features">
+      <span class="feat">Firebase</span>
+      <span class="feat">Cloud Functions</span>
+      <span class="feat">Resend</span>
+      <span class="feat">pdf-lib</span>
+    </div>
+  </div>
+  <div class="emoji">🏥</div>
+  <div class="url">oas.kojinius.jp</div>
+</body>
+</html>

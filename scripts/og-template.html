@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700;9..144,800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1200px;
+    height: 630px;
+    background: #1A1210;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* 背景グラデーション */
+  body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 80%, rgba(247,147,33,0.08), transparent),
+      radial-gradient(ellipse 50% 40% at 80% 20%, rgba(115,87,99,0.06), transparent);
+  }
+
+  /* 左端アクセントライン */
+  .accent-line {
+    position: absolute;
+    left: 0; top: 0;
+    width: 6px; height: 100%;
+    background: linear-gradient(180deg, #F79321 0%, #E07800 50%, #F79321 100%);
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    padding: 60px 80px 60px 60px;
+    margin-left: 6px;
+  }
+
+  /* バッジ */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(247,147,33,0.12);
+    border: 1px solid rgba(247,147,33,0.3);
+    border-radius: 999px;
+    padding: 8px 20px;
+    width: fit-content;
+    margin-bottom: 28px;
+  }
+  .badge span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: #F79321;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* メインタイトル */
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 52px;
+    font-weight: 800;
+    color: #FCF0DE;
+    line-height: 1.25;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+  }
+  h1 em {
+    font-style: normal;
+    color: #F79321;
+  }
+
+  /* サブタイトル */
+  .subtitle {
+    font-size: 20px;
+    color: #C4A99B;
+    line-height: 1.7;
+    max-width: 700px;
+    margin-bottom: 36px;
+  }
+
+  /* プロジェクトドット */
+  .projects {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #F79321;
+    opacity: 0.6;
+  }
+  .dot:nth-child(1) { opacity: 1; }
+  .dot:nth-child(2) { opacity: 0.8; }
+  .dot:nth-child(3) { opacity: 0.6; }
+  .dot:nth-child(4) { opacity: 0.4; }
+  .dot:nth-child(5) { opacity: 0.25; }
+  .project-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: #8B7355;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-left: 4px;
+  }
+
+  /* 右下 URL */
+  .url {
+    position: absolute;
+    bottom: 40px;
+    right: 60px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    color: #8B7355;
+    letter-spacing: 0.05em;
+  }
+
+  /* 右上装飾 */
+  .corner-decoration {
+    position: absolute;
+    top: 40px;
+    right: 60px;
+    display: flex;
+    gap: 6px;
+  }
+  .corner-decoration div {
+    width: 8px; height: 8px;
+    border: 1.5px solid rgba(247,147,33,0.3);
+  }
+  .corner-decoration div:first-child {
+    background: rgba(247,147,33,0.3);
+  }
+</style>
+</head>
+<body>
+  <div class="accent-line"></div>
+  <div class="container">
+    <div class="badge">
+      <span>Claude Code × Firebase</span>
+    </div>
+    <h1>Claude と一緒に<br/>プロダクトを<em>作っています</em></h1>
+    <p class="subtitle">
+      AI（Claude Code）との対話を通じて設計・実装した<br/>
+      プロジェクトを公開するポートフォリオ
+    </p>
+    <div class="projects">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <span class="project-label">5 projects</span>
+    </div>
+  </div>
+  <div class="corner-decoration">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  <div class="url">kojinius.jp</div>
+</body>
+</html>
