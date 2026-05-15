@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>背景透過ツール</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --panel: #161922;
+      --panel-2: #1f2330;
+      --border: #2a2f3d;
+      --text: #e7eaf2;
+      --muted: #8a93a6;
+      --accent: #7c9cff;
+      --accent-2: #a5b4ff;
+      --danger: #ff6b7a;
+      --ok: #5fd39b;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif; }
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+    header {
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    header .sub {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    main {
+      flex: 1;
+      padding: 28px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 420px;
+    }
+    .panel h2 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .drop {
+      flex: 1;
+      border: 1.5px dashed var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      text-align: center;
+      padding: 24px;
+      color: var(--muted);
+      position: relative;
+      overflow: hidden;
+    }
+    .drop:hover, .drop.dragover {
+      border-color: var(--accent);
+      background: rgba(124, 156, 255, 0.06);
+      color: var(--text);
+    }
+    .drop .icon {
+      font-size: 38px;
+      line-height: 1;
+    }
+    .drop .hint { font-size: 13px; }
+    .drop .small { font-size: 11px; color: var(--muted); }
+    input[type="file"] { display: none; }
+
+    .preview {
+      flex: 1;
+      border-radius: 12px;
+      background:
+        linear-gradient(45deg, #2a2f3d 25%, transparent 25%),
+        linear-gradient(-45deg, #2a2f3d 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #2a2f3d 75%),
+        linear-gradient(-45deg, transparent 75%, #2a2f3d 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+      background-color: #1a1d27;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .preview img {
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+    .preview .empty {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    button {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      font-family: inherit;
+    }
+    button:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--accent-2);
+    }
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    button.primary {
+      background: linear-gradient(180deg, var(--accent), #5c7cdf);
+      border-color: transparent;
+      color: #0f1115;
+      font-weight: 600;
+    }
+    button.primary:hover:not(:disabled) {
+      filter: brightness(1.08);
+      color: #0f1115;
+    }
+    button.danger { color: var(--danger); }
+    button.danger:hover:not(:disabled) { border-color: var(--danger); color: var(--danger); }
+
+    .meta {
+      display: flex;
+      gap: 14px;
+      font-size: 12px;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+    .meta span b { color: var(--text); font-weight: 500; }
+
+    .progress {
+      height: 6px;
+      background: var(--panel-2);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress > div {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      width: 0%;
+      transition: width 0.2s;
+    }
+    .status {
+      font-size: 12px;
+      color: var(--muted);
+      min-height: 1.4em;
+    }
+    .status.error { color: var(--danger); }
+    .status.ok { color: var(--ok); }
+
+    .controls {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    select {
+      appearance: none;
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 28px 6px 10px;
+      font-size: 12px;
+      font-family: inherit;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%238a93a6' fill='none' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+    }
+
+    footer {
+      padding: 14px 28px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 11px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>背景透過ツール</h1>
+    <span class="sub">ブラウザだけで動く・画像は外部送信なし</span>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>入力</h2>
+      <label class="drop" id="drop">
+        <span class="icon">📥</span>
+        <span class="hint"><b>クリック</b> または <b>ドラッグ＆ドロップ</b></span>
+        <span class="small">PNG / JPG / WEBP / BMP / GIF（1 枚目のフレーム）</span>
+        <span class="small">クリップボードから貼り付け（Ctrl+V）も可</span>
+        <input id="file" type="file" accept="image/*" />
+      </label>
+
+      <div class="controls">
+        <label>モデル
+          <select id="model">
+            <option value="isnet_fp16" selected>中精度（~80MB / 推奨）</option>
+            <option value="isnet">高精度（~170MB / 重い）</option>
+            <option value="isnet_quint8">軽量（~40MB / 粗い）</option>
+          </select>
+        </label>
+        <label>出力
+          <select id="format">
+            <option value="image/png" selected>PNG（透過）</option>
+            <option value="image/webp">WebP（透過）</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="meta" id="inputMeta"></div>
+
+      <div class="actions">
+        <button id="runBtn" class="primary" disabled>背景を切り抜く</button>
+        <button id="clearBtn" disabled>クリア</button>
+      </div>
+
+      <div class="progress"><div id="bar"></div></div>
+      <div class="status" id="status">画像を入れてください。初回は ONNX モデル（~80MB）をダウンロードします。</div>
+    </section>
+
+    <section class="panel">
+      <h2>出力</h2>
+      <div class="preview" id="preview">
+        <span class="empty">ここに結果が出ます</span>
+      </div>
+
+      <div class="meta" id="outputMeta"></div>
+
+      <div class="actions">
+        <button id="downloadBtn" disabled>ダウンロード</button>
+        <button id="copyBtn" disabled>クリップボードへコピー</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>エンジン: <a href="https://github.com/imgly/background-removal-js" target="_blank" rel="noopener">@imgly/background-removal</a> v1.7.0（MIT/ONNX、IMG.LY 提供）</span>
+    <span>処理は全て端末内。画像はサーバーに送られません。</span>
+  </footer>
+
+  <script type="module">
+    import removeBackground from "https://esm.sh/@imgly/background-removal@1.7.0";
+
+    const dropEl = document.getElementById("drop");
+    const fileEl = document.getElementById("file");
+    const runBtn = document.getElementById("runBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const previewEl = document.getElementById("preview");
+    const statusEl = document.getElementById("status");
+    const barEl = document.getElementById("bar");
+    const inputMetaEl = document.getElementById("inputMeta");
+    const outputMetaEl = document.getElementById("outputMeta");
+    const modelEl = document.getElementById("model");
+    const formatEl = document.getElementById("format");
+
+    let inputBlob = null;
+    let inputName = "image";
+    let outputBlob = null;
+    let isProcessing = false;
+
+    // 既にドロップ枠内にプレビューが入っている時は file picker を開かない用のフラグ
+    let suppressClick = false;
+
+    const setStatus = (msg, kind) => {
+      statusEl.textContent = msg;
+      statusEl.className = "status" + (kind ? " " + kind : "");
+    };
+
+    const fmtBytes = (n) => {
+      if (n < 1024) return `${n} B`;
+      if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+      return `${(n / 1024 / 1024).toFixed(2)} MB`;
+    };
+
+    const loadInput = async (file) => {
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        setStatus("画像ファイルを入れてください", "error");
+        return;
+      }
+      inputBlob = file;
+      inputName = (file.name || "image").replace(/\.[^.]+$/, "");
+
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        // ドロップゾーン内にサムネ表示
+        dropEl.innerHTML = "";
+        img.style.maxWidth = "100%";
+        img.style.maxHeight = "260px";
+        img.style.borderRadius = "8px";
+        img.style.boxShadow = "0 2px 12px rgba(0,0,0,0.4)";
+        dropEl.appendChild(img);
+        const cap = document.createElement("span");
+        cap.className = "small";
+        cap.style.marginTop = "8px";
+        cap.textContent = `${file.name}  ${img.naturalWidth}×${img.naturalHeight}  ${fmtBytes(file.size)}`;
+        dropEl.appendChild(cap);
+
+        inputMetaEl.innerHTML = `
+          <span>サイズ <b>${img.naturalWidth} × ${img.naturalHeight}</b></span>
+          <span>ファイル <b>${fmtBytes(file.size)}</b></span>
+          <span>形式 <b>${file.type}</b></span>
+        `;
+      };
+      img.src = url;
+
+      runBtn.disabled = false;
+      clearBtn.disabled = false;
+      setStatus("準備 OK。「背景を切り抜く」を押してください。");
+    };
+
+    const clearAll = () => {
+      inputBlob = null;
+      outputBlob = null;
+      inputName = "image";
+      fileEl.value = "";
+      dropEl.innerHTML = `
+        <span class="icon">📥</span>
+        <span class="hint"><b>クリック</b> または <b>ドラッグ＆ドロップ</b></span>
+        <span class="small">PNG / JPG / WEBP / BMP / GIF（1 枚目のフレーム）</span>
+        <span class="small">クリップボードから貼り付け（Ctrl+V）も可</span>
+      `;
+      previewEl.innerHTML = `<span class="empty">ここに結果が出ます</span>`;
+      inputMetaEl.innerHTML = "";
+      outputMetaEl.innerHTML = "";
+      runBtn.disabled = true;
+      clearBtn.disabled = true;
+      downloadBtn.disabled = true;
+      copyBtn.disabled = true;
+      barEl.style.width = "0%";
+      setStatus("画像を入れてください。");
+    };
+
+    const run = async () => {
+      if (!inputBlob || isProcessing) return;
+      isProcessing = true;
+      runBtn.disabled = true;
+      clearBtn.disabled = true;
+      downloadBtn.disabled = true;
+      copyBtn.disabled = true;
+      barEl.style.width = "0%";
+      setStatus("ONNX 推論中…（初回はモデルダウンロードで時間がかかります）");
+
+      try {
+        const t0 = performance.now();
+        const blob = await removeBackground(inputBlob, {
+          model: modelEl.value,
+          output: {
+            format: formatEl.value,
+            type: "foreground",
+          },
+          progress: (key, current, total) => {
+            // key は "fetch:..." / "compute:..." 等
+            if (total > 0) {
+              const pct = Math.min(100, Math.round((current / total) * 100));
+              barEl.style.width = pct + "%";
+              setStatus(`${key}  ${pct}%`);
+            } else {
+              setStatus(key);
+            }
+          },
+        });
+        const elapsed = ((performance.now() - t0) / 1000).toFixed(1);
+
+        outputBlob = blob;
+        const url = URL.createObjectURL(blob);
+        previewEl.innerHTML = "";
+        const img = new Image();
+        img.src = url;
+        img.onload = () => {
+          outputMetaEl.innerHTML = `
+            <span>サイズ <b>${img.naturalWidth} × ${img.naturalHeight}</b></span>
+            <span>ファイル <b>${fmtBytes(blob.size)}</b></span>
+            <span>形式 <b>${blob.type}</b></span>
+            <span>処理時間 <b>${elapsed} s</b></span>
+          `;
+        };
+        previewEl.appendChild(img);
+
+        barEl.style.width = "100%";
+        setStatus(`完了（${elapsed} 秒）`, "ok");
+        downloadBtn.disabled = false;
+        copyBtn.disabled = false;
+      } catch (err) {
+        console.error(err);
+        setStatus("失敗: " + (err && err.message ? err.message : String(err)), "error");
+      } finally {
+        isProcessing = false;
+        runBtn.disabled = !inputBlob;
+        clearBtn.disabled = !inputBlob;
+      }
+    };
+
+    const download = () => {
+      if (!outputBlob) return;
+      const ext = (outputBlob.type.split("/")[1] || "png").replace("jpeg", "jpg");
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(outputBlob);
+      a.download = `${inputName}-透過.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    };
+
+    const copyToClipboard = async () => {
+      if (!outputBlob) return;
+      try {
+        // クリップボードは PNG のみ実用対応のブラウザが多いので PNG に統一
+        let toCopy = outputBlob;
+        if (outputBlob.type !== "image/png") {
+          // canvas 経由で PNG 化
+          const bmp = await createImageBitmap(outputBlob);
+          const canvas = document.createElement("canvas");
+          canvas.width = bmp.width;
+          canvas.height = bmp.height;
+          canvas.getContext("2d").drawImage(bmp, 0, 0);
+          toCopy = await new Promise((res) => canvas.toBlob(res, "image/png"));
+        }
+        await navigator.clipboard.write([
+          new ClipboardItem({ "image/png": toCopy }),
+        ]);
+        setStatus("クリップボードにコピーしました", "ok");
+      } catch (err) {
+        console.error(err);
+        setStatus("コピー失敗: " + err.message, "error");
+      }
+    };
+
+    // ドロップ枠クリックで file picker
+    dropEl.addEventListener("click", (e) => {
+      if (suppressClick) return;
+      fileEl.click();
+    });
+    fileEl.addEventListener("change", (e) => loadInput(e.target.files[0]));
+
+    // D&D
+    ["dragenter", "dragover"].forEach((ev) =>
+      dropEl.addEventListener(ev, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropEl.classList.add("dragover");
+      })
+    );
+    ["dragleave", "drop"].forEach((ev) =>
+      dropEl.addEventListener(ev, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropEl.classList.remove("dragover");
+      })
+    );
+    dropEl.addEventListener("drop", (e) => {
+      const file = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file) loadInput(file);
+    });
+
+    // クリップボード貼り付け
+    window.addEventListener("paste", (e) => {
+      const items = e.clipboardData && e.clipboardData.items;
+      if (!items) return;
+      for (const it of items) {
+        if (it.kind === "file" && it.type.startsWith("image/")) {
+          const file = it.getAsFile();
+          if (file) {
+            loadInput(file);
+            break;
+          }
+        }
+      }
+    });
+
+    runBtn.addEventListener("click", run);
+    clearBtn.addEventListener("click", clearAll);
+    downloadBtn.addEventListener("click", download);
+    copyBtn.addEventListener("click", copyToClipboard);
+  </script>
+</body>
+</html>
