@@ -306,7 +306,10 @@
   </footer>
 
   <script type="module">
-    import removeBackground from "https://esm.sh/@imgly/background-removal@1.7.0";
+    // 2026-05-15 17:40:00 [claude-opus-4-7] セッションターン数：21
+    // esm.sh エントリは `export *`（default 無し）。default import だと
+    // 静的リンクエラーで module 全体が停止する。named import が必須。
+    import { removeBackground } from "https://esm.sh/@imgly/background-removal@1.7.0";
 
     const dropEl = document.getElementById("drop");
     const dropInnerEl = document.getElementById("dropInner");
