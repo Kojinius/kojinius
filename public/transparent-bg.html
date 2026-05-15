@@ -90,6 +90,15 @@
       background: rgba(124, 156, 255, 0.06);
       color: var(--text);
     }
+    .drop-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      pointer-events: none;
+    }
     .drop .icon {
       font-size: 38px;
       line-height: 1;
@@ -239,13 +248,15 @@
   <main>
     <section class="panel">
       <h2>入力</h2>
-      <label class="drop" id="drop">
-        <span class="icon">📥</span>
-        <span class="hint"><b>クリック</b> または <b>ドラッグ＆ドロップ</b></span>
-        <span class="small">PNG / JPG / WEBP / BMP / GIF（1 枚目のフレーム）</span>
-        <span class="small">クリップボードから貼り付け（Ctrl+V）も可</span>
-        <input id="file" type="file" accept="image/*" />
-      </label>
+      <div class="drop" id="drop">
+        <div class="drop-inner" id="dropInner">
+          <span class="icon">📥</span>
+          <span class="hint"><b>クリック</b> または <b>ドラッグ＆ドロップ</b></span>
+          <span class="small">PNG / JPG / WEBP / BMP / GIF（1 枚目のフレーム）</span>
+          <span class="small">クリップボードから貼り付け（Ctrl+V）も可</span>
+        </div>
+      </div>
+      <input id="file" type="file" accept="image/*" hidden />
 
       <div class="controls">
         <label>モデル
@@ -298,6 +309,7 @@
     import removeBackground from "https://esm.sh/@imgly/background-removal@1.7.0";
 
     const dropEl = document.getElementById("drop");
+    const dropInnerEl = document.getElementById("dropInner");
     const fileEl = document.getElementById("file");
     const runBtn = document.getElementById("runBtn");
     const clearBtn = document.getElementById("clearBtn");
@@ -315,9 +327,6 @@
     let inputName = "image";
     let outputBlob = null;
     let isProcessing = false;
-
-    // 既にドロップ枠内にプレビューが入っている時は file picker を開かない用のフラグ
-    let suppressClick = false;
 
     const setStatus = (msg, kind) => {
       statusEl.textContent = msg;
@@ -342,18 +351,18 @@
       const url = URL.createObjectURL(file);
       const img = new Image();
       img.onload = () => {
-        // ドロップゾーン内にサムネ表示
-        dropEl.innerHTML = "";
+        // ドロップゾーン内にサムネ表示（input#file は drop の外なので破壊しない）
+        dropInnerEl.innerHTML = "";
         img.style.maxWidth = "100%";
         img.style.maxHeight = "260px";
         img.style.borderRadius = "8px";
         img.style.boxShadow = "0 2px 12px rgba(0,0,0,0.4)";
-        dropEl.appendChild(img);
+        dropInnerEl.appendChild(img);
         const cap = document.createElement("span");
         cap.className = "small";
         cap.style.marginTop = "8px";
         cap.textContent = `${file.name}  ${img.naturalWidth}×${img.naturalHeight}  ${fmtBytes(file.size)}`;
-        dropEl.appendChild(cap);
+        dropInnerEl.appendChild(cap);
 
         inputMetaEl.innerHTML = `
           <span>サイズ <b>${img.naturalWidth} × ${img.naturalHeight}</b></span>
@@ -373,7 +382,7 @@
       outputBlob = null;
       inputName = "image";
       fileEl.value = "";
-      dropEl.innerHTML = `
+      dropInnerEl.innerHTML = `
         <span class="icon">📥</span>
         <span class="hint"><b>クリック</b> または <b>ドラッグ＆ドロップ</b></span>
         <span class="small">PNG / JPG / WEBP / BMP / GIF（1 枚目のフレーム）</span>
@@ -398,24 +407,35 @@
       downloadBtn.disabled = true;
       copyBtn.disabled = true;
       barEl.style.width = "0%";
-      setStatus("ONNX 推論中…（初回はモデルダウンロードで時間がかかります）");
+      setStatus("モデルを確認中…（初回のみ約 80MB のダウンロードがあります）");
 
       try {
         const t0 = performance.now();
+        let dlDone = false;
         const blob = await removeBackground(inputBlob, {
           model: modelEl.value,
           output: {
             format: formatEl.value,
             type: "foreground",
           },
+          // 2026-05-15 17:30:00 [claude-opus-4-7] セッションターン数：13
+          // DL フェーズと推論フェーズを日本語で明示し進捗を可視化。
+          // key の正確な文字列は @imgly 側非公開のため fetch 包含で DL 判定。
           progress: (key, current, total) => {
-            // key は "fetch:..." / "compute:..." 等
-            if (total > 0) {
+            const isFetch = String(key).toLowerCase().includes("fetch");
+            if (isFetch && total > 0) {
               const pct = Math.min(100, Math.round((current / total) * 100));
               barEl.style.width = pct + "%";
-              setStatus(`${key}  ${pct}%`);
+              setStatus(
+                `モデルDL中（初回のみ・約80MB）  ${pct}%  ` +
+                `${(current / 1048576).toFixed(1)} / ${(total / 1048576).toFixed(1)} MB`
+              );
+              if (pct >= 100) dlDone = true;
+            } else if (isFetch) {
+              setStatus("モデルDL中（初回のみ・約80MB）…");
             } else {
-              setStatus(key);
+              barEl.style.width = "100%";
+              setStatus(dlDone ? "切り抜き処理中…（モデルDL完了）" : "切り抜き処理中…");
             }
           },
         });
@@ -485,11 +505,8 @@
       }
     };
 
-    // ドロップ枠クリックで file picker
-    dropEl.addEventListener("click", (e) => {
-      if (suppressClick) return;
-      fileEl.click();
-    });
+    // ドロップ枠クリックで file picker（drop は div なので label の二重発火なし）
+    dropEl.addEventListener("click", () => fileEl.click());
     fileEl.addEventListener("change", (e) => loadInput(e.target.files[0]));
 
     // D&D
