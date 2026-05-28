@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<!-- 2026-05-27 claude-opus-4-7 セッションターン数：1 — 3 プラン横断のコスト試算ページを新規作成（kantan-tokoo §08 / morimori-max §04+§05 / meo-package §06 を統合） -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="./auth.js"></script>
+<title>post-pilot コスト試算（3 プラン統合）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/doc.css">
+<style>
+/* 2026-05-28 claude-opus-4-7 セッションターン数：5 — ダーク→ライトテーマオーバーライド（doc.css 共通CSS適用） */
+:root{
+  --bg:#f7f5f0;--paper:#ffffff;--paper-dim:#fafaf9;
+  --text:#1f2937;--text-dim:#4b5563;--text-mute:#9ca3af;
+  --border:#e5e7eb;--border-strong:#d1d5db;
+  --bg-code:#f4f3f0;
+  --accent:#059669;--accent-soft:#ecfdf5;--accent-line:#34d399;
+  --ok:#059669;--ok-soft:#ecfdf5;
+  --warn:#d97706;--warn-soft:#fffbeb;
+  --ng:#dc2626;--ng-soft:#fef2f2;
+  --info:#2563eb;--info-soft:#eff6ff;
+  --tip:#7c3aed;--tip-soft:#f5f3ff;
+  --meo-c:#f97316;--meo-soft:#fff7ed;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:"Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.85;-webkit-font-smoothing:antialiased}
+body::before{display:none}
+.container{max-width:1180px;margin:0 auto;padding:0 28px}
+@media(max-width:640px){.container{padding:0 18px}}
+code,kbd,pre,.mono{font-family:var(--mono);font-size:.9em}
+header.hero{padding:40px 0 32px;border-bottom:1px solid var(--border)}
+.breadcrumb{font-size:13px;color:var(--text-mute);margin-bottom:20px;letter-spacing:.04em}
+.breadcrumb code{background:var(--paper-dim);border:1px solid var(--border);border-radius:5px;color:var(--accent);padding:2px 7px}
+h1.hero-title{font-size:clamp(26px,4vw,42px);font-weight:900;line-height:1.25;letter-spacing:-.02em;margin-bottom:14px;color:var(--text)}
+h1.hero-title .grad{background:linear-gradient(135deg,var(--accent),var(--info));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-sub{font-size:15px;color:var(--text-dim);max-width:840px;margin-bottom:24px;line-height:1.8}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.meta-tag{padding:5px 12px;background:var(--paper);border:1px solid var(--border);border-radius:999px;font-size:12px;color:var(--text-dim);font-family:var(--mono)}
+.meta-tag.ok,.meta-tag.free{color:var(--ok);border-color:var(--accent-line)}
+.meta-tag.paid,.meta-tag.todo{color:var(--warn);border-color:#fcd34d}
+.meta-tag.exist{color:var(--tip);border-color:#c4b5fd}
+.toc{margin:24px 0 0;padding:18px 22px;background:var(--paper);border:1px solid var(--border);border-radius:12px}
+.toc-title{font-size:12px;color:var(--text-mute);font-weight:700;letter-spacing:.1em;margin-bottom:10px;text-transform:uppercase}
+.toc ol{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:5px 18px}
+.toc li{padding:4px 0 4px 22px;position:relative;font-size:13px;color:var(--text)}
+.toc li::before{content:"—";position:absolute;left:0;top:4px;color:var(--text-mute)}
+.toc a{color:var(--text-dim);text-decoration:none}.toc a:hover{color:var(--accent)}
+.toc .badge{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;vertical-align:middle}
+.toc .badge.green{background:var(--ok-soft);color:var(--ok);border:1px solid var(--accent-line)}
+.toc .badge.violet{background:var(--tip-soft);color:var(--tip);border:1px solid #c4b5fd}
+.toc .badge.orange{background:var(--meo-soft);color:var(--meo-c);border:1px solid #fed7aa}
+section{padding:44px 0;border-bottom:1px solid var(--border)}
+section:last-of-type{border-bottom:none}
+h2{font-size:22px;font-weight:900;letter-spacing:-.01em;margin-bottom:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:var(--text)}
+h2 .sec-num{font-family:var(--mono);font-size:12px;background:var(--accent-soft);color:var(--accent);padding:3px 9px;border-radius:7px;font-weight:700;border:1px solid var(--accent-line)}
+h2.kantan .sec-num{background:var(--ok-soft);color:var(--ok)}
+h2.morimori .sec-num{background:var(--tip-soft);color:var(--tip)}
+h2.meo .sec-num{background:var(--meo-soft);color:var(--meo-c)}
+h2.overview .sec-num{background:var(--info-soft);color:var(--info)}
+.sec-desc{color:var(--text-dim);font-size:13.5px;margin-bottom:22px;max-width:840px;line-height:1.8}
+h3{font-size:16px;font-weight:700;margin:24px 0 10px;color:var(--text)}
+.plan-overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:18px}
+.plan-card{padding:22px;border-radius:14px;border:1px solid var(--border);background:var(--paper);transition:transform .15s}
+.plan-card:hover{transform:translateY(-2px)}
+.plan-card.green{border-color:var(--accent-line);background:var(--ok-soft)}
+.plan-card.violet{border-color:#c4b5fd;background:var(--tip-soft)}
+.plan-card.orange{border-color:#fed7aa;background:var(--meo-soft)}
+.plan-card .plan-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.plan-card.green .plan-label{color:var(--ok)}.plan-card.violet .plan-label{color:var(--tip)}.plan-card.orange .plan-label{color:var(--meo-c)}
+.plan-card h4{font-size:15px;font-weight:900;margin-bottom:7px;color:var(--text)}
+.plan-card .price{font-family:var(--mono);font-size:26px;font-weight:900;margin-bottom:3px}
+.plan-card.green .price{color:var(--ok)}.plan-card.violet .price{color:var(--tip)}.plan-card.orange .price{color:var(--meo-c)}
+.plan-card .price-sub{font-size:11px;color:var(--text-mute);font-family:var(--mono);margin-bottom:9px}
+.plan-card p{font-size:12px;color:var(--text-dim);line-height:1.65}
+.plan-card .jump{display:inline-block;margin-top:11px;padding:5px 12px;background:var(--paper);border:1px solid var(--border);border-radius:999px;font-size:11px;color:var(--text);text-decoration:none;font-family:var(--mono)}
+.plan-card .jump:hover{background:var(--accent-soft);color:var(--accent)}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;margin-bottom:18px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:580px;background:var(--paper)}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text)}
+thead,thead.green,thead.violet,thead.orange{background:var(--paper-dim)}
+th{font-weight:700;font-size:12px;letter-spacing:.03em}
+tbody tr:hover{background:var(--paper-dim)}
+tbody tr:last-child td{border-bottom:none}
+td.mono{font-family:var(--mono);font-size:11px;color:var(--accent);word-break:break-all}
+td.num{font-family:var(--mono);text-align:right}
+td.amber{color:var(--warn);font-weight:600}td.green{color:var(--ok);font-weight:600}td.red{color:var(--ng);font-weight:600}
+td.kantan{color:var(--ok);font-weight:600}td.morimori{color:var(--tip);font-weight:600}td.meo{color:var(--meo-c);font-weight:600}td.zero{font-family:var(--mono);text-align:right}
+.cost-summary{padding:18px;border:1px solid var(--border);border-radius:12px;margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;text-align:center;background:var(--paper)}
+.cost-summary.green{border-color:var(--accent-line)}.cost-summary.violet{border-color:#c4b5fd}.cost-summary.orange{border-color:#fed7aa}
+.cost-summary .item{padding:0 8px;border-right:1px solid var(--border)}.cost-summary .item:last-child{border-right:none}
+.cost-summary .label{font-size:10px;color:var(--text-mute);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.cost-summary .value{font-size:20px;font-weight:900;font-family:var(--mono);color:var(--accent)!important;background:none!important;-webkit-background-clip:unset!important;background-clip:unset!important}
+.cost-summary.violet .value{color:var(--tip)!important}.cost-summary.orange .value{color:var(--meo-c)!important}
+.cost-summary .unit{font-size:11px;color:var(--text-dim);margin-top:3px}
+.note{padding:14px 18px;border-radius:10px;margin:14px 0;border-left:4px solid;font-size:13px;line-height:1.75}
+.note.warn{background:var(--warn-soft);border-color:var(--warn);color:#92400e}
+.note.info{background:var(--info-soft);border-color:var(--info);color:#1e40af}
+.note.danger{background:var(--ng-soft);border-color:var(--ng);color:#991b1b}
+.note.ok,.note.green{background:var(--ok-soft);border-color:var(--ok);color:#065f46}
+.note strong{display:block;font-weight:700;margin-bottom:4px;font-size:12.5px;text-transform:none;letter-spacing:0;color:inherit}
+.note a{color:inherit;text-decoration:underline}
+.note code{background:rgba(0,0,0,.07);color:inherit;border:none;padding:1px 4px;border-radius:3px;font-family:var(--mono);font-size:.88em}
+.arch-canvas{padding:24px 18px;background:var(--paper);border:1px solid var(--border);border-radius:14px;margin-bottom:18px;position:relative;overflow:hidden}
+.arch-canvas::before{display:none}
+.arch-layer-label{font-family:var(--mono);font-size:10px;color:var(--text-mute);letter-spacing:.18em;text-align:center;text-transform:uppercase;margin-bottom:12px;position:relative;z-index:1}
+.arch-layer-label::before,.arch-layer-label::after{content:"";display:inline-block;width:40px;height:1px;background:var(--border);vertical-align:middle;margin:0 10px}
+.arch-row{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;position:relative;z-index:1}
+.arch-row.tight{gap:10px}
+.arch-card{flex:0 1 240px;min-width:200px;padding:13px 15px;border-radius:10px;border:1px solid var(--border);border-left-width:4px;background:var(--paper);backdrop-filter:none;transition:transform .15s,box-shadow .15s;position:relative}
+.arch-card:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.07)}
+.arch-card.compact{flex:0 1 175px;min-width:150px;padding:10px 12px}
+.arch-card.hosting{border-left-color:#0d9488}.arch-card.asset{border-left-color:var(--ok)}
+.arch-card.browser,.arch-card.logic{border-left-color:var(--info)}
+.arch-card.user{border-left-color:var(--tip)}.arch-card.button{border-left-color:var(--ok)}
+.arch-card.external{border-left-color:var(--text-mute);border-style:dashed}
+.arch-card.worker{border-left-color:#ec4899}
+.arch-card.copy{border-left-color:var(--warn);border-style:dashed}
+.arch-card.line,.arch-card.channel-line{border-left-color:#16a34a}
+.arch-card.trigger,.arch-card.actor{border-left-color:var(--tip)}
+.arch-card.entry{border-left-color:var(--info)}.arch-card.data{border-left-color:#0d9488}
+.arch-card.ai{border-left-color:var(--info)}.arch-card.moderation{border-left-color:var(--warn)}
+.arch-card.approval{border-left-color:#ec4899}
+.arch-card.channel-paid,.arch-card.api{border-left-color:var(--meo-c)}
+.arch-card.channel-free,.arch-card.channel{border-left-color:var(--ok)}
+.arch-card.channel-semi{border-left-color:var(--warn);border-style:dashed}
+.arch-card.storage{border-left-color:#ec4899}
+.arch-card.todo{border-left-color:var(--warn);border-style:dashed;opacity:.65}
+.arch-card-head{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.arch-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;background:var(--paper-dim)!important;color:var(--text-dim)!important;flex-shrink:0}
+.arch-card.compact .arch-icon{width:24px;height:24px;font-size:12px}
+.arch-card-meta{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--text-mute);text-transform:uppercase}
+.arch-card-title{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:4px}
+.arch-card.compact .arch-card-title{font-size:11.5px;margin-bottom:2px}
+.arch-card-spec{font-family:var(--mono);font-size:10px;color:var(--text-dim);line-height:1.45;word-break:break-all}
+.arch-card.compact .arch-card-spec{font-size:9.5px}
+.arch-card-badge{position:absolute;top:-7px;right:10px;padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.04em}
+.arch-card-badge.free{background:var(--ok);color:#fff}.arch-card-badge.exist{background:var(--tip);color:#fff}
+.arch-card-badge.paid{background:var(--warn);color:#fff}.arch-card-badge.client{background:var(--info);color:#fff}
+.arch-card-badge.copy,.arch-card-badge.semi{background:var(--warn);color:#fff}
+.arch-card-badge.line{background:#16a34a;color:#fff}
+.arch-card-badge.mobile-only,.arch-card-badge.todo,.arch-card-badge.todo-b{background:var(--text-mute);color:#fff}
+.arch-flow{display:flex;flex-direction:column;align-items:center;margin:10px 0;position:relative;z-index:1}
+.arch-flow-line{width:2px;height:24px;background:var(--border-strong);border-radius:2px;position:relative}
+.arch-flow-line::after{content:"";position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--border-strong)}
+.arch-flow-label{position:absolute;left:calc(50% + 12px);top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:9px;color:var(--accent);white-space:nowrap;letter-spacing:.04em;background:var(--paper-dim);padding:1px 5px;border-radius:3px}
+.arch-fanout,.arch-fanin{width:100%;max-width:760px;margin:6px auto 0;display:block}
+.arch-canvas svg path{stroke:var(--border-strong)!important}
+.arch-canvas svg marker path{fill:var(--border-strong)!important}
+.arch-section{border:1px dashed var(--border);border-radius:12px;padding:14px;margin:12px 0;background:var(--paper-dim);position:relative;z-index:1}
+.arch-section-title{position:absolute;top:-9px;left:14px;background:var(--paper);padding:0 8px;font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+.arch-legend{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);position:relative;z-index:1}
+.arch-legend-item{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text-dim)}
+.arch-legend-dot{width:9px;height:9px;border-radius:3px}
+.arch-side{display:grid;grid-template-columns:1fr 220px;gap:18px;align-items:start;position:relative;z-index:1}
+.arch-side-aside{padding-top:28px}
+@media(max-width:900px){.arch-side{grid-template-columns:1fr}.arch-side-aside{padding-top:0}}
+@media(max-width:768px){.arch-card{flex:1 1 100%}.arch-fanout,.arch-fanin{display:none}.arch-row{flex-direction:column}}
+.stack-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.stack-card{padding:18px;background:var(--paper);border:1px solid var(--border);border-radius:12px;transition:border-color .2s}
+.stack-card:hover{border-color:var(--accent)}
+.stack-card.exist{border-left:4px solid var(--ok)}.stack-card.todo{border-left:4px solid var(--warn);border-left-style:dashed;opacity:.75}
+.stack-layer{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.1em;margin-bottom:5px}
+.stack-card h4{font-size:14px;font-weight:700;margin-bottom:4px;color:var(--text)}
+.stack-ver{font-family:var(--mono);font-size:11px;color:var(--text-mute);margin-bottom:9px}
+.stack-card p{font-size:13px;color:var(--text-dim);line-height:1.7}
+.stack-card .why{margin-top:9px;padding-top:9px;border-top:1px dashed var(--border);font-size:12px;color:var(--text-dim)}
+.stack-card .why strong{color:var(--accent);font-weight:600}
+.phase-banner{display:inline-block;padding:3px 10px;border-radius:6px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-left:8px}
+.phase-banner.a{background:var(--ok-soft);color:var(--ok);border:1px solid var(--accent-line)}
+.phase-banner.b{background:var(--warn-soft);color:#92400e;border:1px solid #fcd34d}
+pre.code{padding:15px 18px;background:var(--paper-dim);border:1px solid var(--border);border-radius:10px;overflow-x:auto;font-family:var(--mono);font-size:12px;line-height:1.65;color:var(--text);margin-bottom:14px}
+pre.code .k{color:var(--tip)}pre.code .s{color:var(--ok)}
+pre.code .c{color:var(--text-mute);font-style:italic}
+pre.code .f{color:var(--info)}pre.code .n{color:var(--warn)}
+.url-block{padding:13px 17px;background:var(--paper-dim);border:1px solid var(--border);border-radius:10px;font-family:var(--mono);font-size:12px;overflow-x:auto;margin-bottom:14px;word-break:break-all;color:var(--text)}
+.url-block .scheme{color:var(--info)}.url-block .host{color:var(--ok)}.url-block .path{color:var(--warn)}.url-block .qkey{color:var(--tip)}.url-block .qval{color:var(--ok)}
+.back-links{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px}
+.back-link{padding:6px 12px;background:var(--paper);border:1px solid var(--border);border-radius:999px;font-size:11px;color:var(--text-dim);text-decoration:none;font-family:var(--mono);transition:color .15s,border-color .15s}
+.back-link:hover{color:var(--accent);border-color:var(--accent)}
+.compare-table th:first-child{width:220px}
+footer{padding:28px 0 44px;text-align:center;color:var(--text-mute);font-size:12px;border-top:1px solid var(--border)}
+footer code{font-family:var(--mono);color:var(--accent)}
+
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-inner">
+      <a class="topbar-back" href="index.html">← 一覧に戻る</a>
+      <span class="topbar-tag tech">コスト試算</span>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="container">
+    <div class="breadcrumb">post-pilot / proposals / <code>cost-estimate</code></div>
+    <h1 class="hero-title">3 プラン<br><span class="grad">月額コスト試算</span></h1>
+    <p class="hero-sub">post-pilot の 3 プラン（簡単投稿 / 盛り盛りMAX / 動画 + MEO 診断 まるごとパッケージ）の月額コストを 1 ページに統合。各プランの想定運用量を前提に、新規発生コストと既存契約への吸収分を分けて記載。USD 価格は $1=¥150 で換算済。</p>
+    <div class="meta">
+      <span class="meta-tag">Verified: 2026-05-27</span>
+      <span class="meta-tag">FX: $1 = ¥150</span>
+      <span class="meta-tag">Vercel Pro: 既存契約で吸収</span>
+    </div>
+
+    <div class="toc">
+      <div class="toc-title">目次</div>
+      <ol>
+        <li><a href="#overview">3 プラン総覧</a></li>
+        <li><a href="#kantan-tokoo">簡単投稿プラン <span class="badge green">¥0/月</span></a></li>
+        <li><a href="#morimori-max">盛り盛りMAXプラン <span class="badge violet">¥5,612/月〜</span></a></li>
+        <li><a href="#x-api-pricing">　└ X API 料金実測（2026-05 verified）</a></li>
+        <li><a href="#monthly-cost">　└ 月額コスト試算</a></li>
+        <li><a href="#meo">動画 + MEO 診断 まるごとパッケージ <span class="badge orange">約¥75/月</span></a></li>
+      </ol>
+    </div>
+  </div>
+</header>
+
+<section id="overview">
+  <div class="container">
+    <h2 class="overview"><span class="sec-num">01</span>3 プラン総覧</h2>
+    <p class="sec-desc">3 プランは前提コストの桁が大きく異なる。完全無料の「簡単投稿」と従量課金の「盛り盛りMAX」、低額固定の「MEO」を一覧で比較する。</p>
+
+    <div class="plan-overview">
+      <div class="plan-card green">
+        <div class="plan-label">PLAN · kantan-tokoo</div>
+        <h4>簡単投稿プラン</h4>
+        <div class="price">¥0</div>
+        <div class="price-sub">/ 月（完全固定）</div>
+        <p>サーバ常駐ゼロ。Web Intent + LocalStorage + Service Worker のクライアント完結。投稿数や通知数に関係なく月額コストが上がらない。</p>
+        <a class="jump" href="#kantan-tokoo">詳細 →</a>
+      </div>
+      <div class="plan-card violet">
+        <div class="plan-label">PLAN · morimori-max</div>
+        <h4>盛り盛りMAXプラン</h4>
+        <div class="price">¥5,612</div>
+        <div class="price-sub">/ 月（新規発生分・60投稿+LINE 2,000通想定）</div>
+        <!-- 2026-05-28 claude-opus-4-7 セッションターン数：3 — ジモティを自動チャネルから外し営業ツール(連携未定)へ。自動は X/Threads/LINE の3チャネル -->
+        <p>X API（pay-per-use）+ Threads + LINE Push の 3 チャネル。投稿数・LINE 通数で従量課金。ジモティは営業ツール（システム連携は未定）。Vercel Pro 込みは ¥8,612/月。</p>
+        <a class="jump" href="#morimori-max">詳細 →</a>
+      </div>
+      <div class="plan-card orange">
+        <div class="plan-label">PLAN · meo-package</div>
+        <h4>動画 + MEO 診断 まるごとパッケージ</h4>
+        <div class="price">約¥75</div>
+        <div class="price-sub">/ 月（Phase A・月 10 件想定）</div>
+        <p>meoscope（既存資産）+ Claude API の 2 呼び/件のみ新規発生。Vercel Pro / Neon / Blob / Places 無料枠は既存契約で吸収。</p>
+        <a class="jump" href="#meo">詳細 →</a>
+      </div>
+    </div>
+
+    <h3>横断比較</h3>
+    <div class="table-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr><th>項目</th><th>簡単投稿</th><th>盛り盛りMAX</th><th>MEO パッケージ</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>新規発生コスト</td><td class="kantan">¥0 / 月</td><td class="morimori">¥5,612 / 月〜</td><td class="meo">約¥75 / 月</td></tr>
+          <tr><td>Vercel Pro 込みの月額</td><td class="kantan">¥0（既存内）</td><td class="morimori">¥8,612 / 月</td><td class="meo">既存内に吸収</td></tr>
+          <tr><td>従量課金の有無</td><td class="kantan">なし</td><td class="morimori">あり（X / LINE）</td><td class="meo">微小（Claude のみ）</td></tr>
+          <tr><td>スケール時の挙動</td><td class="kantan">¥0 のまま</td><td class="morimori">投稿数・LINE 通数で線形増加</td><td class="meo">件数に比例して増加（10件で約¥75）</td></tr>
+          <tr><td>主な変動要因</td><td>—</td><td>X 投稿数 / URL 含有率 / LINE 友だち数</td><td>分析件数 / Claude トークン</td></tr>
+          <tr><td>想定運用量（基準）</td><td>—</td><td>60投稿 / 月 + LINE 500人×週1</td><td>10件 / 月</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note info">
+      <strong>読み方</strong>
+      「新規発生コスト」は <code>post-pilot</code> 導入で<strong>追加で発生する</strong>月額のみを示す。Vercel Pro / Neon / Vercel Blob / Google Places API 無料枠 / Notion / Chatwork は既存契約・既存無料枠で吸収しているため、ここには含めない（明細表内では「既存内」と併記）。
+    </div>
+  </div>
+</section>
+
+<section id="kantan-tokoo">
+  <div class="container">
+    <h2 class="kantan"><span class="sec-num">02</span>簡単投稿プラン</h2>
+    <p class="sec-desc">投稿数・通知数に関係なく完全固定。スケールしてもコスト増ゼロ。</p>
+    <div class="table-wrap">
+      <table>
+        <thead class="green"><tr><th>項目</th><th>単価</th><th>月額</th><th>備考</th></tr></thead>
+        <tbody>
+          <tr><td>Vercel ホスティング（静的）</td><td class="num green">¥0</td><td class="num green">¥0</td><td>既存 Pro の静的配信枠で吸収</td></tr>
+          <tr><td>X 投稿</td><td class="num green">¥0</td><td class="num green">¥0</td><td>Web Intent は無料・無認証</td></tr>
+          <tr><td>Threads 投稿</td><td class="num green">¥0</td><td class="num green">¥0</td><td>Web Intent は無料・無認証</td></tr>
+          <tr><td>通知サーバ</td><td class="num green">¥0</td><td class="num green">¥0</td><td>Notifications API はクライアント完結</td></tr>
+          <tr><td>下書きテンプレ運用</td><td class="num">人件費のみ</td><td class="num">—</td><td>月次レビュー想定、外部 AI 費用ゼロ運用も可</td></tr>
+          <tr><td>季節カレンダー保守</td><td class="num green">¥0</td><td class="num green">¥0</td><td>年初に1回 commit、内閣府 CSV を再利用</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cost-summary green">
+      <div class="item"><div class="label">MONTHLY</div><div class="value">¥0</div><div class="unit">/ 月（運用コスト）</div></div>
+      <div class="item"><div class="label">PER CLICK</div><div class="value">¥0</div><div class="unit">/ 投稿ボタン押下</div></div>
+      <div class="item"><div class="label">PER NOTIFY</div><div class="value">¥0</div><div class="unit">/ 通知1件</div></div>
+      <div class="item"><div class="label">SCALE TO 1M</div><div class="value">¥0</div><div class="unit">/ 100万投稿でも同額</div></div>
+    </div>
+    <div class="back-links">
+      <a class="back-link" href="./sns/kantan-tokoo-technical.html">← 技術スタック詳細</a>
+      <a class="back-link" href="./sns/kantan-tokoo-internal.html">← リアン社内マニュアル</a>
+    </div>
+  </div>
+</section>
+
+<section id="morimori-max">
+  <div class="container">
+    <h2 class="morimori"><span class="sec-num">03</span>盛り盛りMAXプラン</h2>
+    <p class="sec-desc">X API（pay-per-use）+ Threads（無料）+ LINE Push の 3 チャネル。X の従量課金と LINE の通数課金が変動要因。ジモティは営業ツール（システム連携は未定）。</p>
+
+    <h3 id="x-api-pricing">X API 料金実測（2026-05 verified）</h3>
+    <p class="sec-desc">2026-02-06 から pay-per-use が新規デフォルト。2026-04 の値上げを反映。</p>
+    <div class="table-wrap">
+      <table>
+        <thead class="violet"><tr><th>操作</th><th>エンドポイント</th><th>単価</th><th>備考</th></tr></thead>
+        <tbody>
+          <tr><td>テキスト投稿</td><td class="mono">POST /2/tweets</td><td class="num amber">¥2.25</td><td>URL を含まない場合</td></tr>
+          <tr><td>URL 付き投稿</td><td class="mono">POST /2/tweets</td><td class="num amber">¥30</td><td>2026-04 値上げ。URL 含む場合のみ</td></tr>
+          <tr><td>画像アップロード</td><td class="mono">POST /1.1/media/upload</td><td class="num">¥1.5</td><td>投稿前に必要</td></tr>
+          <tr><td>自分の投稿読み出し</td><td class="mono">GET /2/users/me/tweets</td><td class="num green">¥0.15</td><td>owned reads は 2026-04 値下げ</td></tr>
+          <tr><td>月次キャップ</td><td>—</td><td class="num">2M reads</td><td>pay-per-use のハードリミット</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note warn">
+      <strong>注意</strong>
+      旧 Basic (¥30,000/月 = 3,000投稿/月) と Pro (¥750,000/月) は既存サブスクライバ限定。新規はサインアップ不可。投稿数が月 13,000 件を超えてから旧 Basic 相当のコストになる試算。
+    </div>
+
+    <h3 id="monthly-cost">月額コスト試算</h3>
+    <p class="sec-desc">1日2投稿 × 30日 = 月60投稿、テキスト + 画像、URL なし想定。LINE は友だち 500人へ週1配信（4回/月 × 500人 = 2,000通）想定。</p>
+    <div class="table-wrap">
+      <table>
+        <thead class="violet"><tr><th>項目</th><th>単価</th><th>使用量/月</th><th>月額</th></tr></thead>
+        <tbody>
+          <tr><td>Vercel Pro（既存）</td><td class="num">¥3,000</td><td>—</td><td class="num">¥3,000</td></tr>
+          <tr><td>X 投稿（テキスト）</td><td class="num">¥2.25</td><td class="num">60</td><td class="num amber">¥135</td></tr>
+          <tr><td>X 画像アップロード</td><td class="num">¥1.5</td><td class="num">60</td><td class="num amber">¥90</td></tr>
+          <tr><td>Threads 投稿</td><td class="num green">¥0</td><td class="num">60</td><td class="num green">¥0</td></tr>
+          <tr><td>ジモティ（営業ツール・システム連携未定）</td><td class="num green">¥0</td><td>—</td><td class="num green">¥0</td></tr>
+          <tr><td>LINE 公式アカウント（ライト）</td><td class="num">¥5,000</td><td class="num">2,000通</td><td class="num amber">¥5,000</td></tr>
+          <tr><td>Claude Sonnet 4.6（原稿+モデレーション）</td><td class="num">約¥6/件</td><td class="num">60</td><td class="num">¥360</td></tr>
+          <tr><td>fal.ai FLUX.1 schnell</td><td class="num">¥0.45</td><td class="num">60</td><td class="num">¥27</td></tr>
+          <tr><td>Notion / Chatwork</td><td class="num green">¥0</td><td>—</td><td class="num green">¥0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cost-summary violet">
+      <div class="item"><div class="label">NEW COST</div><div class="value">¥5,612</div><div class="unit">/ 月（自動3チャネル・新規発生分）</div></div>
+      <div class="item"><div class="label">TOTAL</div><div class="value">¥8,612</div><div class="unit">/ 月（Vercel Pro 込み）</div></div>
+      <div class="item"><div class="label">W/O LINE</div><div class="value">¥3,612</div><div class="unit">/ 月（LINE抜き）</div></div>
+      <div class="item"><div class="label">LINE FREE TIER</div><div class="value">¥0</div><div class="unit">/ 月200通まで</div></div>
+    </div>
+
+    <div class="note info">
+      <strong>変動要因</strong>
+      <strong>X の URL 含む投稿は ¥30/件</strong>と通常の 13 倍。CV 計測したい時だけ明示的にオンにする。LINE は <strong>通数 = 配信回数 × 受信者数</strong>。友だち 5,000 人に月 60 投稿で 300,000 通 → スタンダード超過の警告が必要。
+    </div>
+    <div class="note warn">
+      <strong>LINE 通数の事前見積もり</strong>
+      通数 = 配信回数 × 受信者数。友だち 1,000人に週1配信で月 4,000通 → ライト ¥5,000 圏内。Notion DB に <code>line_audience_size</code> を持ち、cron 開始時に「今月の予想通数 + 残り枠」を試算して上限超過なら Chatwork に warning 通知 + Push をスキップする防御を入れる。
+    </div>
+    <div class="back-links">
+      <a class="back-link" href="./sns/morimori-max-technical.html">← 技術スタック詳細</a>
+      <a class="back-link" href="./sns/morimori-max-internal.html">← リアン社内マニュアル</a>
+    </div>
+  </div>
+</section>
+
+<section id="meo">
+  <div class="container">
+    <h2 class="meo"><span class="sec-num">04</span>動画 + MEO 診断 まるごとパッケージ</h2>
+    <p class="sec-desc">我が社の DM 営業で月 10 件の診断を回し、うち 3 件が受注（動画納品 = 詳細 PDF 同梱）する想定。Phase A は既存資産のみで完結するため新規発生コストはほぼゼロ。</p>
+    <div class="table-wrap">
+      <table>
+        <thead class="orange"><tr><th>項目</th><th>単価</th><th>使用量/月</th><th>月額</th><th>備考</th></tr></thead>
+        <tbody>
+          <tr><td>Vercel Pro (既存)</td><td class="num">¥3,000</td><td>—</td><td class="num green">¥0</td><td>既存契約で吸収</td></tr>
+          <tr><td>Google Places API</td><td class="num">¥0</td><td class="num">~30 呼び/件 × 10件 = 300</td><td class="num green">¥0</td><td>無料枠 1,000/月 の範囲内 · quota ガード稼働中</td></tr>
+          <tr><td>OSM Overpass / Nominatim</td><td class="num green">¥0</td><td class="num">10件</td><td class="num green">¥0</td><td>無料 · ODbL 帰属表記必須</td></tr>
+          <tr><td>Anthropic Claude (SWOT + Recommend)</td><td class="num">約¥7.5/件</td><td class="num">10件</td><td class="num">約¥75</td><td>anthropic_usage_log に自前計測 · 実測ベースで再評価</td></tr>
+          <tr><td>Neon Postgres (既存)</td><td class="num green">¥0</td><td>—</td><td class="num green">¥0</td><td>lienrapport DB 共有</td></tr>
+          <tr><td>Vercel Blob (既存)</td><td class="num green">¥0</td><td class="num">10 PDF · ~500KB/件</td><td class="num green">¥0</td><td>lienrapport-media 共有 · 無料枠内</td></tr>
+          <tr><td>営業担当の追加ユーザー枠</td><td class="num green">¥0</td><td class="num">1名</td><td class="num green">¥0</td><td>users テーブル 1 行追加</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cost-summary orange">
+      <div class="item">
+        <div class="label">PHASE A NEW COST</div>
+        <div class="value">約¥75</div>
+        <div class="unit">/ 月 (Claude のみ)</div>
+      </div>
+      <div class="item">
+        <div class="label">PHASE B 想定 (要設計)</div>
+        <div class="value">+α</div>
+        <div class="unit">/ 月 (cron + PDF 改修)</div>
+      </div>
+      <div class="item">
+        <div class="label">PLACES 無料枠</div>
+        <div class="value">1,000</div>
+        <div class="unit">Place Details / 月</div>
+      </div>
+      <div class="item">
+        <div class="label">担当の運用負荷</div>
+        <div class="value">~10 min</div>
+        <div class="unit">/ 件 (実測未済)</div>
+      </div>
+    </div>
+    <div class="note info">
+      <strong>所要時間の実測未済</strong>
+      Claude を 2 回呼ぶ分析パイプラインの体感所要時間は <strong>本番運用前に社内で 3 件回して実測する</strong>。 <code>maxDuration: 300</code> は上限値で、実時間ではない。SLA 設計は実測後に決める。
+    </div>
+    <div class="back-links">
+      <a class="back-link" href="./meo/meo-package-technical.html">← 技術スタック詳細</a>
+      <a class="back-link" href="./meo/meo-package-internal.html">← リアン社内マニュアル</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    post-pilot ｜ cost-estimate ｜ 3 プラン統合 ｜ 2026-05-27 verified
+  </div>
+</footer>
+
+</body>
+</html>

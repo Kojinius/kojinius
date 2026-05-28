@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<!-- 2026-05-26 claude-opus-4-7 セッションターン数：6 — Google マップサービス × meoscope 連携 技術版 新規作成・実コード裏取り済 -->
+<!-- 2026-05-26 claude-opus-4-7 セッションターン数：8 — 「三浦」呼称を「我々/担当/営業担当」に統一 -->
+<!-- 2026-05-26 claude-opus-4-7 セッションターン数：1 — ドメイン表記を ms.lienrapport.jp → meoscope.com に置換 -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../auth.js"></script>
+<title>動画 + MEO 診断 まるごとパッケージ｜技術スタック詳細</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/doc.css">
+<style>
+/* 2026-05-28 claude-opus-4-7 セッションターン数：5 — ダーク→ライトテーマオーバーライド（doc.css 共通CSS適用） */
+:root{
+  --bg:#f7f5f0;--paper:#ffffff;--paper-dim:#fafaf9;
+  --text:#1f2937;--text-dim:#4b5563;--text-mute:#9ca3af;
+  --border:#e5e7eb;--border-strong:#d1d5db;
+  --bg-code:#f4f3f0;
+  --accent:#059669;--accent-soft:#ecfdf5;--accent-line:#34d399;
+  --ok:#059669;--ok-soft:#ecfdf5;
+  --warn:#d97706;--warn-soft:#fffbeb;
+  --ng:#dc2626;--ng-soft:#fef2f2;
+  --info:#2563eb;--info-soft:#eff6ff;
+  --tip:#7c3aed;--tip-soft:#f5f3ff;
+  --meo-c:#f97316;--meo-soft:#fff7ed;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:"Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.85;-webkit-font-smoothing:antialiased}
+body::before{display:none}
+.container{max-width:1180px;margin:0 auto;padding:0 28px}
+@media(max-width:640px){.container{padding:0 18px}}
+code,kbd,pre,.mono{font-family:var(--mono);font-size:.9em}
+header.hero{padding:40px 0 32px;border-bottom:1px solid var(--border)}
+.breadcrumb{font-size:13px;color:var(--text-mute);margin-bottom:20px;letter-spacing:.04em}
+.breadcrumb code{background:var(--paper-dim);border:1px solid var(--border);border-radius:5px;color:var(--accent);padding:2px 7px}
+h1.hero-title{font-size:clamp(26px,4vw,42px);font-weight:900;line-height:1.25;letter-spacing:-.02em;margin-bottom:14px;color:var(--text)}
+h1.hero-title .grad{background:linear-gradient(135deg,var(--accent),var(--info));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-sub{font-size:15px;color:var(--text-dim);max-width:840px;margin-bottom:24px;line-height:1.8}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.meta-tag{padding:5px 12px;background:var(--paper);border:1px solid var(--border);border-radius:999px;font-size:12px;color:var(--text-dim);font-family:var(--mono)}
+.meta-tag.ok,.meta-tag.free{color:var(--ok);border-color:var(--accent-line)}
+.meta-tag.paid,.meta-tag.todo{color:var(--warn);border-color:#fcd34d}
+.meta-tag.exist{color:var(--tip);border-color:#c4b5fd}
+.toc{margin:24px 0 0;padding:18px 22px;background:var(--paper);border:1px solid var(--border);border-radius:12px}
+.toc-title{font-size:12px;color:var(--text-mute);font-weight:700;letter-spacing:.1em;margin-bottom:10px;text-transform:uppercase}
+.toc ol{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:5px 18px}
+.toc li{padding:4px 0 4px 22px;position:relative;font-size:13px;color:var(--text)}
+.toc li::before{content:"—";position:absolute;left:0;top:4px;color:var(--text-mute)}
+.toc a{color:var(--text-dim);text-decoration:none}.toc a:hover{color:var(--accent)}
+.toc .badge{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;vertical-align:middle}
+.toc .badge.green{background:var(--ok-soft);color:var(--ok);border:1px solid var(--accent-line)}
+.toc .badge.violet{background:var(--tip-soft);color:var(--tip);border:1px solid #c4b5fd}
+.toc .badge.orange{background:var(--meo-soft);color:var(--meo-c);border:1px solid #fed7aa}
+section{padding:44px 0;border-bottom:1px solid var(--border)}
+section:last-of-type{border-bottom:none}
+h2{font-size:22px;font-weight:900;letter-spacing:-.01em;margin-bottom:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:var(--text)}
+h2 .sec-num{font-family:var(--mono);font-size:12px;background:var(--accent-soft);color:var(--accent);padding:3px 9px;border-radius:7px;font-weight:700;border:1px solid var(--accent-line)}
+h2.kantan .sec-num{background:var(--ok-soft);color:var(--ok)}
+h2.morimori .sec-num{background:var(--tip-soft);color:var(--tip)}
+h2.meo .sec-num{background:var(--meo-soft);color:var(--meo-c)}
+h2.overview .sec-num{background:var(--info-soft);color:var(--info)}
+.sec-desc{color:var(--text-dim);font-size:13.5px;margin-bottom:22px;max-width:840px;line-height:1.8}
+h3{font-size:16px;font-weight:700;margin:24px 0 10px;color:var(--text)}
+.plan-overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:18px}
+.plan-card{padding:22px;border-radius:14px;border:1px solid var(--border);background:var(--paper);transition:transform .15s}
+.plan-card:hover{transform:translateY(-2px)}
+.plan-card.green{border-color:var(--accent-line);background:var(--ok-soft)}
+.plan-card.violet{border-color:#c4b5fd;background:var(--tip-soft)}
+.plan-card.orange{border-color:#fed7aa;background:var(--meo-soft)}
+.plan-card .plan-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.plan-card.green .plan-label{color:var(--ok)}.plan-card.violet .plan-label{color:var(--tip)}.plan-card.orange .plan-label{color:var(--meo-c)}
+.plan-card h4{font-size:15px;font-weight:900;margin-bottom:7px;color:var(--text)}
+.plan-card .price{font-family:var(--mono);font-size:26px;font-weight:900;margin-bottom:3px}
+.plan-card.green .price{color:var(--ok)}.plan-card.violet .price{color:var(--tip)}.plan-card.orange .price{color:var(--meo-c)}
+.plan-card .price-sub{font-size:11px;color:var(--text-mute);font-family:var(--mono);margin-bottom:9px}
+.plan-card p{font-size:12px;color:var(--text-dim);line-height:1.65}
+.plan-card .jump{display:inline-block;margin-top:11px;padding:5px 12px;background:var(--paper);border:1px solid var(--border);border-radius:999px;font-size:11px;color:var(--text);text-decoration:none;font-family:var(--mono)}
+.plan-card .jump:hover{background:var(--accent-soft);color:var(--accent)}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;margin-bottom:18px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:580px;background:var(--paper)}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text)}
+thead,thead.green,thead.violet,thead.orange{background:var(--paper-dim)}
+th{font-weight:700;font-size:12px;letter-spacing:.03em}
+tbody tr:hover{background:var(--paper-dim)}
+tbody tr:last-child td{border-bottom:none}
+td.mono{font-family:var(--mono);font-size:11px;color:var(--accent);word-break:break-all}
+td.num{font-family:var(--mono);text-align:right}
+td.amber{color:var(--warn);font-weight:600}td.green{color:var(--ok);font-weight:600}td.red{color:var(--ng);font-weight:600}
+td.kantan{color:var(--ok);font-weight:600}td.morimori{color:var(--tip);font-weight:600}td.meo{color:var(--meo-c);font-weight:600}td.zero{font-family:var(--mono);text-align:right}
+.cost-summary{padding:18px;border:1px solid var(--border);border-radius:12px;margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;text-align:center;background:var(--paper)}
+.cost-summary.green{border-color:var(--accent-line)}.cost-summary.violet{border-color:#c4b5fd}.cost-summary.orange{border-color:#fed7aa}
+.cost-summary .item{padding:0 8px;border-right:1px solid var(--border)}.cost-summary .item:last-child{border-right:none}
+.cost-summary .label{font-size:10px;color:var(--text-mute);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.cost-summary .value{font-size:20px;font-weight:900;font-family:var(--mono);color:var(--accent)!important;background:none!important;-webkit-background-clip:unset!important;background-clip:unset!important}
+.cost-summary.violet .value{color:var(--tip)!important}.cost-summary.orange .value{color:var(--meo-c)!important}
+.cost-summary .unit{font-size:11px;color:var(--text-dim);margin-top:3px}
+.note{padding:14px 18px;border-radius:10px;margin:14px 0;border-left:4px solid;font-size:13px;line-height:1.75}
+.note.warn{background:var(--warn-soft);border-color:var(--warn);color:#92400e}
+.note.info{background:var(--info-soft);border-color:var(--info);color:#1e40af}
+.note.danger{background:var(--ng-soft);border-color:var(--ng);color:#991b1b}
+.note.ok,.note.green{background:var(--ok-soft);border-color:var(--ok);color:#065f46}
+.note strong{display:block;font-weight:700;margin-bottom:4px;font-size:12.5px;text-transform:none;letter-spacing:0;color:inherit}
+.note a{color:inherit;text-decoration:underline}
+.note code{background:rgba(0,0,0,.07);color:inherit;border:none;padding:1px 4px;border-radius:3px;font-family:var(--mono);font-size:.88em}
+.arch-canvas{padding:24px 18px;background:var(--paper);border:1px solid var(--border);border-radius:14px;margin-bottom:18px;position:relative;overflow:hidden}
+.arch-canvas::before{display:none}
+.arch-layer-label{font-family:var(--mono);font-size:10px;color:var(--text-mute);letter-spacing:.18em;text-align:center;text-transform:uppercase;margin-bottom:12px;position:relative;z-index:1}
+.arch-layer-label::before,.arch-layer-label::after{content:"";display:inline-block;width:40px;height:1px;background:var(--border);vertical-align:middle;margin:0 10px}
+.arch-row{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;position:relative;z-index:1}
+.arch-row.tight{gap:10px}
+.arch-card{flex:0 1 240px;min-width:200px;padding:13px 15px;border-radius:10px;border:1px solid var(--border);border-left-width:4px;background:var(--paper);backdrop-filter:none;transition:transform .15s,box-shadow .15s;position:relative}
+.arch-card:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.07)}
+.arch-card.compact{flex:0 1 175px;min-width:150px;padding:10px 12px}
+.arch-card.hosting{border-left-color:#0d9488}.arch-card.asset{border-left-color:var(--ok)}
+.arch-card.browser,.arch-card.logic{border-left-color:var(--info)}
+.arch-card.user{border-left-color:var(--tip)}.arch-card.button{border-left-color:var(--ok)}
+.arch-card.external{border-left-color:var(--text-mute);border-style:dashed}
+.arch-card.worker{border-left-color:#ec4899}
+.arch-card.copy{border-left-color:var(--warn);border-style:dashed}
+.arch-card.line,.arch-card.channel-line{border-left-color:#16a34a}
+.arch-card.trigger,.arch-card.actor{border-left-color:var(--tip)}
+.arch-card.entry{border-left-color:var(--info)}.arch-card.data{border-left-color:#0d9488}
+.arch-card.ai{border-left-color:var(--info)}.arch-card.moderation{border-left-color:var(--warn)}
+.arch-card.approval{border-left-color:#ec4899}
+.arch-card.channel-paid,.arch-card.api{border-left-color:var(--meo-c)}
+.arch-card.channel-free,.arch-card.channel{border-left-color:var(--ok)}
+.arch-card.channel-semi{border-left-color:var(--warn);border-style:dashed}
+.arch-card.storage{border-left-color:#ec4899}
+.arch-card.todo{border-left-color:var(--warn);border-style:dashed;opacity:.65}
+.arch-card-head{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.arch-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;background:var(--paper-dim)!important;color:var(--text-dim)!important;flex-shrink:0}
+.arch-card.compact .arch-icon{width:24px;height:24px;font-size:12px}
+.arch-card-meta{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--text-mute);text-transform:uppercase}
+.arch-card-title{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:4px}
+.arch-card.compact .arch-card-title{font-size:11.5px;margin-bottom:2px}
+.arch-card-spec{font-family:var(--mono);font-size:10px;color:var(--text-dim);line-height:1.45;word-break:break-all}
+.arch-card.compact .arch-card-spec{font-size:9.5px}
+.arch-card-badge{position:absolute;top:-7px;right:10px;padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.04em}
+.arch-card-badge.free{background:var(--ok);color:#fff}.arch-card-badge.exist{background:var(--tip);color:#fff}
+.arch-card-badge.paid{background:var(--warn);color:#fff}.arch-card-badge.client{background:var(--info);color:#fff}
+.arch-card-badge.copy,.arch-card-badge.semi{background:var(--warn);color:#fff}
+.arch-card-badge.line{background:#16a34a;color:#fff}
+.arch-card-badge.mobile-only,.arch-card-badge.todo,.arch-card-badge.todo-b{background:var(--text-mute);color:#fff}
+.arch-flow{display:flex;flex-direction:column;align-items:center;margin:10px 0;position:relative;z-index:1}
+.arch-flow-line{width:2px;height:24px;background:var(--border-strong);border-radius:2px;position:relative}
+.arch-flow-line::after{content:"";position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--border-strong)}
+.arch-flow-label{position:absolute;left:calc(50% + 12px);top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:9px;color:var(--accent);white-space:nowrap;letter-spacing:.04em;background:var(--paper-dim);padding:1px 5px;border-radius:3px}
+.arch-fanout,.arch-fanin{width:100%;max-width:760px;margin:6px auto 0;display:block}
+.arch-canvas svg path{stroke:var(--border-strong)!important}
+.arch-canvas svg marker path{fill:var(--border-strong)!important}
+.arch-section{border:1px dashed var(--border);border-radius:12px;padding:14px;margin:12px 0;background:var(--paper-dim);position:relative;z-index:1}
+.arch-section-title{position:absolute;top:-9px;left:14px;background:var(--paper);padding:0 8px;font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+.arch-legend{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);position:relative;z-index:1}
+.arch-legend-item{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text-dim)}
+.arch-legend-dot{width:9px;height:9px;border-radius:3px}
+.arch-side{display:grid;grid-template-columns:1fr 220px;gap:18px;align-items:start;position:relative;z-index:1}
+.arch-side-aside{padding-top:28px}
+@media(max-width:900px){.arch-side{grid-template-columns:1fr}.arch-side-aside{padding-top:0}}
+@media(max-width:768px){.arch-card{flex:1 1 100%}.arch-fanout,.arch-fanin{display:none}.arch-row{flex-direction:column}}
+.stack-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.stack-card{padding:18px;background:var(--paper);border:1px solid var(--border);border-radius:12px;transition:border-color .2s}
+.stack-card:hover{border-color:var(--accent)}
+.stack-card.exist{border-left:4px solid var(--ok)}.stack-card.todo{border-left:4px solid var(--warn);border-left-style:dashed;opacity:.75}
+.stack-layer{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.1em;margin-bottom:5px}
+.stack-card h4{font-size:14px;font-weight:700;margin-bottom:4px;color:var(--text)}
+.stack-ver{font-family:var(--mono);font-size:11px;color:var(--text-mute);margin-bottom:9px}
+.stack-card p{font-size:13px;color:var(--text-dim);line-height:1.7}
+.stack-card .why{margin-top:9px;padding-top:9px;border-top:1px dashed var(--border);font-size:12px;color:var(--text-dim)}
+.stack-card .why strong{color:var(--accent);font-weight:600}
+.phase-banner{display:inline-block;padding:3px 10px;border-radius:6px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-left:8px}
+.phase-banner.a{background:var(--ok-soft);color:var(--ok);border:1px solid var(--accent-line)}
+.phase-banner.b{background:var(--warn-soft);color:#92400e;border:1px solid #fcd34d}
+pre.code{padding:15px 18px;background:var(--paper-dim);border:1px solid var(--border);border-radius:10px;overflow-x:auto;font-family:var(--mono);font-size:12px;line-height:1.65;color:var(--text);margin-bottom:14px}
+pre.code .k{color:var(--tip)}pre.code .s{color:var(--ok)}
+pre.code .c{color:var(--text-mute);font-style:italic}
+pre.code .f{color:var(--info)}pre.code .n{color:var(--warn)}
+.url-block{padding:13px 17px;background:var(--paper-dim);border:1px solid var(--border);border-radius:10px;font-family:var(--mono);font-size:12px;overflow-x:auto;margin-bottom:14px;word-break:break-all;color:var(--text)}
+.url-block .scheme{color:var(--info)}.url-block .host{color:var(--ok)}.url-block .path{color:var(--warn)}.url-block .qkey{color:var(--tip)}.url-block .qval{color:var(--ok)}
+.back-links{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px}
+.back-link{padding:6px 12px;background:var(--paper);border:1px solid var(--border);border-radius:999px;font-size:11px;color:var(--text-dim);text-decoration:none;font-family:var(--mono);transition:color .15s,border-color .15s}
+.back-link:hover{color:var(--accent);border-color:var(--accent)}
+.compare-table th:first-child{width:220px}
+footer{padding:28px 0 44px;text-align:center;color:var(--text-mute);font-size:12px;border-top:1px solid var(--border)}
+footer code{font-family:var(--mono);color:var(--accent)}
+
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-inner">
+      <a class="topbar-back" href="../index.html">← 一覧に戻る</a>
+      <span class="topbar-tag tech">技術仕様</span>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="container">
+    <div class="breadcrumb">post-pilot / proposals / MEOサービス / <code>plan: meo-package</code> / technical-spec</div>
+    <h1 class="hero-title">動画 + MEO 診断<br><span class="grad">Technical Architecture</span></h1>
+    <p class="hero-sub">既存の MEO 分析ツール「meoscope」（開発中（本番確認可）・<code>meoscope.com</code>）を、我が社の Google マップ動画サービス（Instagram DM / ジモティ）の営業フローに組み込む構成。Phase A は手動運用・追加開発ゼロ。Phase B で自動化・テンプレ追加を判断。</p>
+    <div class="meta">
+      <span class="meta-tag exist">meoscope: production (meoscope.com)</span>
+      <span class="meta-tag exist">Runtime: Vercel Fluid Compute · Node.js</span>
+      <span class="meta-tag exist">Auth: Firebase + Neon whitelist</span>
+      <span class="meta-tag exist">Analyze: SSE · maxDuration 300s</span>
+      <span class="meta-tag exist">PDF: Playwright + chromium-min</span>
+      <span class="meta-tag todo">無料版 PDF テンプレ: 要新規実装</span>
+      <span class="meta-tag todo">90日 cron: 要追加実装</span>
+      <span class="meta-tag">Verified: 2026-05-26</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">01</span>システム構成図 <span class="phase-banner a">Phase A</span></h2>
+    <p class="sec-desc">Phase A は <strong>追加開発ゼロ</strong>。営業担当の Google アカウントを <code>meoscope.users</code> に INSERT すれば、開発中（本番確認可）の meoscope を手動操作で利用できる。既存資産のみ。</p>
+
+    <div class="arch-canvas">
+
+      <div class="arch-layer-label">Actor (人手)</div>
+      <div class="arch-row">
+        <div class="arch-card actor">
+          <div class="arch-card-head">
+            <div class="arch-icon">👤</div>
+            <div><div class="arch-card-meta">USER</div><div class="arch-card-title">営業担当</div></div>
+          </div>
+          <div class="arch-card-spec">PC or スマホで meoscope を開く<br>店舗名検索 → 候補選択 → 分析 → PDF DL</div>
+        </div>
+      </div>
+
+      <div class="arch-flow"><div class="arch-flow-line"><div class="arch-flow-label">ブラウザ操作</div></div></div>
+
+      <div class="arch-layer-label">Entry (既存)</div>
+      <div class="arch-row">
+        <div class="arch-card entry">
+          <span class="arch-card-badge exist">EXIST</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">🌐</div>
+            <div><div class="arch-card-meta">NEXT.JS APP</div><div class="arch-card-title">meoscope.com</div></div>
+          </div>
+          <div class="arch-card-spec">Next.js 16 App Router<br>Vercel Pro · custom domain</div>
+        </div>
+        <div class="arch-card entry">
+          <span class="arch-card-badge exist">EXIST</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">🔐</div>
+            <div><div class="arch-card-meta">AUTH</div><div class="arch-card-title">Firebase + Neon</div></div>
+          </div>
+          <div class="arch-card-spec">Firebase Google Sign-In<br>__session Cookie 14d · meoscope.users ロール検証</div>
+        </div>
+      </div>
+
+      <div class="arch-flow"><div class="arch-flow-line"><div class="arch-flow-label">POST /api/analyze (SSE)</div></div></div>
+
+      <div class="arch-layer-label">Analyze Pipeline (既存・8 ステップ)</div>
+      <div class="arch-row">
+        <div class="arch-card api">
+          <span class="arch-card-badge exist">EXIST</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">⚙️</div>
+            <div><div class="arch-card-meta">SSE ROUTE</div><div class="arch-card-title">/api/analyze</div></div>
+          </div>
+          <div class="arch-card-spec">runtime: nodejs · maxDuration: 300<br>name/area/map モード · 候補複数時は SSE candidates 返却→人手選択</div>
+        </div>
+      </div>
+
+      <div class="arch-row" style="margin-top:18px">
+        <div class="arch-card data">
+          <span class="arch-card-badge exist">EXIST</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">🗺️</div>
+            <div><div class="arch-card-meta">DATA</div><div class="arch-card-title">Google Places API</div></div>
+          </div>
+          <div class="arch-card-spec">候補検索 + 評判取得<br>無料枠 1,000/月 · quota ガード実装済</div>
+        </div>
+        <div class="arch-card data">
+          <span class="arch-card-badge exist">EXIST</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">🌍</div>
+            <div><div class="arch-card-meta">DATA</div><div class="arch-card-title">OSM Overpass / Nominatim</div></div>
+          </div>
+          <div class="arch-card-spec">競合 POI 抽出 + 地名解決<br>無料 · ODbL 帰属表記必須</div>
+        </div>
+        <div class="arch-card ai">
+          <span class="arch-card-badge exist">EXIST</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">🧠</div>
+            <div><div class="arch-card-meta">LLM</div><div class="arch-card-title">Anthropic Claude</div></div>
+          </div>
+          <div class="arch-card-spec">SWOT + Recommend を 2 回呼び<br>anthropic_usage_log に自前計測</div>
+        </div>
+      </div>
+
+      <div class="arch-flow"><div class="arch-flow-line"><div class="arch-flow-label">done · reportId</div></div></div>
+
+      <div class="arch-layer-label">PDF 出力 (既存・Phase 1 印刷ページ + Playwright)</div>
+      <div class="arch-row">
+        <div class="arch-card api">
+          <span class="arch-card-badge exist">EXIST</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">📄</div>
+            <div><div class="arch-card-meta">PDF ROUTE</div><div class="arch-card-title">/api/report/pdf</div></div>
+          </div>
+          <div class="arch-card-spec">Playwright + @sparticuz/chromium-min<br>/dashboard/[id]/print を A4 多ページレンダリング</div>
+        </div>
+        <div class="arch-card storage">
+          <span class="arch-card-badge exist">EXIST</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">📦</div>
+            <div><div class="arch-card-meta">STORAGE</div><div class="arch-card-title">Vercel Blob</div></div>
+          </div>
+          <div class="arch-card-spec">lienrapport-media 共有<br>meoscope/{userEmail}/ prefix</div>
+        </div>
+      </div>
+
+      <div class="arch-flow"><div class="arch-flow-line"><div class="arch-flow-label">PDF download</div></div></div>
+
+      <div class="arch-row">
+        <div class="arch-card actor">
+          <div class="arch-card-head">
+            <div class="arch-icon">📨</div>
+            <div><div class="arch-card-meta">OFFLINE</div><div class="arch-card-title">担当が DM 添付返信</div></div>
+          </div>
+          <div class="arch-card-spec">Instagram DM / ジモティメッセージ<br>※ 自動連携なし</div>
+        </div>
+      </div>
+
+      <div class="arch-legend">
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#a78bfa"></span>EXISTING ASSET (開発中（本番確認可）)</div>
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#10b981"></span>FREE (OSM/Nominatim)</div>
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#fbbf24"></span>無料枠あり (Places)</div>
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#06b6d4"></span>従量 (Claude API)</div>
+      </div>
+
+    </div>
+
+    <div class="note ok">
+      <strong>Phase A の前提</strong>
+      Phase A は <code>meoscope.users</code> テーブルに営業担当のメールを INSERT する <strong>1 行の SQL だけ</strong> で稼働できる。新規実装ゼロ。所要時間は <code>meoscope.invites</code> 経由の招待発行で 1 分。
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">02</span>追加開発 (Phase B) のアーキ <span class="phase-banner b">Phase B</span></h2>
+    <p class="sec-desc">担当の作業をさらに減らすか、運用範囲を広げたいときに着手する追加開発。Phase A の効果検証を見てから判断する前提。</p>
+
+    <div class="arch-canvas">
+
+      <div class="arch-layer-label">B-1: 無料診断版 PDF テンプレ (A4 1 枚)</div>
+      <div class="arch-row">
+        <div class="arch-card todo">
+          <span class="arch-card-badge todo">TODO</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">📑</div>
+            <div><div class="arch-card-meta">NEW ROUTE</div><div class="arch-card-title">/api/report/pdf?variant=brief</div></div>
+          </div>
+          <div class="arch-card-spec">A4 1 枚: スコア + 弱点 TOP3 + 推奨動画タイプのみ<br>@react-pdf/renderer 採用 (既存 42-output-pdf-react-pdf.md §3 枠内)</div>
+        </div>
+      </div>
+
+      <div class="arch-flow"><div class="arch-flow-line"></div></div>
+
+      <div class="arch-layer-label">B-2: 90 日後 自動再診断</div>
+      <div class="arch-row">
+        <div class="arch-card todo">
+          <span class="arch-card-badge todo">TODO</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">⏰</div>
+            <div><div class="arch-card-meta">CRON (NEW)</div><div class="arch-card-title">vercel.json crons[]</div></div>
+          </div>
+          <div class="arch-card-spec">現状 vercel.json 未作成<br>schedule: 0 9 * * * · /api/cron/reminder-recheck</div>
+        </div>
+        <div class="arch-card todo">
+          <span class="arch-card-badge todo">TODO</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">📨</div>
+            <div><div class="arch-card-meta">NOTIFY (NEW)</div><div class="arch-card-title">Chatwork or Resend</div></div>
+          </div>
+          <div class="arch-card-spec">90 日経過の対象を Neon から SELECT<br>担当の Chatwork ルームに「再診断 due」通知</div>
+        </div>
+        <div class="arch-card todo">
+          <span class="arch-card-badge todo">TODO</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">🗄️</div>
+            <div><div class="arch-card-meta">SCHEMA (NEW)</div><div class="arch-card-title">meoscope.video_deliveries</div></div>
+          </div>
+          <div class="arch-card-spec">納品済の対象を保持<br>(report_id, delivered_at, due_recheck_at)</div>
+        </div>
+      </div>
+
+      <div class="arch-flow"><div class="arch-flow-line"></div></div>
+
+      <div class="arch-layer-label">B-3: DM 自動応答 ※法令・規約リスクあり</div>
+      <div class="arch-row">
+        <div class="arch-card todo">
+          <span class="arch-card-badge todo">RISK</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">⚠️</div>
+            <div><div class="arch-card-meta">CAUTION</div><div class="arch-card-title">Instagram DM 自動応答</div></div>
+          </div>
+          <div class="arch-card-spec">Meta Business API 要審査・ビジネスアカウント要件あり<br>不招請勧誘リスク (特定電子メール法) も要検討 · 非推奨</div>
+        </div>
+      </div>
+
+      <div class="arch-legend">
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#fbbf24"></span>TODO (新規実装)</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">03</span>既存技術スタック (meoscope)</h2>
+    <p class="sec-desc">2026-05-26 時点で開発中（本番確認可）の構成。<code>meoscope/CLAUDE.md</code> + 設計書 <code>main.md §4</code> + 実コード裏取り済。</p>
+
+    <h3>ランタイム / 認証</h3>
+    <div class="stack-grid">
+      <div class="stack-card exist">
+        <span class="stack-card-badge exist">EXIST</span>
+        <div class="stack-layer">RUNTIME</div>
+        <h4>Vercel (Pro Plan)</h4>
+        <div class="stack-ver">Fluid Compute · Node.js</div>
+        <p>カスタムドメイン <code>meoscope.com</code> で本番稼働。<code>VERCEL_PROJECT_PRODUCTION_URL</code> 使用 (Deployment Protection 回避済)。</p>
+        <div class="why"><strong>選定理由:</strong> 既存 Pro 契約。lienrapport プロジェクト群と Blob/Neon 共有。</div>
+      </div>
+      <div class="stack-card exist">
+        <span class="stack-card-badge exist">EXIST</span>
+        <div class="stack-layer">FRAMEWORK</div>
+        <h4>Next.js 16 App Router</h4>
+        <div class="stack-ver">React 19 · TypeScript</div>
+        <p>App Router で API Route + Server Component。<code>serverExternalPackages</code> で playwright-core / chromium-min を external 化。</p>
+      </div>
+      <div class="stack-card exist">
+        <span class="stack-card-badge exist">EXIST</span>
+        <div class="stack-layer">AUTH</div>
+        <h4>Firebase Authentication</h4>
+        <div class="stack-ver">Google Sign-In + Admin SDK</div>
+        <p>セッション Cookie 14 日 (<code>createSessionCookie</code>)。<code>__session</code> Cookie 名 · httpOnly · sameSite=lax · secure (production)。</p>
+        <div class="why"><strong>選定理由:</strong> Kalenex 方式踏襲。Resend magic link は UX 不可で却下済。</div>
+      </div>
+      <div class="stack-card exist">
+        <span class="stack-card-badge exist">EXIST</span>
+        <div class="stack-layer">ACCESS CTRL</div>
+        <h4>Neon ホワイトリスト</h4>
+        <div class="stack-ver">meoscope.users · meoscope.invites</div>
+        <p><code>email</code> ユニーク + <code>role</code> (admin/member)。Firebase で認証後、<code>SELECT role FROM meoscope.users WHERE email = $1</code> で許可判定。未登録は 401。</p>
+      </div>
+    </div>
+
+    <h3>分析パイプライン</h3>
+    <div class="stack-grid">
+      <div class="stack-card exist">
+        <span class="stack-card-badge exist">EXIST</span>
+        <div class="stack-layer">CORE API</div>
+        <h4>POST /api/analyze (SSE)</h4>
+        <div class="stack-ver">runtime: nodejs · maxDuration: 300</div>
+        <p>8 ステップを SSE で逐次送出: 対象特定 → 競合抽出 → 評判取得 → デジタル存在感 → 定量分析 → ポジション判定 → SWOT → AI 提案。途中失敗は <code>step:warn</code>、致命は <code>step:error</code>。</p>
+        <div class="why"><strong>name モード注意:</strong> 候補 2 件以上で <code>type:'candidates'</code> を送って接続終了 → クライアント側で <code>/select</code> UI で選択 → 再 POST。<strong>完全自動化されない</strong>。</div>
+      </div>
+      <div class="stack-card exist">
+        <span class="stack-card-badge exist">EXIST</span>
+        <div class="stack-layer">GEO DATA</div>
+        <h4>Google Places API + OSM</h4>
+        <div class="stack-ver">Places (新世代) · Overpass · Nominatim</div>
+        <p>Places は無料枠 1,000 Place Details / 月。Overpass で半径 3km の競合 POI 抽出。Nominatim で地名解決。</p>
+        <div class="why"><strong>quota ガード:</strong> 利用量を <code>meoscope.quota_counters</code> に記録、閾値超で <code>step:warn</code> 返却。</div>
+      </div>
+      <div class="stack-card exist">
+        <span class="stack-card-badge exist">EXIST</span>
+        <div class="stack-layer">LLM</div>
+        <h4>Anthropic Claude API</h4>
+        <div class="stack-ver">SWOT + Recommend (2 呼び/分析)</div>
+        <p>分析 1 回あたり 2 回の Claude 呼び出し。利用量は <code>meoscope.anthropic_usage_log</code> に自前記録 (Admin API は Individual account 不可)。</p>
+      </div>
+      <div class="stack-card exist">
+        <span class="stack-card-badge exist">EXIST</span>
+        <div class="stack-layer">CORPORATE</div>
+        <h4>gBizINFO API + Web Fetch</h4>
+        <div class="stack-ver">業種推測 confidence='low' fallback</div>
+        <p>business type signals で confidence=low と判定された場合に <code>runCorporateSubset</code> が起動。<code>GBIZ_API_KEY</code> 投入済。SSRF 対策の <code>fetchSafeHtml</code> で公式サイト多段 fetch。</p>
+      </div>
+    </div>
+
+    <h3>PDF / ストレージ</h3>
+    <div class="stack-grid">
+      <div class="stack-card exist">
+        <span class="stack-card-badge exist">EXIST</span>
+        <div class="stack-layer">PDF</div>
+        <h4>Playwright + chromium-min</h4>
+        <div class="stack-ver">/dashboard/[id]/print + headless render</div>
+        <p>POST <code>/api/report/pdf</code> で <code>reportId</code> を受領 → <code>/dashboard/[id]/print</code> を headless ブラウザで開く → Google Fonts (Noto Sans JP) <code>document.fonts.ready</code> 待ち + 1s → <code>page.pdf({ format: 'A4', margin: 12mm })</code> → Blob 保存 + stream 返却。</p>
+        <div class="why"><strong>制約:</strong> Cookie ベース認証必須。担当のセッション Cookie を Playwright Context に渡してから render する。テンプレは <strong>マルチページの詳細版のみ</strong>。</div>
+      </div>
+      <div class="stack-card exist">
+        <span class="stack-card-badge exist">EXIST</span>
+        <div class="stack-layer">STORAGE</div>
+        <h4>Vercel Blob</h4>
+        <div class="stack-ver">lienrapport-media (共有)</div>
+        <p><code>meoscope/{userEmail}/</code> prefix で分離。Public ストアだが URL を外に出さず Function 経由で stream 返却 (URL 隠匿)。</p>
+      </div>
+      <div class="stack-card exist">
+        <span class="stack-card-badge exist">EXIST</span>
+        <div class="stack-layer">DB</div>
+        <h4>Neon Postgres</h4>
+        <div class="stack-ver">lienrapport DB · meoscope schema · ap-southeast-1</div>
+        <p><code>meoscope.users</code> / <code>meoscope.invites</code> / <code>meoscope.quota_counters</code> / <code>meoscope.anthropic_usage_log</code>。マイグレーションは <code>scripts/migrate.ts</code>。</p>
+      </div>
+    </div>
+
+    <h3>追加開発 (Phase B)</h3>
+    <div class="stack-grid">
+      <div class="stack-card todo">
+        <span class="stack-card-badge todo">TODO</span>
+        <div class="stack-layer">B-1 PDF</div>
+        <h4>@react-pdf/renderer 1 枚版</h4>
+        <div class="stack-ver">新規 API: /api/report/pdf-brief</div>
+        <p>既存 <code>42-output-pdf-react-pdf.md</code> の枠内で「無料診断 1 枚版」テンプレを追加。ECharts SSR-SVG → PNG 化 + 文字情報を直接 PDF 化。Noto Sans JP を <code>Font.register</code>。</p>
+        <div class="why"><strong>所要見積:</strong> 既存設計書がある + 既存 Playwright 経路は残す前提なので、新規ルート 1 本 + テンプレ 1 つで 1〜2 日。実装後に動作・フォント検証必須。</div>
+      </div>
+      <div class="stack-card todo">
+        <span class="stack-card-badge todo">TODO</span>
+        <div class="stack-layer">B-2 CRON</div>
+        <h4>vercel.json crons[]</h4>
+        <div class="stack-ver">未作成 (現状リポジトリに vercel.json なし)</div>
+        <p>新規 <code>vercel.json</code> に <code>{ path: "/api/cron/reminder-recheck", schedule: "0 9 * * *" }</code> 追加。Vercel Pro なら回数無制限。</p>
+        <div class="why"><strong>注意:</strong> 現状 meoscope に Cron Jobs は 1 本も存在しない。導入時は CRON_SECRET 検証ロジックを揃える。</div>
+      </div>
+      <div class="stack-card todo">
+        <span class="stack-card-badge todo">TODO</span>
+        <div class="stack-layer">B-2 NOTIFY</div>
+        <h4>Chatwork API or Resend</h4>
+        <div class="stack-ver">既存: Chatwork MCP は本人用 / Resend は不使用</div>
+        <p>Chatwork ルームに「再診断 due」通知 → 担当が手動で meoscope を回す。完全自動でメール送信したい場合は Resend を新規導入 (現状 meoscope は Resend 不使用 = main.md §4)。</p>
+        <div class="why"><strong>推奨:</strong> Chatwork で通知 + 担当が手動再分析。完全自動メールは不招請勧誘リスクのため非推奨。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">04</span>運用フロー (Phase A の 1 ジョブ内訳)</h2>
+    <p class="sec-desc">DM 受信から PDF 添付返信までの手動運用フロー。営業担当のステップだけを記述。</p>
+    <ol class="flow-list">
+      <li>
+        <strong>DM 受信 (Instagram / ジモティ)</strong>
+        <small>担当が DM に気付く。営業時間外なら翌営業日対応の自動返信文を 1 本入れておく運用が望ましい</small>
+      </li>
+      <li>
+        <strong>meoscope を開く</strong>
+        <small><code>https://meoscope.com</code> · Google Sign-In · 初回のみホワイトリスト登録 (admin が <code>meoscope.invites</code> に行を追加 → 担当がリンク踏む)</small>
+      </li>
+      <li>
+        <strong>S1 分析開始画面で店舗名入力</strong>
+        <small>name モード · 任意で areaHint (例: 小田原市) + categoryHint (例: 飲食店) を併記すると候補精度が上がる</small>
+      </li>
+      <li>
+        <strong>候補が複数なら正しい店を選択</strong>
+        <small>候補 1 件なら即採用 · 2 件以上は <code>/select</code> 画面で人手選択 → 再 POST · 候補ゼロならエリア併記して再試行</small>
+      </li>
+      <li>
+        <strong>分析実行 (SSE 進捗を画面で見る)</strong>
+        <small>8 ステップ進捗が SSE で流れる · 致命的エラーなら <code>step:error</code> 表示 · Claude が 2 回呼ばれるので体感数分 (<strong>実測未済・本番運用前に担当と一緒に計測する</strong>)</small>
+      </li>
+      <li>
+        <strong>S3 ダッシュボードで結果確認</strong>
+        <small>「次の一手」「SWOT」「KPI」「9 チャート」を一通り目視確認 · 違和感あればこの段階で気付ける</small>
+      </li>
+      <li>
+        <strong>S4 PDF 出力</strong>
+        <small>「PDF ダウンロード」ボタン押下 · POST <code>/api/report/pdf</code> · Playwright が <code>/dashboard/[id]/print</code> を A4 multi-page でレンダリング · ファイル名 <code>meoscope-{reportId}.pdf</code></small>
+      </li>
+      <li>
+        <strong>PDF を DM に添付返信</strong>
+        <small>Instagram DM は PDF 直添付不可 (画像/動画のみ) → 1 ページ目を PNG 化して画像添付 + 「フル版は別途お送りします」運用 · ジモティはメッセージから外部 URL OK · 詳細運用は次節 §05</small>
+      </li>
+      <li>
+        <strong>商談 → 受注 → 動画制作</strong>
+        <small>レポートの弱点を起点に提案 · 受注したら同じ PDF を納品時に「導入前レポート」として渡す</small>
+      </li>
+      <li>
+        <strong>90 日後 (Phase A は手動カレンダー)</strong>
+        <small>担当のカレンダーに納品から 90 日後リマインダを手動登録 · その日に meoscope で再分析 · 「動画前 → 動画後」の比較レポートを送付 · Phase B で自動化検討</small>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">05</span>Instagram DM への PDF 添付制約</h2>
+    <p class="sec-desc">Instagram DM の仕様上、PDF 直添付ができない点は事前に詰めが必要。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>媒体</th><th>PDF 直添付</th><th>外部 URL</th><th>運用案</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Instagram DM</td>
+            <td class="red">不可</td>
+            <td>可 (プレビュー展開)</td>
+            <td>PDF 1 ページ目を画像化して添付 + Blob の限定 URL を DM 本文に貼る</td>
+          </tr>
+          <tr>
+            <td>ジモティ メッセージ</td>
+            <td class="amber">仕様確認要</td>
+            <td>可</td>
+            <td>外部 URL 経由が無難 · ジモティ規約「商用色 / クロール禁止」に抵触しない範囲で</td>
+          </tr>
+          <tr>
+            <td>メール (info@ 等)</td>
+            <td class="green">可</td>
+            <td>可</td>
+            <td>チラシ 3 の MAIL 欄経由のフローはメール添付で完結</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note warn">
+      <strong>限定 URL の作り方 (Phase A 範囲)</strong>
+      既存 <code>uploadPdf</code> は Vercel Blob (Public ストア) に PUT しているが、現行実装では URL を外に出さず Function 経由で stream するだけ。担当が外部 URL として共有したい場合は、<code>/api/report/pdf-share</code> のような <strong>短期 URL 発行ルートを新規追加</strong>するか、PDF を Google Drive に手動アップロードして Drive のリンクを貼るのが現実的。最初は Drive 経由で運用し、頻度が高くなったら API 化を判断。
+    </div>
+  </div>
+</section>
+
+<!-- 2026-05-27 claude-opus-4-7 セッションターン数：4 — §06 コスト試算は cost-estimate.html#meo へ集約 -->
+<section>
+  <div class="container">
+    <h2><span class="sec-num">06</span>コスト試算 (Phase A・月 10 件想定)</h2>
+    <p class="sec-desc">3 プラン横断のコスト試算ページに統合しました。Phase A NEW COST 約¥75/月（Claude のみ）の内訳はそちらを参照。</p>
+    <div class="note ok">
+      <strong>移動先</strong>
+      → <a href="../cost-estimate.html#meo" style="color:inherit;text-decoration:underline;font-weight:700">post-pilot コスト試算（3 プラン統合）｜ 動画 + MEO 診断 まるごとパッケージの章</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">07</span>必要な追加開発の優先順位</h2>
+    <p class="sec-desc">Phase A の効果検証 (1 ヶ月運用) を見てから、以下のうちどれを着手するかボス判断。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>優先</th><th>項目</th><th>難易度</th><th>効果</th><th>備考</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="num">P1</td>
+            <td>無料診断版 PDF テンプレ (A4 1 枚)</td>
+            <td class="amber">中</td>
+            <td class="green">高</td>
+            <td>既存 <code>42-output-pdf-react-pdf.md</code> 枠内 · DM 添付の心理的ハードル低下</td>
+          </tr>
+          <tr>
+            <td class="num">P2</td>
+            <td>PDF 短期 URL 発行ルート</td>
+            <td class="green">低</td>
+            <td class="amber">中</td>
+            <td>Instagram DM に外部 URL として貼れる · Drive 手動運用の代替</td>
+          </tr>
+          <tr>
+            <td class="num">P3</td>
+            <td>90 日後 cron リマインダ (Chatwork 通知)</td>
+            <td class="amber">中</td>
+            <td class="amber">中</td>
+            <td>vercel.json + crons[] + Chatwork 通知 · 全自動メールは法令面で非推奨</td>
+          </tr>
+          <tr>
+            <td class="num">P4</td>
+            <td>営業担当向け簡易 UI (店舗名検索→PDF 1 クリック)</td>
+            <td class="amber">中</td>
+            <td class="amber">中</td>
+            <td>既存 S1〜S4 を踏ませる代わりに 1 画面化 · UX 効率化</td>
+          </tr>
+          <tr>
+            <td class="num">P5</td>
+            <td>Instagram DM API 連携</td>
+            <td class="red">高</td>
+            <td class="red">低 (リスク高)</td>
+            <td>Meta Business 審査必須 · 不招請勧誘リスク · <strong>非推奨</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">08</span>裏取り済の事実 (2026-05-26)</h2>
+    <p class="sec-desc">本書の主張はすべて以下の実コード・設計書・git log で裏取り済。推測は「実測未済」と明示。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>主張</th><th>裏取りソース</th></tr></thead>
+        <tbody>
+          <tr><td>meoscope は開発中（本番確認可） (meoscope.com)</td><td class="mono">meoscope/README.md · MEMORY.md project_phase2_complete</td></tr>
+          <tr><td>POST /api/analyze は SSE · maxDuration=300 · 8 ステップ</td><td class="mono">src/app/api/analyze/route.ts L51-52, L73-477</td></tr>
+          <tr><td>name モードで候補複数時は人手選択 (/select 経由)</td><td class="mono">src/app/api/analyze/route.ts L132-134, L613-617</td></tr>
+          <tr><td>認証は Firebase + Neon ホワイトリスト · __session Cookie 14 日</td><td class="mono">src/lib/auth/session.ts L1-49</td></tr>
+          <tr><td>PDF は Playwright + chromium-min · /dashboard/[id]/print レンダリング</td><td class="mono">src/app/api/report/pdf/route.ts L43-89</td></tr>
+          <tr><td>PDF は A4 multi-page (margin 12mm) · 単一テンプレ</td><td class="mono">src/app/api/report/pdf/route.ts L77-82</td></tr>
+          <tr><td>"A4 1 枚 無料診断版" テンプレは未実装</td><td class="mono">src/app/dashboard/[id]/print/page.tsx (1 ファイルのみ) + 設計書 42-output-pdf-react-pdf.md は Phase 3 計画</td></tr>
+          <tr><td>vercel.json / crons[] は未作成</td><td class="mono">grep "crons\|schedule" meoscope/*.{json,ts,md} → 3 ファイルすべて設計書内言及のみ</td></tr>
+          <tr><td>メール送信機能は未実装 (Resend 不使用と明記)</td><td class="mono">documents/design/main.md §4 + README.md L17-18</td></tr>
+          <tr><td>Claude 呼び出しは SWOT + Recommend の 2 回</td><td class="mono">src/app/api/analyze/route.ts L354-449</td></tr>
+          <tr><td>業種推測 confidence は high/medium/low + 低時 corporate-subset fallback</td><td class="mono">src/app/api/analyze/route.ts L262-285</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    post-pilot ｜ plan: <code>meo-package</code> ｜ technical-spec ｜ meoscope 実コード裏取り済 (2026-05-26)
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<!-- 2026-05-26 claude-opus-4-7 セッションターン数：6 リアン社内利用前提に振り直し -->
+<!-- 2026-05-26 18:54:22 claude-opus-4-7 セッションターン数：10 修正反映（守ってほしいこと削除） -->
+<!-- 2026-05-26 19:30:00 claude-opus-4-7 セッションターン数：18 リアン・ラポール表記揃え／STEP 7 にデザイン部活用シーン追加 -->
+<!-- 2026-05-26 19:50:00 claude-opus-4-7 セッションターン数：22 観点転換: meoscope=デザイン部の営業ツール「狙い目発掘」が主軸（hero/STEP3/STEP5/STEP7/STEP8/FAQ/footer 全面書き換え） -->
+<!-- 2026-05-26 claude-opus-4-7 セッションターン数：3 — ドメイン表記を ms.lienrapport.jp → meoscope.com に置換 -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../auth.js"></script>
+<meta name="robots" content="noindex,nofollow">
+<title>meoscope の使い方 ｜ リアン職員向けマニュアル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#f7f5f0;
+    --paper:#ffffff;
+    --text:#1f2937;
+    --text-dim:#4b5563;
+    --text-mute:#9ca3af;
+    --border:#e5e7eb;
+    --accent:#ea580c;
+    --accent-soft:#fff7ed;
+    --ok:#059669;
+    --warn:#d97706;
+    --ng:#dc2626;
+  }
+  html{font-size:18px}
+  body{background:var(--bg);color:var(--text);font-family:"Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.95;-webkit-font-smoothing:antialiased}
+  .container{max-width:800px;margin:0 auto;padding:0 24px}
+
+  .topbar{background:#fff;border-bottom:1px solid var(--border);padding:14px 0;position:sticky;top:0;z-index:10}
+  .topbar-inner{display:flex;align-items:center;gap:16px;font-size:14px}
+  .topbar-back{color:var(--text-dim);text-decoration:none}
+  .topbar-back:hover{color:var(--text)}
+  .topbar-tag{margin-left:auto;background:#fef3c7;color:#92400e;padding:5px 14px;border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.05em}
+
+  header.hero{padding:56px 0 24px}
+  .hero-eyebrow{font-size:13px;color:var(--text-mute);letter-spacing:.18em;margin-bottom:14px;font-weight:700}
+  h1.hero-title{font-size:32px;font-weight:900;line-height:1.45;margin-bottom:24px;letter-spacing:-.01em}
+  .hero-onephrase{padding:24px 28px;background:var(--paper);border:2px solid var(--accent);border-radius:10px;font-size:18px;line-height:1.85;color:var(--text)}
+  .hero-onephrase .lead{display:block;font-size:13px;color:var(--accent);font-weight:700;margin-bottom:8px;letter-spacing:.08em}
+
+  .status-banner{margin:20px 0 0;padding:18px 24px;background:#fffbeb;border:2px solid #d97706;border-radius:10px;color:#92400e;font-size:15px;line-height:1.7}
+  .status-banner strong{display:block;font-weight:900;margin-bottom:4px}
+
+  .toc{margin:32px 0 8px;padding:20px 24px;background:var(--paper);border:1px solid var(--border);border-radius:10px}
+  .toc-title{font-size:13px;color:var(--text-mute);font-weight:700;letter-spacing:.1em;margin-bottom:12px}
+  .toc ol{counter-reset:t;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px}
+  @media(max-width:560px){.toc ol{grid-template-columns:1fr}}
+  .toc li{padding:6px 0 6px 28px;position:relative;font-size:15px}
+  .toc li::before{counter-increment:t;content:counter(t);position:absolute;left:0;top:6px;width:20px;height:20px;background:var(--accent-soft);color:var(--accent);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;border:1px solid var(--accent)}
+  .toc a{color:var(--text);text-decoration:none}
+  .toc a:hover{color:var(--accent)}
+
+  section{padding:40px 0 4px}
+  .step-num{display:inline-block;font-size:13px;color:var(--accent);font-weight:900;letter-spacing:.15em;margin-bottom:8px}
+  h2.sec-title{font-size:26px;font-weight:900;margin-bottom:18px;padding-bottom:10px;border-bottom:3px solid var(--accent);display:inline-block;letter-spacing:-.005em}
+  .sec-body{font-size:17px;color:var(--text);line-height:1.95}
+  .sec-body p{margin-bottom:14px}
+  .sec-body strong{background:linear-gradient(transparent 65%,#fef3c7 65%);font-weight:700;padding:0 2px}
+
+  .steps{counter-reset:s;list-style:none;margin:8px 0}
+  .steps li{padding:16px 22px 16px 56px;background:var(--paper);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;position:relative;font-size:16.5px;line-height:1.85}
+  .steps li::before{counter-increment:s;content:counter(s);position:absolute;left:16px;top:16px;width:28px;height:28px;background:var(--accent-soft);color:var(--accent);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;border:2px solid var(--accent)}
+  .steps li strong{display:block;font-weight:900;color:var(--text);font-size:17px;margin-bottom:4px}
+
+  .callout{padding:20px 24px;border-radius:10px;margin:8px 0 16px;font-size:16px;line-height:1.85}
+  .callout strong{display:block;font-weight:900;margin-bottom:6px;font-size:16px}
+  .callout.ok{background:#ecfdf5;border-left:6px solid var(--ok);color:#065f46}
+  .callout.warn{background:#fffbeb;border-left:6px solid var(--warn);color:#92400e}
+  .callout.ng{background:#fef2f2;border-left:6px solid var(--ng);color:#991b1b}
+  .callout.info{background:#eff6ff;border-left:6px solid #2563eb;color:#1e40af}
+  .callout.tip{background:#f5f3ff;border-left:6px solid #7c3aed;color:#5b21b6}
+
+  .usecase{background:var(--paper);border:1px solid var(--border);border-radius:10px;padding:24px 28px;margin:8px 0 16px}
+  .usecase h4{font-size:18px;font-weight:900;margin-bottom:10px;color:var(--accent)}
+  .usecase p{font-size:16px;line-height:1.85;color:var(--text);margin-bottom:8px}
+
+  .faq{background:var(--paper);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  .faq details{border-bottom:1px solid var(--border)}
+  .faq details:last-child{border-bottom:none}
+  .faq summary{padding:18px 22px;cursor:pointer;font-weight:700;font-size:16px;list-style:none;display:flex;align-items:flex-start;gap:12px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::before{content:"Q";display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--accent-soft);color:var(--accent);border-radius:50%;font-weight:900;font-size:13px;border:2px solid var(--accent);flex-shrink:0}
+  .faq details[open] summary{background:#faf9f7}
+  .faq .a{padding:0 22px 18px 60px;font-size:16px;color:var(--text-dim);line-height:1.85}
+
+  .checklist{background:var(--paper);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin:8px 0 16px;list-style:none}
+  .checklist li{padding:8px 0 8px 32px;position:relative;font-size:16px;line-height:1.7;border-bottom:1px dashed var(--border)}
+  .checklist li:last-child{border-bottom:none}
+  .checklist li::before{content:"✓";position:absolute;left:0;top:8px;width:22px;height:22px;background:var(--ok);color:#fff;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px}
+
+  .future-box{margin:32px 0 0;padding:24px 28px;background:#fafaf9;border:1px dashed var(--border-strong,#d1d5db);border-radius:10px;font-size:15px;line-height:1.85;color:var(--text-dim)}
+  .future-box strong{display:block;font-weight:900;margin-bottom:6px;font-size:15px;color:var(--text);letter-spacing:.04em}
+
+  footer{padding:48px 0 64px;text-align:center;color:var(--text-mute);font-size:14px;margin-top:32px;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-inner">
+      <a class="topbar-back" href="../">← 一覧に戻る</a>
+      <span class="topbar-tag">社内マニュアル</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <header class="hero">
+    <div class="hero-eyebrow">社内マニュアル / マップ診断ツール「meoscope」</div>
+    <h1 class="hero-title">meoscope の使い方<br>リアン職員向けマニュアル</h1>
+    <div class="hero-onephrase">
+      <span class="lead">これはどんなツール？</span>
+      <strong>デザイン部の営業ツール</strong>。営業先候補の店舗・事業所が Google マップ上でどう見えているか（GBP の整備状況・クチコミ・近隣との比較）を分析し、<strong>「この会社は狙い目だな」</strong>という見込みを判断するために使います。改善余地がはっきりしている会社ほど、<strong>動画コンテンツ制作 / Google マップ動画掲載 / LINE 公式アカウント運用</strong>の提案が刺さります。
+    </div>
+
+    <div class="status-banner">
+      <strong>※ このアプリは現在開発中です（完了予定: 2026-06-08 ／ meoscope 単体の完了予定日です）</strong>
+      この資料は完成後の使い方を先にまとめたものです。
+    </div>
+
+    <div class="status-banner" style="background:#fef2f2;border-color:#dc2626;color:#991b1b">
+      <strong>※ 1 件の分析ごとにランニングコストが発生します（Anthropic Claude API）</strong>
+      meoscope は 1 件の分析あたり Anthropic Claude（SWOT + 推奨）を 2 回呼ぶため、月 10 件想定で <b>約 ¥75/月</b> の従量課金が発生します。Vercel Pro／Neon／Vercel Blob／Google Places API 無料枠は既存契約で吸収。詳細はコスト試算資料へ:<br>
+      ・<a href="../cost-estimate.html#meo" style="color:#991b1b;font-weight:700;text-decoration:underline">MEO パッケージ コスト試算（Phase A・月 10 件想定）</a>
+    </div>
+
+    <div class="toc">
+      <div class="toc-title">この資料の目次</div>
+      <ol>
+        <li><a href="#step1">始める前の準備</a></li>
+        <li><a href="#step2">ログインのしかた</a></li>
+        <li><a href="#step3">分析を始める（3 つの入り方）</a></li>
+        <li><a href="#step4">分析中の画面</a></li>
+        <li><a href="#step5">結果の見方</a></li>
+        <li><a href="#step6">PDF として保存する</a></li>
+        <li><a href="#step7">営業ツールとしての活用シーン</a></li>
+        <li><a href="#step8">90 日後の再分析</a></li>
+        <li><a href="#faq">よくある質問</a></li>
+      </ol>
+    </div>
+  </header>
+
+  <section id="step1">
+    <div class="step-num">STEP 1</div>
+    <h2 class="sec-title">始める前の準備</h2>
+    <div class="sec-body">
+      <p>このツールを使うには、<strong>業務用の Google アカウント</strong>が必要です。</p>
+      <p>初めて使う方は、管理者にメールアドレスを伝えて「meoscope に登録してください」とお伝えください。登録は管理者の画面で <strong>1 分</strong>で終わります。</p>
+    </div>
+    <ul class="checklist">
+      <li>業務用の Google アカウント（個人用ではなく事業所用のもの）が手元にある</li>
+      <li>管理者から「登録しました」の連絡を受けている</li>
+      <li>パソコン or タブレットの Chrome / Edge / Safari を使う</li>
+    </ul>
+  </section>
+
+  <section id="step2">
+    <div class="step-num">STEP 2</div>
+    <h2 class="sec-title">ログインのしかた</h2>
+    <ol class="steps">
+      <li><strong>ブラウザで <code style="background:#fff;padding:2px 8px;border-radius:4px">meoscope.com</code> を開く</strong>お気に入りに入れておくと毎回楽です。</li>
+      <li><strong>「Google でサインイン」ボタンを押す</strong>真ん中に大きく表示されます。</li>
+      <li><strong>業務用 Google アカウントを選ぶ</strong>個人用と間違えないようにご注意ください。</li>
+      <li><strong>右上に自分の名前が出ていればログイン完了</strong>そのまま分析を始められます。</li>
+    </ol>
+    <div class="callout warn">
+      <strong>ログインできない時</strong>
+      「許可されていません」と出る場合は、管理者への登録がまだ完了していない可能性があります。管理者に連絡してメール登録を依頼してください。
+    </div>
+  </section>
+
+  <section id="step3">
+    <div class="step-num">STEP 3</div>
+    <h2 class="sec-title">分析を始める（3 つの入り方）</h2>
+    <div class="sec-body">
+      <p>ログインすると、3 つのタブが並んでいます。<strong>営業先候補が決まっている時は「① 企業名で探す」</strong>、<strong>エリアから狙い目を発掘したい時は「③ エリア＋業種で探す」</strong>が基本です。</p>
+    </div>
+    <ol class="steps">
+      <li><strong>① 企業名で探す（個別商談前のリサーチ）</strong>狙っている店舗・事業所の名前で検索する。商談前にこれをかけて、提案のネタを仕込んでおきます。</li>
+      <li><strong>② 地図から選ぶ（場所から特定）</strong>名前は知らないが「あの場所のあのお店」を見たい時。地図上で位置を指定する。飛び込み訪問の前にも使えます。</li>
+      <li><strong>③ エリア＋業種で探す（狙い目発掘）</strong>営業エリアの「飲食店」「美容室」「クリニック」などを指定すると、近隣の同業他社が一覧で出ます。<b>評価が低い・クチコミ少ない・写真が無い会社ほど、提案で刺さりやすい狙い目候補</b>。</li>
+    </ol>
+    <div class="callout tip">
+      <strong>使い分けの目安</strong>
+      ・<b>営業先候補が決まっている</b>： ① 企業名で探す<br>
+      ・<b>場所から特定したい</b>： ② 地図から選ぶ<br>
+      ・<b>エリアから狙い目を発掘</b>： ③ エリア＋業種で探す<br>
+      ・<b>リアン自身の見え方を確認したい（補助用途）</b>： ① で「リアン・ラポール」を入力
+    </div>
+    <div class="sec-body">
+      <p>必要な情報を入力したら、画面下の <strong>「分析を開始する」</strong>ボタンを押します。</p>
+    </div>
+  </section>
+
+  <section id="step4">
+    <div class="step-num">STEP 4</div>
+    <h2 class="sec-title">分析中の画面</h2>
+    <div class="sec-body">
+      <p>「分析を開始」を押すと、進捗を示す円形の図が出ます。<strong>8 つのステップ</strong>が順番に進んでいきます。完了まで通常 <strong>1〜3 分</strong>。途中で画面を閉じないでください。</p>
+    </div>
+    <div class="callout info">
+      <strong>長く待っても進まない時</strong>
+      5 分以上止まったように見えるときは、ブラウザを更新せず、もう一度同じ条件で分析をやり直してください（料金が発生したり履歴が壊れたりすることはありません）。
+    </div>
+  </section>
+
+  <section id="step5">
+    <div class="step-num">STEP 5</div>
+    <h2 class="sec-title">結果の見方（狙い目判定 ＆ 提案ネタ抽出）</h2>
+    <div class="sec-body">
+      <p>分析が終わると <strong>ダッシュボード画面</strong>が表示されます。営業観点では「<strong>狙い目かどうか</strong>」と「<strong>提案できる改善余地は何か</strong>」を読み取るのが目的です。</p>
+    </div>
+    <ol class="steps">
+      <li><strong>画面上部 ── 基本情報と数値</strong>対象企業の評価（星）／クチコミ数／近隣の同業数／密集度。<b>クチコミ少・評価低・写真ゼロ ＝ 改善余地が大きい ＝ 狙い目</b>のサイン。</li>
+      <li><strong>「次の一手」── まずここを見る</strong>このタイミングで一番優先してやるべき改善ポイントが 1 行で書かれています。<b>そのまま商談で「御社、ここから手を付けるのが効きます」と提案できるネタ</b>。</li>
+      <li><strong>強み・弱み（SWOT）</strong>4 つの箱で整理。<b>弱み欄 ＝ 提案できる改善余地</b>、強み欄 ＝ 商談の入り口（褒め所）として使えます。</li>
+      <li><strong>9 種類のグラフ</strong>近隣との比較・カテゴリ別評価・営業時間と評価の関係などが可視化。「同エリアの他店はこのくらい」を見せて危機感を喚起する材料にも。</li>
+      <li><strong>改善提案リスト</strong>具体的な打ち手が箇条書きで並びます。<b>そのまま提案資料の骨子に転用可能</b>。動画掲載・写真追加・クチコミ施策など、デザイン部のサービスにつなげやすい項目を中心に。</li>
+    </ol>
+  </section>
+
+  <section id="step6">
+    <div class="step-num">STEP 6</div>
+    <h2 class="sec-title">PDF として保存する</h2>
+    <ol class="steps">
+      <li><strong>画面上部の「PDF で保存」ボタンを押す</strong>レポート見出しのすぐ下にあります。別のタブで印刷用ページが開きます。</li>
+      <li><strong>ブラウザの印刷メニューを開く</strong>Windows なら <code style="background:#fff;padding:2px 8px;border-radius:4px">Ctrl + P</code>、Mac なら <code style="background:#fff;padding:2px 8px;border-radius:4px">⌘ + P</code>。</li>
+      <li><strong>送信先を「PDF として保存」に変える</strong>Chrome / Edge / Safari なら標準で選べます。</li>
+      <li><strong>ファイル名を「会社名_日付」にして保存</strong>例：<code style="background:#fff;padding:2px 8px;border-radius:4px">○○商店_20260526.pdf</code>（営業先ごとにフォルダ管理しやすい）</li>
+    </ol>
+    <div class="callout warn">
+      <strong>背景が白く抜ける時</strong>
+      印刷メニューの「詳細設定」を開いて、<strong>「背景のグラフィック」</strong>のチェックを ON にすると色付きで保存されます。
+    </div>
+  </section>
+
+  <section id="step7">
+    <h2 class="sec-title">営業ツールとしての活用シーン</h2>
+    <div class="sec-body">
+      <p>デザイン部の営業フローに沿って「いつ・何のために」使うかをまとめます。</p>
+    </div>
+
+    <div class="usecase">
+      <h4>① 営業エリアから「狙い目」を発掘する</h4>
+      <p>STEP 3 の <strong>③ エリア＋業種で探す</strong> を使って、営業エリアの飲食店・美容室・クリニックなど業種別に同業他社を一覧化。<strong>評価が低い・クチコミが少ない・写真が無い会社</strong>ほど提案が刺さりやすい狙い目候補。週次でリストを更新してアプローチ順を決めます。</p>
+    </div>
+
+    <div class="usecase">
+      <h4>② 商談前のリサーチ（提案ネタの仕込み）</h4>
+      <p>アポイントが取れた会社を <strong>① 企業名で探す</strong> で分析。「次の一手」「強み・弱み」「改善提案リスト」を読み込んでおき、商談で<strong>「御社、ここから手を付けるのが効きます」</strong>と具体的に話せる状態を作ります。</p>
+    </div>
+
+    <div class="usecase">
+      <h4>③ 商談時の提案資料として PDF を持参</h4>
+      <p>PDF を出力してそのまま商談に持っていく。<strong>客観的な数字で改善余地を見せる</strong>と、「自分の店、こんなふうに見られてるんだ」と気付いてもらえる。動画掲載・写真追加・クチコミ施策など、デザイン部のサービスにつながる提案を組み立てやすくなります。</p>
+    </div>
+
+    <div class="usecase">
+      <h4>④ 受注後のベースライン記録</h4>
+      <p>受注したお客様の<strong>サービス導入前の状態を PDF で保存</strong>。「実施前の数字はこれでした」を残しておくと、後で効果を示す比較材料になります。</p>
+    </div>
+
+    <div class="usecase">
+      <h4>⑤ 90 日後の効果測定（次の継続提案へ）</h4>
+      <p>動画掲載・改善施策の 90 日後に再分析（→ STEP 8）。<strong>「実施前 → 90 日後」の数字を並べて効果を示し</strong>、追加施策・継続提案・事例紹介の素材として使います。</p>
+    </div>
+
+    <div class="usecase">
+      <h4>⑥（補助）リアン自身の見え方確認</h4>
+      <p>月 1 回程度、リアン・ラポール自身を <strong>① 企業名で探す</strong> で分析しておくと、自社の GBP 状況・クチコミの動きが見えます。営業の合間の補助用途として。</p>
+    </div>
+  </section>
+
+  <section id="step8">
+    <div class="step-num">STEP 8</div>
+    <h2 class="sec-title">90 日後の再分析（重要）</h2>
+    <div class="sec-body">
+      <p>受注したお客様にサービス（動画掲載・写真追加・クチコミ施策など）を導入したら、<strong>90 日後</strong>にもう一度同じ条件で分析。<strong>「数字でビフォーアフターを見せる」ことが次の継続提案・事例紹介の起点</strong>になります。</p>
+    </div>
+    <ol class="steps">
+      <li><strong>施策実施日に Google カレンダーへ「90 日後リマインド」を入れる</strong>「○○商店 meoscope 再分析」などのタイトルで、お客様ごとに作成。</li>
+      <li><strong>リマインドが来たら同じ条件で分析</strong>STEP 3 と同じ入り方で、同じ名称で分析する。</li>
+      <li><strong>「実施前 → 90 日後」を 1 枚の比較資料にまとめる</strong>初回 PDF と最新 PDF を並べて改善した数字を整理。<b>追加施策の提案資料</b>・<b>事例紹介素材</b>として使います。</li>
+    </ol>
+  </section>
+
+  <section id="faq">
+    <h2 class="sec-title">よくある質問</h2>
+    <div class="faq">
+      <details>
+        <summary>同じ場所を何回も分析していい？</summary>
+        <div class="a">問題ありません。料金が増えるわけではなく、履歴に残るだけです。改善施策の前後比較に活用できます。</div>
+      </details>
+      <details>
+        <summary>分析結果が営業先のイメージと違う時は？</summary>
+        <div class="a">数字は実際のGoogle マップから取っているので「外から見えている事実」です。お客様の自己認識と違う時こそ、提案の切り口が詰まっています。「マップ上ではこう見えています」を起点に改善提案を組み立ててください。</div>
+      </details>
+      <details>
+        <summary>クチコミの本文がどこにも書かれていない</summary>
+        <div class="a">個人情報保護のため、クチコミの本文や投稿者名は分析対象外にしています（数や星の平均だけを使っています）。本文を読みたい場合はGoogle マップ本体で直接確認してください。</div>
+      </details>
+      <details>
+        <summary>近隣の競合や類似店の名前が結果に出てくる。商談で使っていい？</summary>
+        <div class="a">出てくる店名・社名は公開情報（Google マップに載っている情報）です。商談で「同エリアの他店はこのくらいの数字です」と相対比較する材料として使えます。ただし「○○より劣っている」のように特定の他社を貶める書き方は避けてください。あくまで「<strong>御社の伸びしろ</strong>」を示す観点で。</div>
+      </details>
+      <details>
+        <summary>分析結果を SNS や HP に載せてもいい？</summary>
+        <div class="a">いいえ。Google マップの利用規約上、分析結果をそのまま公開できません。社内資料・商談時の対面提示・お客様へ手渡しする提案資料のみに使ってください。</div>
+      </details>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="container">社内マニュアル ｜ meoscope（デザイン部の営業ツール ─ 営業先候補の GBP 状況を分析）</div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<!-- 2026-05-26 claude-opus-4-7 セッションターン数：6 リアン社内利用前提に振り直し（職員＋利用者） -->
+<!-- 2026-05-26 18:54:22 claude-opus-4-7 セッションターン数：10 修正反映（再確認文削除／URL配布主体明記／スマホ交代callout削除／投稿しない日文言調整／写真STEP削除＋繰り上げ／守ってほしいこと削除／追加サービス宣伝挿入） -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../auth.js"></script>
+<meta name="robots" content="noindex,nofollow">
+<title>簡単投稿プランの使い方 ｜ リアン職員向けマニュアル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#f7f5f0;
+    --paper:#ffffff;
+    --text:#1f2937;
+    --text-dim:#4b5563;
+    --text-mute:#9ca3af;
+    --border:#e5e7eb;
+    --accent:#059669;
+    --accent-soft:#ecfdf5;
+    --ok:#059669;
+    --warn:#d97706;
+    --ng:#dc2626;
+  }
+  html{font-size:18px}
+  body{background:var(--bg);color:var(--text);font-family:"Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.95;-webkit-font-smoothing:antialiased}
+  .container{max-width:800px;margin:0 auto;padding:0 24px}
+
+  .topbar{background:#fff;border-bottom:1px solid var(--border);padding:14px 0;position:sticky;top:0;z-index:10}
+  .topbar-inner{display:flex;align-items:center;gap:16px;font-size:14px}
+  .topbar-back{color:var(--text-dim);text-decoration:none}
+  .topbar-back:hover{color:var(--text)}
+  .topbar-tag{margin-left:auto;background:#fef3c7;color:#92400e;padding:5px 14px;border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.05em}
+
+  header.hero{padding:56px 0 24px}
+  .hero-eyebrow{font-size:13px;color:var(--text-mute);letter-spacing:.18em;margin-bottom:14px;font-weight:700}
+  h1.hero-title{font-size:32px;font-weight:900;line-height:1.45;margin-bottom:24px;letter-spacing:-.01em}
+  .hero-onephrase{padding:24px 28px;background:var(--paper);border:2px solid var(--accent);border-radius:10px;font-size:18px;line-height:1.85;color:var(--text)}
+  .hero-onephrase .lead{display:block;font-size:13px;color:var(--accent);font-weight:700;margin-bottom:8px;letter-spacing:.08em}
+
+  .status-banner{margin:20px 0 0;padding:18px 24px;background:#fffbeb;border:2px solid #d97706;border-radius:10px;color:#92400e;font-size:15px;line-height:1.7}
+  .status-banner strong{display:block;font-weight:900;margin-bottom:4px}
+
+  .toc{margin:32px 0 8px;padding:20px 24px;background:var(--paper);border:1px solid var(--border);border-radius:10px}
+  .toc-title{font-size:13px;color:var(--text-mute);font-weight:700;letter-spacing:.1em;margin-bottom:12px}
+  .toc ol{counter-reset:t;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px}
+  @media(max-width:560px){.toc ol{grid-template-columns:1fr}}
+  .toc li{padding:6px 0 6px 28px;position:relative;font-size:15px}
+  .toc li::before{counter-increment:t;content:counter(t);position:absolute;left:0;top:6px;width:20px;height:20px;background:var(--accent-soft);color:var(--accent);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;border:1px solid var(--accent)}
+  .toc a{color:var(--text);text-decoration:none}
+  .toc a:hover{color:var(--accent)}
+
+  section{padding:40px 0 4px}
+  .step-num{display:inline-block;font-size:13px;color:var(--accent);font-weight:900;letter-spacing:.15em;margin-bottom:8px}
+  h2.sec-title{font-size:26px;font-weight:900;margin-bottom:18px;padding-bottom:10px;border-bottom:3px solid var(--accent);display:inline-block;letter-spacing:-.005em}
+  .sec-body{font-size:17px;color:var(--text);line-height:1.95}
+  .sec-body p{margin-bottom:14px}
+  .sec-body strong{background:linear-gradient(transparent 65%,#d1fae5 65%);font-weight:700;padding:0 2px}
+
+  .steps{counter-reset:s;list-style:none;margin:8px 0}
+  .steps li{padding:16px 22px 16px 56px;background:var(--paper);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;position:relative;font-size:16.5px;line-height:1.85}
+  .steps li::before{counter-increment:s;content:counter(s);position:absolute;left:16px;top:16px;width:28px;height:28px;background:var(--accent-soft);color:var(--accent);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;border:2px solid var(--accent)}
+  .steps li strong{display:block;font-weight:900;color:var(--text);font-size:17px;margin-bottom:4px}
+
+  .callout{padding:20px 24px;border-radius:10px;margin:8px 0 16px;font-size:16px;line-height:1.85}
+  .callout strong{display:block;font-weight:900;margin-bottom:6px;font-size:16px}
+  .callout.ok{background:#ecfdf5;border-left:6px solid var(--ok);color:#065f46}
+  .callout.warn{background:#fffbeb;border-left:6px solid var(--warn);color:#92400e}
+  .callout.ng{background:#fef2f2;border-left:6px solid var(--ng);color:#991b1b}
+  .callout.info{background:#eff6ff;border-left:6px solid #2563eb;color:#1e40af}
+  .callout.tip{background:#f5f3ff;border-left:6px solid #7c3aed;color:#5b21b6}
+
+  .pattern-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:8px 0 16px}
+  @media(max-width:600px){.pattern-grid{grid-template-columns:1fr}}
+  .pattern-card{padding:24px 26px;background:var(--paper);border:1px solid var(--border);border-radius:10px}
+  .pattern-card .pat-label{font-size:12px;color:var(--accent);font-weight:900;letter-spacing:.1em;margin-bottom:8px}
+  .pattern-card h4{font-size:18px;font-weight:900;margin-bottom:10px;color:var(--text)}
+  .pattern-card p{font-size:15px;line-height:1.85;color:var(--text-dim)}
+
+  .faq{background:var(--paper);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  .faq details{border-bottom:1px solid var(--border)}
+  .faq details:last-child{border-bottom:none}
+  .faq summary{padding:18px 22px;cursor:pointer;font-weight:700;font-size:16px;list-style:none;display:flex;align-items:flex-start;gap:12px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::before{content:"Q";display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--accent-soft);color:var(--accent);border-radius:50%;font-weight:900;font-size:13px;border:2px solid var(--accent);flex-shrink:0}
+  .faq details[open] summary{background:#faf9f7}
+  .faq .a{padding:0 22px 18px 60px;font-size:16px;color:var(--text-dim);line-height:1.85}
+
+  .checklist{background:var(--paper);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin:8px 0 16px;list-style:none}
+  .checklist li{padding:8px 0 8px 32px;position:relative;font-size:16px;line-height:1.7;border-bottom:1px dashed var(--border)}
+  .checklist li:last-child{border-bottom:none}
+  .checklist li::before{content:"✓";position:absolute;left:0;top:8px;width:22px;height:22px;background:var(--ok);color:#fff;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:13px}
+
+  .future-box{margin:32px 0 0;padding:24px 28px;background:#fafaf9;border:1px dashed #d1d5db;border-radius:10px;font-size:15px;line-height:1.85;color:var(--text-dim)}
+  .future-box strong{display:block;font-weight:900;margin-bottom:6px;font-size:15px;color:var(--text);letter-spacing:.04em}
+
+  footer{padding:48px 0 64px;text-align:center;color:var(--text-mute);font-size:14px;margin-top:32px;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-inner">
+      <a class="topbar-back" href="../">← 一覧に戻る</a>
+      <span class="topbar-tag">社内マニュアル</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <header class="hero">
+    <div class="hero-eyebrow">社内マニュアル / 簡単投稿プラン</div>
+    <h1 class="hero-title">簡単投稿プランの使い方<br>リアン職員向けマニュアル</h1>
+    <div class="hero-onephrase">
+      <span class="lead">これはどんなツール？</span>
+      <strong>リアンの SNS 投稿</strong>を毎日続けるための、スマホの小さな道具。アプリを開くと <strong>「今日の投稿下書きが 3 案」</strong>並んでいて、気に入った 1 つを選んで X（旧 Twitter）や Threads に投稿できます。<strong>職員が代行する</strong>使い方と、<strong>利用者が自分で投稿する</strong>練習として使う使い方の両方を想定しています。
+    </div>
+
+    <div class="status-banner">
+      <strong>※ このアプリは現在開発中です（完了予定: 2026-05-31）</strong>
+      この資料は完成後の使い方を先にまとめたものです。
+    </div>
+
+    <div class="toc">
+      <div class="toc-title">この資料の目次</div>
+      <ol>
+        <li><a href="#step1">このツールの位置づけ</a></li>
+        <li><a href="#step2">誰が使うか（2 つのパターン）</a></li>
+        <li><a href="#step3">アプリの開き方</a></li>
+        <li><a href="#step4">毎日の使い方（基本操作）</a></li>
+        <li><a href="#step5">利用者が自分で投稿する場合のルール</a></li>
+        <li><a href="#step6">下書きネタの差し替え</a></li>
+        <li><a href="#faq">よくある質問</a></li>
+      </ol>
+    </div>
+  </header>
+
+  <section id="step1">
+    <div class="step-num">STEP 1</div>
+    <h2 class="sec-title">このツールの位置づけ</h2>
+    <div class="sec-body">
+      <p>リアンの公式 SNS（X / Threads）の <strong>毎日の投稿を続ける</strong>ためのアプリです。投稿内容を毎回考えるのは大変なので、AI が <strong>毎日 3 案の下書き</strong>を用意してくれます。</p>
+      <p>そのまま使っても、少し書き直してから使っても OK。<strong>0 から書く必要がないので、続けやすい</strong>のが特徴です。</p>
+    </div>
+  </section>
+
+  <section id="step2">
+    <div class="step-num">STEP 2</div>
+    <h2 class="sec-title">誰が使うか（2 つのパターン）</h2>
+    <div class="sec-body">
+      <p>リアンでの使い方は、大きく分けて 2 通りあります。</p>
+    </div>
+    <div class="pattern-grid">
+      <div class="pattern-card">
+        <div class="pat-label">パターン A</div>
+        <h4>職員が代行投稿</h4>
+        <p>SNS 担当の職員が朝アプリを開いて、下書きを選び、その日の活動写真を添えて投稿します。一番シンプルな運用パターン。</p>
+      </div>
+      <div class="pattern-card">
+        <div class="pat-label">パターン B</div>
+        <h4>利用者が自分で投稿</h4>
+        <p>利用者の方が、職員と一緒にアプリを開いて投稿を体験します。<strong>社会参加・自己表現の練習</strong>として位置づけ、投稿前に職員が必ず確認します。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="step3">
+    <div class="step-num">STEP 3</div>
+    <h2 class="sec-title">アプリの開き方</h2>
+    <ol class="steps">
+      <li><strong>スマホで指定の URL を開く</strong>事業所内で配布されているリアン用の URL（橋本が配布します）を、Safari や Chrome に入力します。</li>
+      <li><strong>ホーム画面に追加する</strong>iPhone は Safari の「共有」→「ホーム画面に追加」、Android は Chrome の「ホーム画面に追加」を選択。毎日タップするだけで開けるようになります。</li>
+      <li><strong>毎日、ホーム画面のアイコンを押して開く</strong>パスワードやログインは不要。誰でもすぐ使えます。</li>
+    </ol>
+  </section>
+
+  <section id="step4">
+    <div class="step-num">STEP 4</div>
+    <h2 class="sec-title">毎日の使い方（基本操作）</h2>
+    <ol class="steps">
+      <li><strong>アイコンを押してアプリを開く</strong>今日の日付が上に出ています。</li>
+      <li><strong>3 つの下書きの中から 1 つ選ぶ</strong>「丁寧な感じ」「カジュアル」「質問形式」など、トーンの違う 3 案が並びます。</li>
+      <li><strong>気に入った 1 つを押す</strong>選んだ下書きの全文と、付けたほうがいいハッシュタグが表示されます。</li>
+      <li><strong>必要なら少し直す</strong>「事業所名を入れる」「今日のイベントを追加する」など、自由に編集できます。</li>
+      <li><strong>今日の写真を撮って添える</strong>その日のイベント・作業・お昼ごはん・お庭の様子など、1 枚あると投稿の魅力が大きく変わります。</li>
+      <li><strong>「X に投稿」または「Threads に投稿」のボタンを押す</strong>SNS アプリの投稿前画面が開いて、文章がすでに入った状態になります。最後に投稿ボタンを押せば完了。</li>
+    </ol>
+  </section>
+
+  <section id="step5">
+    <div class="step-num">STEP 5</div>
+    <h2 class="sec-title">利用者が自分で投稿する場合のルール</h2>
+    <div class="sec-body">
+      <p>利用者の方が SNS 投稿に取り組む時は、<strong>必ず職員が同席</strong>し、<strong>投稿前に内容を一緒に確認</strong>します。これは安心して練習してもらうための約束事です。</p>
+    </div>
+    <ul class="checklist">
+      <li>下書きを選んだら、まず職員に <strong>「これでいいですか」と見せる</strong></li>
+      <li>写真を添える場合は、<strong>映っているものが大丈夫か職員と確認</strong>する</li>
+      <li>他の利用者の方や職員の顔が写っていないか必ずチェック</li>
+      <li>事業所の外の景色や、個人が特定できる住所表示が写っていないか確認</li>
+      <li>OK が出たら投稿ボタンを押す</li>
+      <li>投稿後、職員と一緒に「ちゃんと投稿できたかな」と確認する</li>
+    </ul>
+  </section>
+
+  <section id="step6">
+    <div class="step-num">STEP 6</div>
+    <h2 class="sec-title">下書きネタの差し替え</h2>
+    <div class="sec-body">
+      <p>下書きの元ネタは <strong>毎月 1 回</strong>差し替えます。季節ネタ（梅雨・お盆・クリスマス等）や、リアンで今月特に伝えたい話題を反映させます。</p>
+      <p>職員の関わり方:</p>
+    </div>
+    <ul class="checklist">
+      <li>来月以降にやるイベント・活動の予定があれば、SNS 担当の職員に共有する</li>
+      <li>「この言葉を入れてほしい」「この表現は使いたくない」があれば月初のミーティングで提案する</li>
+      <li>下書きが新しくなったら、利用者の方にも「今月はこういう投稿が出ますよ」と一緒に確認する</li>
+    </ul>
+    <div class="callout tip">
+      <strong>デザイン部のサービス紹介も、投稿ネタに入れます</strong>
+      リアン・ラポールの<b>デザイン部</b>では <b>動画コンテンツ制作 / Google マップ動画掲載 / LINE 公式アカウント運用</b> の 3 サービスを提供しています。SNS では「こんな仕事してます」という作品例・事例紹介の投稿も下書きに含めて、読んだ地域のお店や事業者さんから「うちもお願いしたい」と問い合わせがくる導線を作ります。<br>
+      ・<b>動画コンテンツ制作</b> ── 制作した動画を実例として見せ、「同じような動画、お店でも作れます」と案内する投稿<br>
+      ・<b>Google マップ動画掲載</b> ── 納品先のマップに載せた動画の事例を紹介し、「マップに動画を載せませんか」と PR する投稿<br>
+      ・<b>LINE 公式アカウント運用</b> ── 運用代行した LINE 公式の実例を見せ、「友だち向け配信、代行します」と案内する投稿
+    </div>
+  </section>
+
+  <section id="faq">
+    <h2 class="sec-title">よくある質問</h2>
+    <div class="faq">
+      <details>
+        <summary>下書きを使わずに自分で書いてもいい？</summary>
+        <div class="a">もちろんです。下書きは「ネタ切れの時の支援」として用意しています。自分の言葉で書ける日はそちらの方が良い投稿になります。</div>
+      </details>
+      <details>
+        <summary>Instagram にも投稿したい</summary>
+        <div class="a">Instagram は仕様上、外からの自動投稿に対応していません。文章をコピーして手で貼り付ければ投稿できます。</div>
+      </details>
+      <details>
+        <summary>間違って投稿してしまったらどうする？</summary>
+        <div class="a">SNS アプリで <strong>すぐに投稿を削除</strong>してください。X / Threads ともに、投稿の「…」メニューから削除できます。それでも見られた可能性がある場合は、職員に報告してください。</div>
+      </details>
+      <details>
+        <summary>下書きが今日も昨日と同じに見える</summary>
+        <div class="a">画面を <strong>下に引っ張って離す（プルダウン更新）</strong>をしてみてください。それでも同じ場合は、ブラウザを閉じて開き直してください。</div>
+      </details>
+      <details>
+        <summary>利用者の方がパソコン操作に不慣れで進めない</summary>
+        <div class="a">職員が横についてゆっくり進めてあげてください。「焦らせない・急かさない」が大事です。一連の流れを覚えるまでに数週間〜数ヶ月かかる方もいます。</div>
+      </details>
+      <details>
+        <summary>投稿後に「やっぱり消したい」と利用者の方が言った時は？</summary>
+        <div class="a">本人の意志を尊重し、職員がすぐに削除をサポートしてください。理由を深く聞き出す必要はありません。</div>
+      </details>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="container">社内マニュアル ｜ 簡単投稿プラン（リアンの毎日の SNS 投稿支援ツール）</div>
+</footer>
+
+</body>
+</html>

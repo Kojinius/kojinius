@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<!-- 2026-05-26 claude-opus-4-7 セッションターン数：6 — 盛り盛りMAXプラン 技術版（スタック詳細）新規作成 -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../auth.js"></script>
+<title>盛り盛りMAXプラン｜技術スタック詳細</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/doc.css">
+<style>
+/* 2026-05-28 claude-opus-4-7 セッションターン数：5 — ダーク→ライトテーマオーバーライド（doc.css 共通CSS適用） */
+:root{
+  --bg:#f7f5f0;--paper:#ffffff;--paper-dim:#fafaf9;
+  --text:#1f2937;--text-dim:#4b5563;--text-mute:#9ca3af;
+  --border:#e5e7eb;--border-strong:#d1d5db;
+  --bg-code:#f4f3f0;
+  --accent:#059669;--accent-soft:#ecfdf5;--accent-line:#34d399;
+  --ok:#059669;--ok-soft:#ecfdf5;
+  --warn:#d97706;--warn-soft:#fffbeb;
+  --ng:#dc2626;--ng-soft:#fef2f2;
+  --info:#2563eb;--info-soft:#eff6ff;
+  --tip:#7c3aed;--tip-soft:#f5f3ff;
+  --meo-c:#f97316;--meo-soft:#fff7ed;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:"Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.85;-webkit-font-smoothing:antialiased}
+body::before{display:none}
+.container{max-width:1180px;margin:0 auto;padding:0 28px}
+@media(max-width:640px){.container{padding:0 18px}}
+code,kbd,pre,.mono{font-family:var(--mono);font-size:.9em}
+header.hero{padding:40px 0 32px;border-bottom:1px solid var(--border)}
+.breadcrumb{font-size:13px;color:var(--text-mute);margin-bottom:20px;letter-spacing:.04em}
+.breadcrumb code{background:var(--paper-dim);border:1px solid var(--border);border-radius:5px;color:var(--accent);padding:2px 7px}
+h1.hero-title{font-size:clamp(26px,4vw,42px);font-weight:900;line-height:1.25;letter-spacing:-.02em;margin-bottom:14px;color:var(--text)}
+h1.hero-title .grad{background:linear-gradient(135deg,var(--accent),var(--info));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-sub{font-size:15px;color:var(--text-dim);max-width:840px;margin-bottom:24px;line-height:1.8}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.meta-tag{padding:5px 12px;background:var(--paper);border:1px solid var(--border);border-radius:999px;font-size:12px;color:var(--text-dim);font-family:var(--mono)}
+.meta-tag.ok,.meta-tag.free{color:var(--ok);border-color:var(--accent-line)}
+.meta-tag.paid,.meta-tag.todo{color:var(--warn);border-color:#fcd34d}
+.meta-tag.exist{color:var(--tip);border-color:#c4b5fd}
+.toc{margin:24px 0 0;padding:18px 22px;background:var(--paper);border:1px solid var(--border);border-radius:12px}
+.toc-title{font-size:12px;color:var(--text-mute);font-weight:700;letter-spacing:.1em;margin-bottom:10px;text-transform:uppercase}
+.toc ol{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:5px 18px}
+.toc li{padding:4px 0 4px 22px;position:relative;font-size:13px;color:var(--text)}
+.toc li::before{content:"—";position:absolute;left:0;top:4px;color:var(--text-mute)}
+.toc a{color:var(--text-dim);text-decoration:none}.toc a:hover{color:var(--accent)}
+.toc .badge{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;vertical-align:middle}
+.toc .badge.green{background:var(--ok-soft);color:var(--ok);border:1px solid var(--accent-line)}
+.toc .badge.violet{background:var(--tip-soft);color:var(--tip);border:1px solid #c4b5fd}
+.toc .badge.orange{background:var(--meo-soft);color:var(--meo-c);border:1px solid #fed7aa}
+section{padding:44px 0;border-bottom:1px solid var(--border)}
+section:last-of-type{border-bottom:none}
+h2{font-size:22px;font-weight:900;letter-spacing:-.01em;margin-bottom:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:var(--text)}
+h2 .sec-num{font-family:var(--mono);font-size:12px;background:var(--accent-soft);color:var(--accent);padding:3px 9px;border-radius:7px;font-weight:700;border:1px solid var(--accent-line)}
+h2.kantan .sec-num{background:var(--ok-soft);color:var(--ok)}
+h2.morimori .sec-num{background:var(--tip-soft);color:var(--tip)}
+h2.meo .sec-num{background:var(--meo-soft);color:var(--meo-c)}
+h2.overview .sec-num{background:var(--info-soft);color:var(--info)}
+.sec-desc{color:var(--text-dim);font-size:13.5px;margin-bottom:22px;max-width:840px;line-height:1.8}
+h3{font-size:16px;font-weight:700;margin:24px 0 10px;color:var(--text)}
+.plan-overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:18px}
+.plan-card{padding:22px;border-radius:14px;border:1px solid var(--border);background:var(--paper);transition:transform .15s}
+.plan-card:hover{transform:translateY(-2px)}
+.plan-card.green{border-color:var(--accent-line);background:var(--ok-soft)}
+.plan-card.violet{border-color:#c4b5fd;background:var(--tip-soft)}
+.plan-card.orange{border-color:#fed7aa;background:var(--meo-soft)}
+.plan-card .plan-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.plan-card.green .plan-label{color:var(--ok)}.plan-card.violet .plan-label{color:var(--tip)}.plan-card.orange .plan-label{color:var(--meo-c)}
+.plan-card h4{font-size:15px;font-weight:900;margin-bottom:7px;color:var(--text)}
+.plan-card .price{font-family:var(--mono);font-size:26px;font-weight:900;margin-bottom:3px}
+.plan-card.green .price{color:var(--ok)}.plan-card.violet .price{color:var(--tip)}.plan-card.orange .price{color:var(--meo-c)}
+.plan-card .price-sub{font-size:11px;color:var(--text-mute);font-family:var(--mono);margin-bottom:9px}
+.plan-card p{font-size:12px;color:var(--text-dim);line-height:1.65}
+.plan-card .jump{display:inline-block;margin-top:11px;padding:5px 12px;background:var(--paper);border:1px solid var(--border);border-radius:999px;font-size:11px;color:var(--text);text-decoration:none;font-family:var(--mono)}
+.plan-card .jump:hover{background:var(--accent-soft);color:var(--accent)}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;margin-bottom:18px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:580px;background:var(--paper)}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text)}
+thead,thead.green,thead.violet,thead.orange{background:var(--paper-dim)}
+th{font-weight:700;font-size:12px;letter-spacing:.03em}
+tbody tr:hover{background:var(--paper-dim)}
+tbody tr:last-child td{border-bottom:none}
+td.mono{font-family:var(--mono);font-size:11px;color:var(--accent);word-break:break-all}
+td.num{font-family:var(--mono);text-align:right}
+td.amber{color:var(--warn);font-weight:600}td.green{color:var(--ok);font-weight:600}td.red{color:var(--ng);font-weight:600}
+td.kantan{color:var(--ok);font-weight:600}td.morimori{color:var(--tip);font-weight:600}td.meo{color:var(--meo-c);font-weight:600}td.zero{font-family:var(--mono);text-align:right}
+.cost-summary{padding:18px;border:1px solid var(--border);border-radius:12px;margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;text-align:center;background:var(--paper)}
+.cost-summary.green{border-color:var(--accent-line)}.cost-summary.violet{border-color:#c4b5fd}.cost-summary.orange{border-color:#fed7aa}
+.cost-summary .item{padding:0 8px;border-right:1px solid var(--border)}.cost-summary .item:last-child{border-right:none}
+.cost-summary .label{font-size:10px;color:var(--text-mute);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.cost-summary .value{font-size:20px;font-weight:900;font-family:var(--mono);color:var(--accent)!important;background:none!important;-webkit-background-clip:unset!important;background-clip:unset!important}
+.cost-summary.violet .value{color:var(--tip)!important}.cost-summary.orange .value{color:var(--meo-c)!important}
+.cost-summary .unit{font-size:11px;color:var(--text-dim);margin-top:3px}
+.note{padding:14px 18px;border-radius:10px;margin:14px 0;border-left:4px solid;font-size:13px;line-height:1.75}
+.note.warn{background:var(--warn-soft);border-color:var(--warn);color:#92400e}
+.note.info{background:var(--info-soft);border-color:var(--info);color:#1e40af}
+.note.danger{background:var(--ng-soft);border-color:var(--ng);color:#991b1b}
+.note.ok,.note.green{background:var(--ok-soft);border-color:var(--ok);color:#065f46}
+.note strong{display:block;font-weight:700;margin-bottom:4px;font-size:12.5px;text-transform:none;letter-spacing:0;color:inherit}
+.note a{color:inherit;text-decoration:underline}
+.note code{background:rgba(0,0,0,.07);color:inherit;border:none;padding:1px 4px;border-radius:3px;font-family:var(--mono);font-size:.88em}
+.arch-canvas{padding:24px 18px;background:var(--paper);border:1px solid var(--border);border-radius:14px;margin-bottom:18px;position:relative;overflow:hidden}
+.arch-canvas::before{display:none}
+.arch-layer-label{font-family:var(--mono);font-size:10px;color:var(--text-mute);letter-spacing:.18em;text-align:center;text-transform:uppercase;margin-bottom:12px;position:relative;z-index:1}
+.arch-layer-label::before,.arch-layer-label::after{content:"";display:inline-block;width:40px;height:1px;background:var(--border);vertical-align:middle;margin:0 10px}
+.arch-row{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;position:relative;z-index:1}
+.arch-row.tight{gap:10px}
+.arch-card{flex:0 1 240px;min-width:200px;padding:13px 15px;border-radius:10px;border:1px solid var(--border);border-left-width:4px;background:var(--paper);backdrop-filter:none;transition:transform .15s,box-shadow .15s;position:relative}
+.arch-card:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.07)}
+.arch-card.compact{flex:0 1 175px;min-width:150px;padding:10px 12px}
+.arch-card.hosting{border-left-color:#0d9488}.arch-card.asset{border-left-color:var(--ok)}
+.arch-card.browser,.arch-card.logic{border-left-color:var(--info)}
+.arch-card.user{border-left-color:var(--tip)}.arch-card.button{border-left-color:var(--ok)}
+.arch-card.external{border-left-color:var(--text-mute);border-style:dashed}
+.arch-card.worker{border-left-color:#ec4899}
+.arch-card.copy{border-left-color:var(--warn);border-style:dashed}
+.arch-card.line,.arch-card.channel-line{border-left-color:#16a34a}
+.arch-card.trigger,.arch-card.actor{border-left-color:var(--tip)}
+.arch-card.entry{border-left-color:var(--info)}.arch-card.data{border-left-color:#0d9488}
+.arch-card.ai{border-left-color:var(--info)}.arch-card.moderation{border-left-color:var(--warn)}
+.arch-card.approval{border-left-color:#ec4899}
+.arch-card.channel-paid,.arch-card.api{border-left-color:var(--meo-c)}
+.arch-card.channel-free,.arch-card.channel{border-left-color:var(--ok)}
+.arch-card.channel-semi{border-left-color:var(--warn);border-style:dashed}
+.arch-card.storage{border-left-color:#ec4899}
+.arch-card.todo{border-left-color:var(--warn);border-style:dashed;opacity:.65}
+.arch-card-head{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.arch-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;background:var(--paper-dim)!important;color:var(--text-dim)!important;flex-shrink:0}
+.arch-card.compact .arch-icon{width:24px;height:24px;font-size:12px}
+.arch-card-meta{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--text-mute);text-transform:uppercase}
+.arch-card-title{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:4px}
+.arch-card.compact .arch-card-title{font-size:11.5px;margin-bottom:2px}
+.arch-card-spec{font-family:var(--mono);font-size:10px;color:var(--text-dim);line-height:1.45;word-break:break-all}
+.arch-card.compact .arch-card-spec{font-size:9.5px}
+.arch-card-badge{position:absolute;top:-7px;right:10px;padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.04em}
+.arch-card-badge.free{background:var(--ok);color:#fff}.arch-card-badge.exist{background:var(--tip);color:#fff}
+.arch-card-badge.paid{background:var(--warn);color:#fff}.arch-card-badge.client{background:var(--info);color:#fff}
+.arch-card-badge.copy,.arch-card-badge.semi{background:var(--warn);color:#fff}
+.arch-card-badge.line{background:#16a34a;color:#fff}
+.arch-card-badge.mobile-only,.arch-card-badge.todo,.arch-card-badge.todo-b{background:var(--text-mute);color:#fff}
+.arch-flow{display:flex;flex-direction:column;align-items:center;margin:10px 0;position:relative;z-index:1}
+.arch-flow-line{width:2px;height:24px;background:var(--border-strong);border-radius:2px;position:relative}
+.arch-flow-line::after{content:"";position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--border-strong)}
+.arch-flow-label{position:absolute;left:calc(50% + 12px);top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:9px;color:var(--accent);white-space:nowrap;letter-spacing:.04em;background:var(--paper-dim);padding:1px 5px;border-radius:3px}
+.arch-fanout,.arch-fanin{width:100%;max-width:760px;margin:6px auto 0;display:block}
+.arch-canvas svg path{stroke:var(--border-strong)!important}
+.arch-canvas svg marker path{fill:var(--border-strong)!important}
+.arch-section{border:1px dashed var(--border);border-radius:12px;padding:14px;margin:12px 0;background:var(--paper-dim);position:relative;z-index:1}
+.arch-section-title{position:absolute;top:-9px;left:14px;background:var(--paper);padding:0 8px;font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+.arch-legend{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);position:relative;z-index:1}
+.arch-legend-item{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;color:var(--text-dim)}
+.arch-legend-dot{width:9px;height:9px;border-radius:3px}
+.arch-side{display:grid;grid-template-columns:1fr 220px;gap:18px;align-items:start;position:relative;z-index:1}
+.arch-side-aside{padding-top:28px}
+@media(max-width:900px){.arch-side{grid-template-columns:1fr}.arch-side-aside{padding-top:0}}
+@media(max-width:768px){.arch-card{flex:1 1 100%}.arch-fanout,.arch-fanin{display:none}.arch-row{flex-direction:column}}
+.stack-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.stack-card{padding:18px;background:var(--paper);border:1px solid var(--border);border-radius:12px;transition:border-color .2s}
+.stack-card:hover{border-color:var(--accent)}
+.stack-card.exist{border-left:4px solid var(--ok)}.stack-card.todo{border-left:4px solid var(--warn);border-left-style:dashed;opacity:.75}
+.stack-layer{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.1em;margin-bottom:5px}
+.stack-card h4{font-size:14px;font-weight:700;margin-bottom:4px;color:var(--text)}
+.stack-ver{font-family:var(--mono);font-size:11px;color:var(--text-mute);margin-bottom:9px}
+.stack-card p{font-size:13px;color:var(--text-dim);line-height:1.7}
+.stack-card .why{margin-top:9px;padding-top:9px;border-top:1px dashed var(--border);font-size:12px;color:var(--text-dim)}
+.stack-card .why strong{color:var(--accent);font-weight:600}
+.phase-banner{display:inline-block;padding:3px 10px;border-radius:6px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-left:8px}
+.phase-banner.a{background:var(--ok-soft);color:var(--ok);border:1px solid var(--accent-line)}
+.phase-banner.b{background:var(--warn-soft);color:#92400e;border:1px solid #fcd34d}
+pre.code{padding:15px 18px;background:var(--paper-dim);border:1px solid var(--border);border-radius:10px;overflow-x:auto;font-family:var(--mono);font-size:12px;line-height:1.65;color:var(--text);margin-bottom:14px}
+pre.code .k{color:var(--tip)}pre.code .s{color:var(--ok)}
+pre.code .c{color:var(--text-mute);font-style:italic}
+pre.code .f{color:var(--info)}pre.code .n{color:var(--warn)}
+.url-block{padding:13px 17px;background:var(--paper-dim);border:1px solid var(--border);border-radius:10px;font-family:var(--mono);font-size:12px;overflow-x:auto;margin-bottom:14px;word-break:break-all;color:var(--text)}
+.url-block .scheme{color:var(--info)}.url-block .host{color:var(--ok)}.url-block .path{color:var(--warn)}.url-block .qkey{color:var(--tip)}.url-block .qval{color:var(--ok)}
+.back-links{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px}
+.back-link{padding:6px 12px;background:var(--paper);border:1px solid var(--border);border-radius:999px;font-size:11px;color:var(--text-dim);text-decoration:none;font-family:var(--mono);transition:color .15s,border-color .15s}
+.back-link:hover{color:var(--accent);border-color:var(--accent)}
+.compare-table th:first-child{width:220px}
+footer{padding:28px 0 44px;text-align:center;color:var(--text-mute);font-size:12px;border-top:1px solid var(--border)}
+footer code{font-family:var(--mono);color:var(--accent)}
+
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-inner">
+      <a class="topbar-back" href="../index.html">← 一覧に戻る</a>
+      <span class="topbar-tag tech">技術仕様</span>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="container">
+    <div class="breadcrumb">post-pilot / <code>plan: morimori-max</code> / technical-spec</div>
+    <h1 class="hero-title">盛り盛りMAXプラン<br><span class="grad">Technical Architecture</span></h1>
+    <p class="hero-sub">X (旧 Twitter) + Threads マルチチャネル自動投稿システム。スケジューラ駆動のサーバレス構成で、AI 生成 → 承認 → 配信を完全自動化。</p>
+    <div class="meta">
+      <span class="meta-tag">Runtime: Vercel Fluid Compute</span>
+      <span class="meta-tag">Scheduler: Vercel Cron</span>
+      <span class="meta-tag paid">X API: Pay-per-use</span>
+      <span class="meta-tag ok">Threads API: Free</span>
+      <span class="meta-tag">Jimoty: 営業ツール（連携未定）</span>
+      <span class="meta-tag">LINE Messaging API</span>
+      <span class="meta-tag">LLM: Claude Sonnet 4.6</span>
+      <span class="meta-tag">Image: fal.ai FLUX.1 schnell</span>
+      <span class="meta-tag">Verified: 2026-05-26</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">01</span>システム構成図</h2>
+    <p class="sec-desc">Vercel Cron が定刻にトリガを発火し、Serverless Function 上で原稿生成 → 画像生成 → 承認通知 → 2媒体配信までを 1ジョブで完結。</p>
+
+    <div class="arch-canvas">
+
+      <div class="arch-layer-label">Scheduler</div>
+      <div class="arch-row">
+        <div class="arch-card trigger">
+          <span class="arch-card-badge exist">EXIST</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">⏰</div>
+            <div><div class="arch-card-meta">CRON</div><div class="arch-card-title">Vercel Cron</div></div>
+          </div>
+          <div class="arch-card-spec">vercel.json · crons[]<br>schedule: 0 7,12,21 * * *</div>
+        </div>
+      </div>
+
+      <div class="arch-flow"><div class="arch-flow-line"><div class="arch-flow-label">cron trigger</div></div></div>
+
+      <div class="arch-layer-label">Entry Function</div>
+      <div class="arch-row">
+        <div class="arch-card entry">
+          <div class="arch-card-head">
+            <div class="arch-icon">🚀</div>
+            <div><div class="arch-card-meta">SERVERLESS</div><div class="arch-card-title">/api/cron/post-publish</div></div>
+          </div>
+          <div class="arch-card-spec">Vercel Fluid Compute · Node 22<br>maxDuration: 300s</div>
+        </div>
+      </div>
+
+      <svg class="arch-fanout" viewBox="0 0 760 50" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <marker id="ah-mm-fan" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#60a5fa"/></marker>
+        </defs>
+        <path d="M380,0 C380,30 130,15 130,45" fill="none" stroke="#60a5fa" stroke-width="1.5" opacity=".8" marker-end="url(#ah-mm-fan)"/>
+        <path d="M380,0 L380,45" fill="none" stroke="#60a5fa" stroke-width="1.5" opacity=".8" marker-end="url(#ah-mm-fan)"/>
+        <path d="M380,0 C380,30 630,15 630,45" fill="none" stroke="#60a5fa" stroke-width="1.5" opacity=".8" marker-end="url(#ah-mm-fan)"/>
+      </svg>
+
+      <div class="arch-layer-label">Data &amp; AI (parallel)</div>
+      <div class="arch-row">
+        <div class="arch-card data">
+          <span class="arch-card-badge free">FREE</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">📋</div>
+            <div><div class="arch-card-meta">DB · QUEUE</div><div class="arch-card-title">Notion DB</div></div>
+          </div>
+          <div class="arch-card-spec">@notionhq/client<br>content queue + log</div>
+        </div>
+        <div class="arch-card ai">
+          <span class="arch-card-badge paid">PAID</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">🧠</div>
+            <div><div class="arch-card-meta">LLM</div><div class="arch-card-title">Anthropic API</div></div>
+          </div>
+          <div class="arch-card-spec">Claude Sonnet 4.6<br>draft text + hashtags</div>
+        </div>
+        <div class="arch-card ai">
+          <span class="arch-card-badge paid">PAID</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">🎨</div>
+            <div><div class="arch-card-meta">IMAGE GEN</div><div class="arch-card-title">fal.ai</div></div>
+          </div>
+          <div class="arch-card-spec">FLUX.1 [schnell]<br>¥0.45 / image</div>
+        </div>
+      </div>
+
+      <svg class="arch-fanin" viewBox="0 0 760 50" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <marker id="ah-mm-in" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#fbbf24"/></marker>
+        </defs>
+        <path d="M130,0 C130,30 380,20 380,45" fill="none" stroke="#fbbf24" stroke-width="1.5" opacity=".7" marker-end="url(#ah-mm-in)"/>
+        <path d="M380,0 L380,45" fill="none" stroke="#fbbf24" stroke-width="1.5" opacity=".7" marker-end="url(#ah-mm-in)"/>
+        <path d="M630,0 C630,30 380,20 380,45" fill="none" stroke="#fbbf24" stroke-width="1.5" opacity=".7" marker-end="url(#ah-mm-in)"/>
+      </svg>
+
+      <div class="arch-layer-label">Safety Filter</div>
+      <div class="arch-row">
+        <div class="arch-card moderation">
+          <div class="arch-card-head">
+            <div class="arch-icon">🛡️</div>
+            <div><div class="arch-card-meta">MODERATION</div><div class="arch-card-title">Claude Risk Filter</div></div>
+          </div>
+          <div class="arch-card-spec">hate / PII / brand-safety<br>auto-reject below threshold</div>
+        </div>
+      </div>
+
+      <div class="arch-flow"><div class="arch-flow-line"><div class="arch-flow-label">pass</div></div></div>
+
+      <div class="arch-layer-label">Human-in-the-loop (optional)</div>
+      <div class="arch-row">
+        <div class="arch-card approval">
+          <span class="arch-card-badge exist">EXIST</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">💬</div>
+            <div><div class="arch-card-meta">APPROVAL</div><div class="arch-card-title">Chatwork notify</div></div>
+          </div>
+          <div class="arch-card-spec">auto-pass if score ≥ 0.95<br>webhook approval window: 15min</div>
+        </div>
+      </div>
+
+      <svg class="arch-fanout" viewBox="0 0 760 50" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <marker id="ah-mm-pub" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34d399"/></marker>
+        </defs>
+        <path d="M380,0 C380,30 100,15 100,45" fill="none" stroke="#34d399" stroke-width="1.5" opacity=".85" marker-end="url(#ah-mm-pub)"/>
+        <path d="M380,0 C380,30 290,15 290,45" fill="none" stroke="#34d399" stroke-width="1.5" opacity=".85" marker-end="url(#ah-mm-pub)"/>
+        <path d="M380,0 C380,30 470,15 470,45" fill="none" stroke="#34d399" stroke-width="1.5" opacity=".85" marker-end="url(#ah-mm-pub)"/>
+        <path d="M380,0 C380,30 660,15 660,45" fill="none" stroke="#34d399" stroke-width="1.5" opacity=".85" marker-end="url(#ah-mm-pub)"/>
+      </svg>
+
+      <!-- 2026-05-28 claude-opus-4-7 セッションターン数：3 — ジモティを自動チャネルから外し営業ツール(連携未定)へリフレーム。自動配信は X/Threads/LINE -->
+      <div class="arch-layer-label">Publish Channels (自動3 + 営業ツール)</div>
+      <div class="arch-row">
+        <div class="arch-card channel-paid">
+          <span class="arch-card-badge paid">PAID</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">𝕏</div>
+            <div><div class="arch-card-meta">PUBLIC POST</div><div class="arch-card-title">X API v2</div></div>
+          </div>
+          <div class="arch-card-spec">POST /2/tweets<br>¥2.25 text · ¥30 URL · pay-per-use</div>
+        </div>
+        <div class="arch-card channel-free">
+          <span class="arch-card-badge free">FREE</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">@</div>
+            <div><div class="arch-card-meta">PUBLIC POST</div><div class="arch-card-title">Threads Graph API</div></div>
+          </div>
+          <div class="arch-card-spec">POST /me/threads → /me/threads_publish<br>250 posts / 24h · OAuth long-lived</div>
+        </div>
+        <div class="arch-card channel-semi">
+          <span class="arch-card-badge semi">営業</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">🛒</div>
+            <div><div class="arch-card-meta">営業ツール</div><div class="arch-card-title">Jimoty (連携未定)</div></div>
+          </div>
+          <div class="arch-card-spec">システム連携は未定（今後検討）<br>現状はスタッフが手動で営業活用</div>
+        </div>
+        <div class="arch-card channel-line">
+          <span class="arch-card-badge line">LINE</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">L</div>
+            <div><div class="arch-card-meta">PUSH DELIVERY</div><div class="arch-card-title">LINE Messaging API</div></div>
+          </div>
+          <div class="arch-card-spec">POST /v2/bot/message/push<br>友だちへ Push 配信 · 旧Notify代替</div>
+        </div>
+      </div>
+
+      <div class="arch-legend">
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#a78bfa"></span>EXISTING ASSET</div>
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#10b981"></span>FREE</div>
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#fb923c"></span>PAID (X)</div>
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#d97706"></span>営業ツール (Jimoty・連携未定)</div>
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#06c755"></span>LINE Push</div>
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#60a5fa"></span>data flow</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">02</span>技術スタック</h2>
+    <p class="sec-desc">既存資産（Vercel Pro / Notion / Chatwork）を再利用。新規追加はゼロ。</p>
+
+    <h3>ランタイム / 配信基盤</h3>
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="stack-layer">RUNTIME</div>
+        <h4>Vercel (Pro Plan)</h4>
+        <div class="stack-ver">Fluid Compute + Functions</div>
+        <p>Node.js 22 / Edge 不可（外部 API レイテンシ吸収のため Node Functions で 60〜300s 実行枠を確保）</p>
+        <div class="why"><strong>選定理由:</strong> 既存 Pro 契約。Cron Jobs ネイティブ、Cold Start なし、env 暗号化標準。</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">SCHEDULER</div>
+        <h4>Vercel Cron Jobs</h4>
+        <div class="stack-ver">vercel.json → crons[]</div>
+        <p>cron 式で <code>/api/cron/*</code> をトリガ。最小単位は 1分。Pro なら回数無制限。</p>
+        <div class="why"><strong>選定理由:</strong> 別 VPS 不要、Vercel 内完結。GitHub Actions cron より発火精度が高い。</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">DATABASE</div>
+        <h4>Notion DB</h4>
+        <div class="stack-ver">@notionhq/client</div>
+        <p>投稿キュー、配信履歴、業種テンプレを Notion で人間が編集可能に保持。</p>
+        <div class="why"><strong>選定理由:</strong> 非エンジニアでも編集可。Firestore 化は流量増えてからで間に合う。</div>
+      </div>
+    </div>
+
+    <h3>AI 生成</h3>
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="stack-layer">TEXT LLM</div>
+        <h4>Claude Sonnet 4.6</h4>
+        <div class="stack-ver">@anthropic-ai/sdk</div>
+        <p>原稿生成・モデレーション・ハッシュタグ最適化を 1モデルで統合。Prompt Cache で system 部を再利用。</p>
+        <div class="why"><strong>選定理由:</strong> Sonnet 4.6 は日本語コピー品質が高く、tool_use とキャッシュが安定。</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">IMAGE GEN</div>
+        <h4>fal.ai FLUX.1 [schnell]</h4>
+        <div class="stack-ver">@fal-ai/client</div>
+        <p>1枚 約¥0.45、生成 ~2秒。商用ライセンスクリア。レスポンスは CDN URL を Notion に保存。</p>
+        <div class="why"><strong>選定理由:</strong> Imagen より圧倒的に安く、品質も SNS 用途では十分。</div>
+      </div>
+    </div>
+
+    <h3>配信チャネル（自動3種 + 営業ツール・性質が異なるため統一実装不可）</h3>
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="stack-layer">CHANNEL: X (公開投稿)</div>
+        <h4>X API v2 (Pay-per-use)</h4>
+        <div class="stack-ver">POST /2/tweets · OAuth 2.0 PKCE</div>
+        <p>2026/02 以降は従量課金が新規デフォルト。テキスト ¥2.25、URL 含む ¥30、画像投稿は media/upload 別途。</p>
+        <div class="why"><strong>注意:</strong> 旧 Basic (¥30,000/月) は新規受付停止。無料枠なし。<code>x-rate-limit-*</code> ヘッダで動的に制御。</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">CHANNEL: Threads (公開投稿)</div>
+        <h4>Threads Graph API (Free)</h4>
+        <div class="stack-ver">graph.threads.net/v1.0</div>
+        <p>2段階フロー: <code>POST /me/threads</code> → 30秒待機 → <code>POST /me/threads_publish</code>。24h 内 250投稿まで。</p>
+        <div class="why"><strong>注意:</strong> 課金なし。long-lived token は 60日有効、cron で 50日目に refresh。</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">CHANNEL: Jimoty (営業ツール)</div>
+        <h4>Jimoty (システム連携は未定)</h4>
+        <div class="stack-ver">no API · 営業ツールとして手動活用</div>
+        <p>ジモティは地域掲示板として、現状はスタッフが手動で営業・集客に活用します。<strong>post-pilot システムからの連携（下書き自動生成・通知など）は未定（今後検討）</strong>です。</p>
+        <div class="why"><strong>将来連携する場合の留意:</strong> 公式 API が無く、利用規約で「クロール等で自動的に収集・解析する行為」が禁止のため完全自動投稿は不可。連携する場合も AI 下書きを Chatwork 通知 → 人手投稿の半自動に限定し、非広告トーンで規約適合させる。</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">CHANNEL: LINE (Push配信)</div>
+        <h4>LINE Messaging API</h4>
+        <div class="stack-ver">POST /v2/bot/message/push · Bearer Auth</div>
+        <p>2025/03 で廃止された LINE Notify の公式代替。<strong>X/Threads の「公開投稿」とは性質が異なる「友だち追加済ユーザへの Push 配信」</strong>。</p>
+        <div class="why"><strong>料金 (2026/05時点):</strong> コミュニケーション ¥0 / 200通月、ライト ¥5,000 / 5,000通、スタンダード ¥15,000 / 30,000通。<strong>通数 = 配信回数 × 受信者数</strong>。2026/10 に料金改定予定（要再確認）。</div>
+      </div>
+    </div>
+
+    <h3>運用 / 周辺</h3>
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="stack-layer">APPROVAL</div>
+        <h4>Chatwork API</h4>
+        <div class="stack-ver">POST /v2/rooms/{id}/messages</div>
+        <p>下書きを Chatwork ルームへ通知。OK ボタンで Webhook → publish。auto-pass フラグでスキップ可能。</p>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">OBSERVABILITY</div>
+        <h4>Vercel Logs + Sentry (任意)</h4>
+        <div class="stack-ver">native + @sentry/nextjs</div>
+        <p>cron 実行ログは Vercel に 30日保存。エラー閾値超過で Slack/Chatwork 通知。</p>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">SECRETS</div>
+        <h4>Vercel Env Vars</h4>
+        <div class="stack-ver">vercel env / .env.local</div>
+        <p>X / Threads / Anthropic / fal.ai / Chatwork の API key は環境変数に集約。OIDC で fal.ai 連携可。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">03</span>処理フロー（1ジョブの内訳）</h2>
+    <p class="sec-desc">Vercel Cron 1回のトリガで完了するステップ。idempotent 設計で再実行安全。</p>
+    <ol class="flow-list">
+      <li><strong>キュー取得</strong> <small>Notion DB から <code>status=ready</code> かつ <code>scheduled_at ≤ now</code> のレコードを 1件 pop。</small></li>
+      <li><strong>原稿生成</strong> <small>Claude Sonnet 4.6 に業種・トーン・テンプレを投げて投稿文＋ハッシュタグを JSON で受け取る。<code>cache_control: ephemeral</code> で system prompt をキャッシュ。</small></li>
+      <li><strong>画像生成</strong> <small>fal.ai FLUX.1 schnell に原稿要約をプロンプトとして送信、CDN URL を取得。</small></li>
+      <li><strong>モデレーション</strong> <small>Claude を再呼び出しし、PII / hate / brand-safety をスコアリング。閾値未満なら自動却下。</small></li>
+      <li><strong>承認（任意）</strong> <small>Chatwork に下書きを通知。承認モード時は Webhook 待機（最大15分）、auto-pass モード時はスキップ。</small></li>
+      <li><strong>X 投稿（公開）</strong> <small><code>POST /2/tweets</code>。画像ありなら先に <code>media/upload</code>。<code>x-rate-limit-remaining</code> を監視。</small></li>
+      <li><strong>Threads 投稿（公開）</strong> <small><code>POST /me/threads</code> でコンテナ作成 → 30秒スリープ → <code>POST /me/threads_publish</code>。失敗時は指数バックオフで 3回まで再試行。</small></li>
+      <li><strong>Jimoty（営業ツール・連携未定）</strong> <small>ジモティは現状スタッフが手動で営業活用。システムからの下書き生成・通知の連携は未定（今後検討）。連携する場合も <code>POST</code> 自動化は行わず、Chatwork 通知 → 人手投稿の半自動に限定する。</small></li>
+      <li><strong>LINE Push 配信</strong> <small>条件を満たす場合のみ <code>POST /v2/bot/message/push</code> で対象セグメントへ配信。月の通数上限（プラン依存）を監視し、超過時はスキップ + Chatwork に警告。</small></li>
+      <li><strong>記録</strong> <small>Notion DB に <code>posted_at</code> / <code>x_tweet_id</code> / <code>threads_post_id</code> / <code>line_request_id</code> / <code>jimoty_handed_off_at</code> を書き戻し、status を <code>posted</code> に更新。</small></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 2026-05-27 claude-opus-4-7 セッションターン数：5 — §04 X API 料金実測 / §05 月額コスト試算 は cost-estimate.html へ集約 -->
+<section id="x-api-pricing">
+  <div class="container">
+    <h2><span class="sec-num">04</span>X API 料金実測 ／ 月額コスト試算</h2>
+    <p class="sec-desc">3 プラン横断のコスト試算ページに統合しました。X API pay-per-use の実測単価、月 60 投稿 + LINE 2,000 通想定の月額（NEW COST ¥5,612 / TOTAL ¥8,612）の内訳はそちらを参照。</p>
+    <div class="note info">
+      <strong>移動先</strong>
+      → <a href="../cost-estimate.html#x-api-pricing" style="color:inherit;text-decoration:underline;font-weight:700">post-pilot コスト試算 ｜ 盛り盛りMAXプラン › X API 料金実測（2026-05 verified）</a><br>
+      → <a id="monthly-cost" href="../cost-estimate.html#monthly-cost" style="color:inherit;text-decoration:underline;font-weight:700">post-pilot コスト試算 ｜ 盛り盛りMAXプラン › 月額コスト試算</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">06</span>コード骨子</h2>
+    <p class="sec-desc"><code>/api/cron/post-publish.ts</code> — Vercel Cron から呼ばれるエントリ。</p>
+<pre class="code"><span class="c">// vercel.json</span>
+{
+  <span class="s">"crons"</span>: [
+    { <span class="s">"path"</span>: <span class="s">"/api/cron/post-publish"</span>, <span class="s">"schedule"</span>: <span class="s">"0 7,12,21 * * *"</span> },
+    { <span class="s">"path"</span>: <span class="s">"/api/cron/refresh-tokens"</span>, <span class="s">"schedule"</span>: <span class="s">"0 3 */50 * *"</span> }
+  ]
+}
+
+<span class="c">// app/api/cron/post-publish/route.ts</span>
+<span class="k">import</span> Anthropic <span class="k">from</span> <span class="s">"@anthropic-ai/sdk"</span>;
+<span class="k">import</span> { fal } <span class="k">from</span> <span class="s">"@fal-ai/client"</span>;
+<span class="k">import</span> { Client <span class="k">as</span> Notion } <span class="k">from</span> <span class="s">"@notionhq/client"</span>;
+
+<span class="k">export const</span> <span class="n">maxDuration</span> = <span class="n">300</span>; <span class="c">// Threads publish 待ち含む</span>
+
+<span class="k">export async function</span> <span class="f">GET</span>(req: Request) {
+  <span class="f">verifyCronSecret</span>(req);
+  <span class="k">const</span> job = <span class="k">await</span> <span class="f">popReadyJob</span>(notion);
+  <span class="k">if</span> (!job) <span class="k">return</span> Response.<span class="f">json</span>({ skipped: <span class="k">true</span> });
+
+  <span class="k">const</span> draft = <span class="k">await</span> <span class="f">generateDraft</span>(anthropic, job);
+  <span class="k">const</span> image = <span class="k">await</span> fal.<span class="f">subscribe</span>(<span class="s">"fal-ai/flux/schnell"</span>, { input: { prompt: draft.imagePrompt } });
+  <span class="k">const</span> safety = <span class="k">await</span> <span class="f">moderate</span>(anthropic, draft.text);
+  <span class="k">if</span> (!safety.pass) <span class="k">return</span> <span class="f">rejectAndLog</span>(notion, job, safety);
+
+  <span class="k">if</span> (job.requireApproval) <span class="k">await</span> <span class="f">awaitChatworkApproval</span>(job, draft);
+
+  <span class="k">const</span> [xRes, thRes] = <span class="k">await</span> Promise.<span class="f">allSettled</span>([
+    <span class="f">postToX</span>(draft.text, image.url),
+    <span class="f">postToThreads</span>(draft.text, image.url),
+  ]);
+
+  <span class="k">await</span> <span class="f">recordResult</span>(notion, job, xRes, thRes);
+  <span class="k">return</span> Response.<span class="f">json</span>({ ok: <span class="k">true</span>, x: xRes.status, threads: thRes.status });
+}
+</pre>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">07</span>運用上の注意点</h2>
+    <div class="note danger">
+      <strong>X トークン管理</strong>
+      OAuth 2.0 PKCE の refresh_token は 6ヶ月で失効。cron で残期間を監視し、3ヶ月時点で更新フローを Chatwork に通知すること（ヘッドレスでの refresh は X 側で 2025 末に制限強化）。
+    </div>
+    <div class="note warn">
+      <strong>Threads publish ラグ</strong>
+      コンテナ作成から publish までは Meta 側で最低 30秒必要。<code>maxDuration: 300</code> 必須。連投時はキューを 1job = 1post で分割し、Cron の発火間隔を最低 1分空ける。
+    </div>
+    <div class="note info">
+      <strong>レート制限の防御</strong>
+      X は <code>x-rate-limit-remaining</code> ヘッダ、Threads は HTTP 429 で検知。指数バックオフ（1s → 5s → 30s）でリトライし、3回失敗で Notion に <code>failed</code> 記録 + Chatwork 通知。
+    </div>
+    <div class="note info">
+      <strong>URL 含む投稿のコスト跳ね</strong>
+      X はリンク付き投稿が ¥30/件と通常の 13倍。URL は <code>x_post_options.include_url=false</code> で原則オフ、CV 計測したい時だけ明示的にオンにする。
+    </div>
+    <div class="note danger">
+      <strong>Jimoty 連携時の留意（将来検討・現状は営業ツール）</strong>
+      ジモティは現状スタッフが手動で営業活用し、システム連携は未定。将来連携する場合は、利用規約「投稿等をクロール等で自動的に収集、解析する行為」の禁止に加え、出品代行・商用広告色の強い投稿も規制対象である点に留意し、非広告トーン + 健康カテゴリ固定の方針を継承、「専用 Jimoty アカウントで運営者が手動投稿」のワークフローを守る。<strong>cron からの直接 HTTP POST は実装しない</strong>。
+    </div>
+    <div class="note warn">
+      <strong>LINE 通数の事前見積もり</strong>
+      通数 = 配信回数 × 受信者数。友だち 1,000人に週1配信で月 4,000通 → ライト ¥5,000 圏内。友だち 5,000人へ月60投稿は 300,000通 → スタンダード超過。Notion DB に <code>line_audience_size</code> を持ち、cron 開始時に「今月の予想通数 + 残り枠」を試算して上限超過なら Chatwork に warning 通知 + Push をスキップする防御を入れる。
+    </div>
+    <div class="note info">
+      <strong>LINE Notify 廃止後の移行</strong>
+      旧 LINE Notify（〜2025/03/31）の置き換え。Messaging API は「友だち追加」フローが必須なので、エンドユーザに QR を提示する初期導入手順がクライアント側に発生する。営業時の説明資料に組み込み済み（プレゼン版参照）。
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">08</span>裏取りソース</h2>
+    <p class="sec-desc">2026-05-26 時点の公式・実測情報で検証済み。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>項目</th><th>ソース</th><th>確認日</th></tr></thead>
+        <tbody>
+          <tr><td>X API pay-per-use 体系</td><td class="mono">docs.x.com/x-api/getting-started/pricing</td><td>2026-05-26</td></tr>
+          <tr><td>X API 2026-04 価格改定</td><td class="mono">x.com developer changelog</td><td>2026-05-26</td></tr>
+          <tr><td>Threads Graph API 仕様</td><td class="mono">developers.facebook.com/docs/threads</td><td>2026-05-26</td></tr>
+          <tr><td>Threads 24h 投稿上限 (250)</td><td class="mono">developers.facebook.com/docs/threads/reference/publishing</td><td>2026-05-26</td></tr>
+          <tr><td>Vercel Cron Pro 制限</td><td class="mono">vercel.com/docs/cron-jobs</td><td>2026-05-26</td></tr>
+          <tr><td>fal.ai FLUX.1 schnell 価格</td><td class="mono">fal.ai/models/fal-ai/flux/schnell</td><td>2026-05-26</td></tr>
+          <tr><td>Jimoty 利用規約（自動投稿禁止）</td><td class="mono">jmty.jp/about/terms · jmty.jp/about/guide</td><td>2026-05-26</td></tr>
+          <tr><td>LINE Messaging API 料金</td><td class="mono">developers.line.biz/ja/docs/messaging-api/pricing/</td><td>2026-05-26</td></tr>
+          <tr><td>LINE Notify サービス終了</td><td class="mono">developers.line.biz/ja/news/2025/04/01/line-notify/</td><td>2026-05-26</td></tr>
+          <tr><td>LINE 公式アカウント料金プラン</td><td class="mono">lycbiz.com/jp/service/line-official-account/plan/</td><td>2026-05-26</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    post-pilot ｜ plan: <code>morimori-max</code> ｜ technical-spec ｜ 2026-05-26 verified
+  </div>
+</footer>
+
+</body>
+</html>

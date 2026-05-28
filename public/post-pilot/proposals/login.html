@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<!-- 2026-05-26 21:00:00 claude-opus-4-7 セッションターン数：38 — post-pilot 提案資料ログイン画面（クライアントサイド簡易認証） -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>ログイン ｜ Post-Pilot 提案資料</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0a0f1f;
+    --bg-card:rgba(255,255,255,.04);
+    --border:rgba(255,255,255,.12);
+    --border-hover:rgba(255,255,255,.24);
+    --text:#e8ecf5;
+    --text-dim:#a5adc4;
+    --text-mute:#6b7390;
+    --accent:#fbbf24;
+    --grad-hero:linear-gradient(135deg,#a855f7 0%,#ec4899 40%,#f97316 75%,#fbbf24 100%);
+    --error:#f87171;
+  }
+  html,body{background:var(--bg);color:var(--text);font-family:"Noto Sans JP","Inter",-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;min-height:100vh}
+  body{display:flex;align-items:center;justify-content:center;padding:24px}
+  body::before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 15% 10%,rgba(168,85,247,.16) 0%,transparent 45%),radial-gradient(circle at 85% 30%,rgba(249,115,22,.14) 0%,transparent 50%),radial-gradient(circle at 50% 100%,rgba(6,182,212,.10) 0%,transparent 55%);pointer-events:none;z-index:-1}
+
+  .login-card{width:100%;max-width:420px;padding:40px 36px;background:var(--bg-card);border:1px solid var(--border);border-radius:18px;backdrop-filter:blur(8px)}
+  .badge{display:inline-block;padding:6px 14px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text-dim);font-weight:700;border-radius:999px;font-size:11px;letter-spacing:.12em;margin-bottom:20px}
+  h1.title{font-size:24px;font-weight:900;line-height:1.4;letter-spacing:-.01em;margin-bottom:8px}
+  h1.title .grad{background:var(--grad-hero);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .desc{font-size:13px;color:var(--text-dim);margin-bottom:28px}
+
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:12px;font-weight:700;color:var(--text-dim);letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
+  .field input{display:block;width:100%;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color .15s}
+  .field input:focus{border-color:var(--border-hover)}
+  .field input::placeholder{color:var(--text-mute)}
+
+  .btn{display:block;width:100%;margin-top:8px;padding:13px 16px;background:var(--grad-hero);color:#0a0f1f;font-size:15px;font-weight:900;letter-spacing:.05em;border:none;border-radius:10px;cursor:pointer;transition:transform .15s,box-shadow .15s;font-family:inherit}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(168,85,247,.25)}
+  .btn:active{transform:translateY(0)}
+
+  .error{display:none;margin-top:14px;padding:10px 14px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.4);border-radius:8px;color:var(--error);font-size:13px}
+  .error.show{display:block}
+
+  .footnote{margin-top:24px;font-size:11px;color:var(--text-mute);text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+  <main class="login-card">
+    <span class="badge">POST-PILOT / PROPOSALS</span>
+    <h1 class="title"><span class="grad">提案資料</span>へログイン</h1>
+    <p class="desc">関係者向けの社内・クライアント提案資料です。ID とパスワードを入力してください。</p>
+
+    <form id="login-form" autocomplete="off">
+      <div class="field">
+        <label for="uid">ID</label>
+        <input type="text" id="uid" name="uid" required autocomplete="off" autofocus>
+      </div>
+      <div class="field">
+        <label for="pwd">パスワード</label>
+        <input type="password" id="pwd" name="pwd" required autocomplete="off">
+      </div>
+      <button type="submit" class="btn">ログイン</button>
+      <div id="error" class="error">ID またはパスワードが違います</div>
+    </form>
+
+    <p class="footnote">関係者以外はアクセス禁止</p>
+  </main>
+
+<script>
+// SHA-256 ハッシュ値（事前計算済み）
+const UID_HASH = "096d92ee9c796a7c2419a6ff814b2c0322f13c2eae282894002f99e433ec5641";
+const PWD_HASH = "01cb92dfff4091c2bee0f343b2af049fb39b45c08a1e5132b834e12e037d919d";
+
+async function sha256(text) {
+  const buf = new TextEncoder().encode(text);
+  const hash = await crypto.subtle.digest("SHA-256", buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+function getReturnTo() {
+  const params = new URLSearchParams(location.search);
+  const raw = params.get("returnTo");
+  if (!raw) return "/post-pilot/proposals/";
+  try {
+    const decoded = decodeURIComponent(raw);
+    // オープンリダイレクト防止: 自サイト内のパスのみ許可
+    if (decoded.startsWith("/post-pilot/")) return decoded;
+  } catch (_) {}
+  return "/post-pilot/proposals/";
+}
+
+document.getElementById("login-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const uid = document.getElementById("uid").value;
+  const pwd = document.getElementById("pwd").value;
+  const error = document.getElementById("error");
+  const [uidHash, pwdHash] = await Promise.all([sha256(uid), sha256(pwd)]);
+  if (uidHash === UID_HASH && pwdHash === PWD_HASH) {
+    sessionStorage.setItem("post-pilot-authed", "1");
+    location.replace(getReturnTo());
+  } else {
+    error.classList.add("show");
+    document.getElementById("pwd").value = "";
+  }
+});
+
+// 既に認証済みなら returnTo へ即遷移
+if (sessionStorage.getItem("post-pilot-authed") === "1") {
+  location.replace(getReturnTo());
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<!-- 2026-05-26 claude-opus-4-7 セッションターン数：3 — meoscope 画面遷移のみ HTML 新規作成・実コード裏取り済 (src/app/{,analyze,select,history,dashboard/[id],dashboard/[id]/print}/page.tsx) -->
+<!-- 2026-05-26 claude-opus-4-7 セッションターン数：3 — ドメイン表記を ms.lienrapport.jp → meoscope.com に置換 -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../auth.js"></script>
+<title>meoscope 画面遷移図｜社内資料</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/doc.css">
+<style>
+/* 2026-05-28 claude-opus-4-7 セッションターン数：5 — ダーク→ライトテーマ（screen-flow）
+   モック内部（.mock, .mock-*）は meoscope が dark UI のため暗色維持 */
+:root{
+  --bg:#f7f5f0;--paper:#fff;--paper-dim:#fafaf9;
+  --text:#1f2937;--text-dim:#4b5563;--text-mute:#9ca3af;
+  --border:#e5e7eb;--border-strong:#d1d5db;
+  --accent:#f97316;--accent-soft:#fff7ed;--accent-line:#fed7aa;
+  --gold:#d97706;
+  --ok:#059669;--ok-soft:#ecfdf5;
+  --info:#2563eb;--info-soft:#eff6ff;
+  --warn:#d97706;--warn-soft:#fffbeb;
+  --ng:#dc2626;
+  --tip:#7c3aed;--tip-soft:#f5f3ff;
+  --purple:#7c3aed;
+  --pink:#ec4899;
+  --green:#059669;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:"Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.85;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{display:none}
+.container{max-width:1180px;margin:0 auto;padding:0 28px}
+@media(max-width:640px){.container{padding:0 18px}}
+code{font-family:var(--mono);font-size:.9em}
+header.hero{padding:40px 0 30px;border-bottom:1px solid var(--border)}
+.breadcrumb{font-size:13px;color:var(--text-mute);margin-bottom:20px}
+.breadcrumb code{background:var(--paper-dim);border:1px solid var(--border);border-radius:5px;color:var(--accent);padding:2px 7px}
+h1.hero-title{font-size:clamp(26px,4vw,42px);font-weight:900;line-height:1.25;letter-spacing:-.02em;margin-bottom:12px;color:var(--text)}
+h1.hero-title .grad{background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-sub{font-size:15px;color:var(--text-dim);max-width:780px;margin-bottom:20px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.meta-tag{padding:5px 12px;background:var(--paper);border:1px solid var(--border);border-radius:999px;font-size:12px;color:var(--text-dim);font-family:var(--mono)}
+.meta-tag.ok{color:var(--ok);border-color:#a7f3d0}
+.legend{padding:20px;background:var(--paper);border:1px solid var(--border);border-radius:12px;margin-top:24px}
+.legend-title{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--text-mute);text-transform:uppercase;margin-bottom:12px}
+.legend-row{display:flex;flex-wrap:wrap;gap:14px}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text-dim)}
+.legend-chip{width:13px;height:13px;border-radius:4px;border:1px solid}
+.legend-chip.auth{background:rgba(124,58,237,.15);border-color:var(--purple)}
+.legend-chip.entry{background:rgba(37,99,235,.15);border-color:var(--info)}
+.legend-chip.process{background:rgba(249,115,22,.15);border-color:var(--accent)}
+.legend-chip.result{background:rgba(6,182,212,.15);border-color:#0891b2}
+.legend-chip.output{background:rgba(236,72,153,.15);border-color:var(--pink)}
+.legend-chip.store{background:rgba(5,150,105,.15);border-color:var(--ok)}
+section{padding:44px 0;border-bottom:1px solid var(--border)}
+section:last-of-type{border-bottom:none}
+h2{font-size:22px;font-weight:900;letter-spacing:-.01em;margin-bottom:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;color:var(--text)}
+h2 .sec-num{font-family:var(--mono);font-size:12px;color:var(--accent);background:var(--accent-soft);padding:3px 9px;border-radius:7px;font-weight:700;border:1px solid var(--accent-line)}
+h2 .sec-route{font-family:var(--mono);font-size:11px;color:var(--text-mute);background:var(--paper-dim);border:1px solid var(--border);padding:2px 9px;border-radius:5px;font-weight:400}
+.sec-desc{color:var(--text-dim);font-size:13.5px;margin-bottom:24px;max-width:820px}
+.stage{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;justify-content:center}
+.screen{flex:0 1 300px;min-width:260px;background:var(--paper);border:1px solid var(--border);border-left-width:4px;border-radius:14px;padding:16px;position:relative;transition:transform .2s,box-shadow .2s}
+.screen:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.screen.auth{border-left-color:var(--purple)}
+.screen.entry{border-left-color:var(--info)}
+.screen.process{border-left-color:var(--accent)}
+.screen.result{border-left-color:#0891b2}
+.screen.output{border-left-color:var(--pink)}
+.screen.store{border-left-color:var(--ok)}
+.screen-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
+.screen-id{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;padding:2px 7px;border-radius:5px;background:var(--paper-dim);border:1px solid var(--border);color:var(--text-mute)}
+.screen-id.auth{color:var(--purple);border-color:#c4b5fd;background:var(--tip-soft)}
+.screen-id.entry{color:var(--info);border-color:#bfdbfe;background:var(--info-soft)}
+.screen-id.process{color:var(--accent);border-color:var(--accent-line);background:var(--accent-soft)}
+.screen-id.result{color:#0891b2;border-color:#bae6fd;background:#ecfeff}
+.screen-id.output{color:var(--pink);border-color:#fbcfe8;background:#fdf4ff}
+.screen-id.store{color:var(--ok);border-color:#a7f3d0;background:var(--ok-soft)}
+.screen-route{font-family:var(--mono);font-size:10px;color:var(--text-mute);word-break:break-all;text-align:right}
+
+/* === モック内部: meoscope は dark UI のため暗色維持 === */
+.mock{background:#1e1e2e;border:1px solid rgba(251,191,36,.3);border-radius:6px;padding:12px;min-height:160px;font-family:var(--mono);font-size:10.5px;color:#e8ecf5;line-height:1.5;position:relative;overflow:hidden}
+.mock::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#fbbf24,transparent);opacity:.5}
+.mock-title{font-size:11px;font-weight:700;color:#fbbf24;letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px;text-align:center}
+.mock-sub{font-size:9px;color:#6b7390;letter-spacing:.1em;text-align:center;margin-bottom:10px;text-transform:uppercase}
+.mock-divider{height:1px;background:rgba(251,191,36,.2);margin:7px 0}
+.mock-line{display:flex;justify-content:space-between;padding:2px 0;color:#a5adc4;font-size:10px}
+.mock-line .v{color:#fbbf24;font-weight:600}
+.mock-input{border:1px solid rgba(251,191,36,.2);padding:4px 7px;margin:3px 0;color:#6b7390;font-size:9px}
+.mock-input.filled{color:#e8ecf5}
+.mock-btn{border:1px solid #fbbf24;color:#fbbf24;text-align:center;padding:5px;margin-top:6px;font-weight:700;letter-spacing:.08em;font-size:9.5px}
+.mock-btn.solid{background:#fbbf24;color:#000}
+.mock-btn.ghost{border-color:#6b7390;color:#a5adc4}
+.mock-tab{display:inline-block;padding:2px 7px;border:1px solid #6b7390;color:#a5adc4;font-size:9px;margin-right:3px}
+.mock-tab.active{border-color:#fbbf24;color:#fbbf24;background:rgba(251,191,36,.07)}
+.mock-chip{display:inline-block;padding:2px 5px;border:1px solid rgba(251,191,36,.2);font-size:9px;color:#a5adc4;margin:2px 3px 2px 0}
+.mock-step{display:flex;align-items:center;gap:5px;padding:2px 0;font-size:9.5px;color:#a5adc4}
+.mock-step .dot{width:9px;height:9px;border:1px solid #6b7390;display:inline-block;flex-shrink:0}
+.mock-step.done .dot{background:#059669;border-color:#059669}
+.mock-step.active .dot{background:#fbbf24;border-color:#fbbf24}
+.mock-step.done{color:#a5adc4}.mock-step.active{color:#fbbf24}
+.mock-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:3px}
+.mock-kpi{border:1px solid rgba(251,191,36,.2);padding:5px;text-align:center}
+.mock-kpi .num{font-size:13px;color:#fbbf24;font-weight:700;font-family:var(--mono);line-height:1}
+.mock-kpi .lbl{font-size:8px;color:#6b7390;letter-spacing:.08em;margin-top:2px;text-transform:uppercase}
+.mock-chart{height:32px;background:repeating-linear-gradient(90deg,rgba(251,191,36,.15) 0 4px,transparent 4px 10px);border:1px solid rgba(251,191,36,.2);margin:3px 0;position:relative}
+.mock-chart::after{content:"";position:absolute;left:5%;bottom:0;width:90%;height:60%;background:linear-gradient(180deg,transparent,rgba(251,191,36,.2));border-top:1px dashed rgba(251,191,36,.4)}
+.mock-row{display:flex;gap:5px;align-items:center;font-size:9.5px;color:#a5adc4;padding:2px 0;border-bottom:1px dotted rgba(255,255,255,.05)}
+.mock-row .n{font-family:var(--mono);color:#fbbf24;width:13px}
+.mock-row .name{flex:1;color:#e8ecf5}.mock-row .val{color:#6b7390}
+
+.screen-role{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);font-size:12px;color:var(--text-dim)}
+.screen-role strong{display:block;font-weight:700;color:var(--text);margin-bottom:3px;font-size:12.5px}
+.screen-role .src{font-family:var(--mono);font-size:10px;color:var(--text-mute);margin-top:5px;word-break:break-all}
+.transition{display:flex;flex-direction:column;align-items:center;margin:8px 0;position:relative}
+.transition .arrow{width:2px;height:28px;background:var(--border-strong);position:relative}
+.transition .arrow::after{content:"";position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--border-strong)}
+.transition .label{position:absolute;left:calc(50% + 12px);top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:10px;color:var(--accent);white-space:nowrap;letter-spacing:.04em;background:var(--paper-dim);padding:2px 7px;border-radius:4px;border:1px solid var(--border)}
+.branch{position:relative;padding:26px 0 14px}
+.branch-label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--text-mute);text-transform:uppercase;text-align:center;margin-bottom:16px}
+.branch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;position:relative}
+.branch-grid::before{content:"";position:absolute;top:-16px;left:8%;right:8%;height:2px;background:var(--border-strong)}
+.branch-item{position:relative}
+.branch-item::before{content:"";position:absolute;top:-16px;left:50%;width:2px;height:16px;background:var(--border-strong)}
+.sec-transition{padding:24px 0;display:flex;flex-direction:column;align-items:center;gap:5px}
+.sec-transition .big-arrow{width:3px;height:40px;background:var(--border-strong);border-radius:2px;position:relative}
+.sec-transition .big-arrow::after{content:"";position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid var(--border-strong)}
+.sec-transition .lbl{font-family:var(--mono);font-size:11px;color:var(--text-mute);letter-spacing:.08em}
+.mode-notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:20px}
+.mode-note{padding:16px;background:var(--paper);border:1px solid var(--border);border-radius:10px;font-size:13px}
+.mode-note-head{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--accent);margin-bottom:5px;text-transform:uppercase;font-weight:700}
+.mode-note-body{color:var(--text-dim);font-size:12.5px;line-height:1.75}
+.flow-summary{padding:24px;background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:14px;margin-top:20px}
+.flow-summary-title{font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--accent)}
+.flow-summary-title::before{content:"▸";color:var(--accent)}
+.flow-chain{font-family:var(--mono);font-size:12.5px;line-height:2;color:var(--text-dim);word-break:break-all}
+.flow-chain .n{color:var(--accent);font-weight:700}
+.flow-chain .arr{color:var(--gold);margin:0 5px}
+.note{padding:14px 18px;border-radius:10px;margin:14px 0 0;border-left:4px solid;font-size:13px;line-height:1.75}
+.note.info{background:var(--info-soft);border-color:var(--info);color:#1e40af}
+.note.warn{background:var(--warn-soft);border-color:var(--warn);color:#92400e}
+.note strong{display:block;font-weight:700;margin-bottom:4px;font-size:12px;text-transform:none;letter-spacing:0;color:inherit}
+.note code{background:rgba(0,0,0,.07);color:inherit;border:none;padding:1px 4px;border-radius:3px;font-family:var(--mono);font-size:.88em}
+@media(max-width:760px){.screen{flex:1 1 100%}.branch-grid::before{display:none}.branch-item::before{display:none}}
+footer{padding:28px 0 44px;text-align:center;color:var(--text-mute);font-size:13px;border-top:1px solid var(--border)}
+footer code{font-family:var(--mono);color:var(--accent)}
+
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-inner">
+      <a class="topbar-back" href="../index.html">← 一覧に戻る</a>
+      <span class="topbar-tag flow">画面遷移図</span>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="container">
+    <div class="breadcrumb">post-pilot / proposals / MEOサービス / <code>meoscope</code> / screen-flow</div>
+    <h1 class="hero-title">meoscope<br><span class="grad">Screen Flow</span></h1>
+    <p class="hero-sub">開発中（本番確認可）の MEO 分析ツール「meoscope」(<code>meoscope.com</code>) の画面遷移のみを抜粋。Google サインインから分析実行・ダッシュボード閲覧・PDF 出力・履歴閲覧まで、実装ファイル (<code>src/app/**/page.tsx</code>) と 1:1 で対応。</p>
+    <div class="meta">
+      <span class="meta-tag ok">Next.js 16 App Router</span>
+      <span class="meta-tag ok">Routes: 6 画面 + 1 分岐</span>
+      <span class="meta-tag">Verified: 2026-05-26</span>
+    </div>
+
+    <div class="legend">
+      <div class="legend-title">画面の役割 (色分け)</div>
+      <div class="legend-row">
+        <div class="legend-item"><span class="legend-chip auth"></span>認証</div>
+        <div class="legend-item"><span class="legend-chip entry"></span>入口・選択</div>
+        <div class="legend-item"><span class="legend-chip process"></span>処理進行</div>
+        <div class="legend-item"><span class="legend-chip result"></span>結果表示</div>
+        <div class="legend-item"><span class="legend-chip output"></span>出力</div>
+        <div class="legend-item"><span class="legend-chip store"></span>蓄積</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================= -->
+<!-- STAGE 1: AUTH -->
+<!-- ============================================= -->
+<section>
+  <div class="container">
+    <h2><span class="sec-num">01</span>認証 <span class="sec-route">/  (未認証時)</span></h2>
+    <p class="sec-desc">トップを開いた瞬間に <code>getCurrentUser()</code> でセッション判定。未認証なら <code>&lt;LoginPanel/&gt;</code>、認証済みなら <code>&lt;StartForm/&gt;</code> が表示されるため、ログイン専用画面は存在せず同一ルート上で切替わる。</p>
+
+    <div class="stage">
+      <div class="screen auth">
+        <div class="screen-head">
+          <span class="screen-id auth">L0 LOGIN</span>
+          <span class="screen-route">/ (unauthenticated)</span>
+        </div>
+        <div class="mock">
+          <div class="mock-title">🔭 meoscope</div>
+          <div class="mock-sub">MEO 競合・市場分析ツール</div>
+          <div class="mock-divider"></div>
+          <div style="text-align:center;color:#a5adc4;font-size:10px;padding:8px 0">サインインしてください</div>
+          <div class="mock-btn solid">G　Google でサインイン</div>
+          <div style="text-align:center;color:#6b7390;font-size:9px;margin-top:10px">許可されたメールのみ利用可</div>
+        </div>
+        <div class="screen-role">
+          <strong>役割</strong>
+          Firebase Google Sign-In → ID Token → <code>__session</code> Cookie (14d) → <code>meoscope.users</code> ホワイトリスト判定。未登録は 401。
+          <div class="src">src/components/auth/LoginPanel.tsx · src/lib/auth/session.ts</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-transition">
+      <div class="lbl">サインイン成功</div>
+      <div class="big-arrow"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<!-- STAGE 2: S1 START -->
+<!-- ============================================= -->
+<section>
+  <div class="container">
+    <h2><span class="sec-num">02</span>S1 分析開始 <span class="sec-route">/  (authenticated)</span></h2>
+    <p class="sec-desc">3 つの導線（企業名・地図選択・エリア＋業種）を 1 画面に集約。タブ切替で分析モードが決まり <code>POST /api/analyze</code> の payload mode が変わる。フッタから履歴・運用画面に遷移可。</p>
+
+    <div class="stage">
+      <div class="screen entry">
+        <div class="screen-head">
+          <span class="screen-id entry">S1 START</span>
+          <span class="screen-route">/ (authenticated)</span>
+        </div>
+        <div class="mock">
+          <div class="mock-title">🔭 meoscope</div>
+          <div class="mock-sub">分析を開始</div>
+          <div style="margin:8px 0">
+            <span class="mock-tab active">企業名</span>
+            <span class="mock-tab">地図選択</span>
+            <span class="mock-tab">エリア+業種</span>
+          </div>
+          <div class="mock-input filled">児玉化学工業</div>
+          <div class="mock-input">エリア (任意)</div>
+          <div class="mock-input">業種ヒント (任意)</div>
+          <div class="mock-btn solid">▶ 分析開始</div>
+          <div style="display:flex;gap:6px;margin-top:10px">
+            <div class="mock-btn ghost" style="flex:1;margin-top:0;font-size:8.5px">🗂️ 履歴</div>
+            <div class="mock-btn ghost" style="flex:1;margin-top:0;font-size:8.5px">⚙️ 運用</div>
+          </div>
+        </div>
+        <div class="screen-role">
+          <strong>役割</strong>
+          3 モード択一 → <code>POST /api/analyze</code> 発火 → SSE 接続を <code>/analyze</code> へ持っていく。
+          <div class="src">src/app/page.tsx · src/components/start/StartForm.tsx</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mode-notes">
+      <div class="mode-note">
+        <div class="mode-note-head">▸ name モード</div>
+        <div class="mode-note-body">企業名から場所を解決。候補が複数なら <strong>S1.5 候補選択</strong> へ。候補単一なら S2 直行。</div>
+      </div>
+      <div class="mode-note">
+        <div class="mode-note-head">▸ map モード</div>
+        <div class="mode-note-body">MapLibre でクリックした座標を <code>target</code> として確定 → S2 直行。</div>
+      </div>
+      <div class="mode-note">
+        <div class="mode-note-head">▸ area モード</div>
+        <div class="mode-note-body">エリア＋業種を指定。仮想市場として分析 → S2 直行 → S3 は市場戦略示唆ビュー。</div>
+      </div>
+    </div>
+
+    <div class="sec-transition">
+      <div class="lbl">analyze 発火</div>
+      <div class="big-arrow"></div>
+    </div>
+
+    <div class="branch">
+      <div class="branch-label">― name モードのみ候補数で分岐 ―</div>
+      <div class="branch-grid">
+        <!-- 候補単一: 直接 S2 -->
+        <div class="branch-item">
+          <div class="screen entry" style="border-color:rgba(59,130,246,.3)">
+            <div class="screen-head">
+              <span class="screen-id entry">候補 1 件</span>
+              <span class="screen-route">→ /analyze 直行</span>
+            </div>
+            <div class="mock">
+              <div class="mock-title">SSE: candidates=1</div>
+              <div class="mock-divider"></div>
+              <div class="mock-line"><span>match:</span><span class="v">児玉化学工業 (足柄)</span></div>
+              <div class="mock-line"><span>confidence:</span><span class="v">high</span></div>
+              <div class="mock-divider"></div>
+              <div style="text-align:center;color:var(--gold);font-size:10px;margin-top:8px">▶ 自動で S2 へ</div>
+            </div>
+            <div class="screen-role">
+              <strong>挙動</strong>
+              候補 1 件確定 → <code>type:'matched'</code> 受領 → そのまま分析パイプライン継続。
+            </div>
+          </div>
+        </div>
+
+        <!-- 候補複数: /select -->
+        <div class="branch-item">
+          <div class="screen entry" style="border-color:rgba(168,85,247,.3)">
+            <div class="screen-head">
+              <span class="screen-id entry" style="color:var(--purple)">S1.5 SELECT</span>
+              <span class="screen-route">/select</span>
+            </div>
+            <div class="mock">
+              <div class="mock-title">🔍 候補の選択</div>
+              <div class="mock-sub">複数ヒットしました</div>
+              <div class="mock-row"><span class="n">①</span><span class="name">児玉化学工業 (足柄上郡)</span><span class="val">⭐ 4.2</span></div>
+              <div class="mock-row"><span class="n">②</span><span class="name">児玉化学 (横浜営業所)</span><span class="val">⭐ 3.8</span></div>
+              <div class="mock-row"><span class="n">③</span><span class="name">児玉化学工業 (関西)</span><span class="val">⭐ —</span></div>
+              <div class="mock-btn solid">この候補で再分析</div>
+            </div>
+            <div class="screen-role">
+              <strong>挙動</strong>
+              <code>type:'candidates'</code> 受領 → sessionStorage に保持 → <code>/select</code> redirect → 選択後 <code>POST /api/analyze</code> 再発火。
+              <div class="src">src/app/select/page.tsx · src/components/start/CandidateSelectorClient.tsx</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-transition">
+      <div class="lbl">確定 → 分析実行</div>
+      <div class="big-arrow"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<!-- STAGE 3: S2 PROGRESS -->
+<!-- ============================================= -->
+<section>
+  <div class="container">
+    <h2><span class="sec-num">03</span>S2 分析進捗 <span class="sec-route">/analyze</span></h2>
+    <p class="sec-desc">8 ステップを SSE で逐次受信。各ステップを円形チェーン UI で表示。途中 <code>step:warn</code> は黄色注記、<code>step:error</code> は赤字。完了時に <code>reportId</code> を受け取り <code>/dashboard/[id]</code> へ自動遷移。</p>
+
+    <div class="stage">
+      <div class="screen process">
+        <div class="screen-head">
+          <span class="screen-id process">S2 PROGRESS</span>
+          <span class="screen-route">/analyze</span>
+        </div>
+        <div class="mock">
+          <div class="mock-title">🔭 分析中</div>
+          <div class="mock-sub">8 ステップで解析しています</div>
+          <div class="mock-step done"><span class="dot"></span>1. 対象企業特定</div>
+          <div class="mock-step done"><span class="dot"></span>2. 競合抽出 (Overpass)</div>
+          <div class="mock-step done"><span class="dot"></span>3. 評判取得 (Places)</div>
+          <div class="mock-step done"><span class="dot"></span>4. デジタル存在感</div>
+          <div class="mock-step active"><span class="dot"></span>5. 定量分析 ●</div>
+          <div class="mock-step"><span class="dot"></span>6. ポジション判定</div>
+          <div class="mock-step"><span class="dot"></span>7. SWOT 生成</div>
+          <div class="mock-step"><span class="dot"></span>8. AI 提案</div>
+        </div>
+        <div class="screen-role">
+          <strong>役割</strong>
+          SSE で <code>step:progress / step:warn / step:error</code> を流す。Claude 2 回呼びの体感数分。完了時 <code>type:'done'</code> + <code>reportId</code> 受領で次画面へ。
+          <div class="src">src/app/analyze/page.tsx · src/components/progress/ProgressView.tsx · src/app/api/analyze/route.ts</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-transition">
+      <div class="lbl">done · reportId</div>
+      <div class="big-arrow"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<!-- STAGE 4: S3 DASHBOARD -->
+<!-- ============================================= -->
+<section>
+  <div class="container">
+    <h2><span class="sec-num">04</span>S3 ダッシュボード <span class="sec-route">/dashboard/[id]</span></h2>
+    <p class="sec-desc">分析結果の本体。「次の一手」ブロック最上部 + KPI カード 4 枚 + ECharts 9 種 + 競合密度 MapLibre heatmap + SWOT 4 象限。area モード時は市場戦略示唆ビューに表示制御が切替わる。</p>
+
+    <div class="stage">
+      <div class="screen result">
+        <div class="screen-head">
+          <span class="screen-id result">S3 DASHBOARD</span>
+          <span class="screen-route">/dashboard/[id]</span>
+        </div>
+        <div class="mock">
+          <div class="mock-title">📊 分析対象 / 児玉化学工業</div>
+          <div style="border:1px solid var(--gold);padding:7px;margin:6px 0;background:rgba(251,191,36,.08)">
+            <div style="color:var(--gold);font-size:9px;letter-spacing:.12em">▸ 次の一手</div>
+            <div style="color:#e8ecf5;font-size:10.5px;margin-top:3px">公式サイトに製品事例ページを追加し...</div>
+          </div>
+          <div class="mock-grid">
+            <div class="mock-kpi"><div class="num">72</div><div class="lbl">総合</div></div>
+            <div class="mock-kpi"><div class="num">11</div><div class="lbl">競合数</div></div>
+            <div class="mock-kpi"><div class="num">中</div><div class="lbl">飽和度</div></div>
+            <div class="mock-kpi"><div class="num">2位</div><div class="lbl">地位</div></div>
+          </div>
+          <div class="mock-chart"></div>
+          <div style="display:flex;gap:5px;margin-top:6px">
+            <span class="mock-chip">SWOT</span>
+            <span class="mock-chip">密度MAP</span>
+            <span class="mock-chip">提案</span>
+          </div>
+        </div>
+        <div class="screen-role">
+          <strong>役割</strong>
+          KPI + 9 チャート + 「次の一手」+ SWOT + 提案リストを 1 画面で。PDF / Excel への導線をフッタに配置。
+          <div class="src">src/app/dashboard/[id]/page.tsx · src/components/dashboard/*</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-transition">
+      <div class="lbl">出力 or 履歴へ</div>
+      <div class="big-arrow"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<!-- STAGE 5: OUTPUT -->
+<!-- ============================================= -->
+<section>
+  <div class="container">
+    <h2><span class="sec-num">05</span>出力 <span class="sec-route">/dashboard/[id]/print  ·  /api/report/pdf  ·  /api/report/excel</span></h2>
+    <p class="sec-desc">S3 から PDF / Excel を生成。PDF はブラウザの Ctrl+P または Playwright サーバーサイドレンダリング (現状は印刷ページ + Ctrl+P UX が正)。Excel は ExcelJS でサーバー生成。</p>
+
+    <div class="branch">
+      <div class="branch-grid">
+        <div class="branch-item">
+          <div class="screen output">
+            <div class="screen-head">
+              <span class="screen-id output">S4-P PRINT</span>
+              <span class="screen-route">/dashboard/[id]/print</span>
+            </div>
+            <div class="mock">
+              <div class="mock-title">📄 印刷プレビュー</div>
+              <div class="mock-sub">A4 multi-page · @media print</div>
+              <div class="mock-divider"></div>
+              <div style="border:1px dashed var(--border-screen);padding:8px;margin:4px 0">
+                <div style="font-size:9.5px;color:var(--gold);text-align:center;margin-bottom:5px">— Page 1 / N —</div>
+                <div class="mock-line"><span>分析対象:</span><span class="v">児玉化学工業</span></div>
+                <div class="mock-line"><span>総合スコア:</span><span class="v">72</span></div>
+              </div>
+              <div class="mock-btn solid">⌘ + P で PDF 保存</div>
+            </div>
+            <div class="screen-role">
+              <strong>役割</strong>
+              ブラウザの Ctrl+P で PDF 化。サーバーサイドは Playwright + chromium-min が同じページを headless でレンダリング → Vercel Blob 保存も可。
+              <div class="src">src/app/dashboard/[id]/print/page.tsx · src/app/api/report/pdf/route.ts</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="branch-item">
+          <div class="screen output">
+            <div class="screen-head">
+              <span class="screen-id output">S4-X EXCEL</span>
+              <span class="screen-route">/api/report/excel</span>
+            </div>
+            <div class="mock">
+              <div class="mock-title">📊 Excel ダウンロード</div>
+              <div class="mock-sub">ExcelJS · 集計値中心</div>
+              <div class="mock-divider"></div>
+              <div class="mock-row"><span class="n">A</span><span class="name">KPI サマリ</span><span class="val">sheet1</span></div>
+              <div class="mock-row"><span class="n">B</span><span class="name">競合一覧</span><span class="val">sheet2</span></div>
+              <div class="mock-row"><span class="n">C</span><span class="name">SWOT</span><span class="val">sheet3</span></div>
+              <div class="mock-row"><span class="n">D</span><span class="name">提案</span><span class="val">sheet4</span></div>
+              <div class="mock-btn solid">⬇ ダウンロード</div>
+            </div>
+            <div class="screen-role">
+              <strong>役割</strong>
+              生 POI ダンプを避け集計値中心（ODbL 派生 DB 化回避）。POST 1 発で .xlsx 直返却。
+              <div class="src">src/app/api/report/excel/route.ts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<!-- STAGE 6: HISTORY -->
+<!-- ============================================= -->
+<section>
+  <div class="container">
+    <h2><span class="sec-num">06</span>S5 履歴 <span class="sec-route">/history</span></h2>
+    <p class="sec-desc">過去の分析レポート一覧。IndexedDB (ブラウザローカル) + Vercel Blob (サーバー側ユーザー別フォルダ) の二段保管。クリックで <code>/dashboard/[id]</code> に再遷移して再閲覧可。</p>
+
+    <div class="stage">
+      <div class="screen store">
+        <div class="screen-head">
+          <span class="screen-id store">S5 HISTORY</span>
+          <span class="screen-route">/history</span>
+        </div>
+        <div class="mock">
+          <div class="mock-title">🗂️ 履歴</div>
+          <div class="mock-sub">過去の分析レポート</div>
+          <div class="mock-row"><span class="n">▸</span><span class="name">児玉化学工業</span><span class="val">05-26</span></div>
+          <div class="mock-row"><span class="n">▸</span><span class="name">小田原 / 美容室</span><span class="val">05-25</span></div>
+          <div class="mock-row"><span class="n">▸</span><span class="name">Iwasaki cafe (鳥取)</span><span class="val">05-24</span></div>
+          <div class="mock-row"><span class="n">▸</span><span class="name">藤沢 / カフェ市場</span><span class="val">05-23</span></div>
+          <div class="mock-btn ghost">→ 行クリックで S3 へ再遷移</div>
+        </div>
+        <div class="screen-role">
+          <strong>役割</strong>
+          IndexedDB のローカル一覧 + サーバー側 Blob の同期。クリックで該当 <code>reportId</code> の S3 を再構築。
+          <div class="src">src/app/history/page.tsx · src/components/history/HistoryList.tsx · src/lib/history/*</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note info">
+      <strong>S5 ↔ S3 の往復</strong>
+      履歴行クリックで S3 を再構築（再分析は走らない・派生レポートのみ保管）。Places の rating/口コミは規約上非保存なので S3 上は「保管時点で削除済」表記になる場合あり。
+    </div>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<!-- FULL FLOW SUMMARY -->
+<!-- ============================================= -->
+<section>
+  <div class="container">
+    <h2><span class="sec-num">SUM</span>遷移チェーンまとめ</h2>
+    <p class="sec-desc">主要 1 ジョブを 1 行で。途中分岐は括弧内に。</p>
+
+    <div class="flow-summary">
+      <div class="flow-summary-title">分析 1 ジョブの動線</div>
+      <div class="flow-chain">
+        <span class="n">L0</span> ログイン<span class="arr">→</span>
+        <span class="n">S1</span> 分析開始 (name/map/area)<span class="arr">→</span>
+        (候補複数なら <span class="n">S1.5</span> /select<span class="arr">→</span>)
+        <span class="n">S2</span> /analyze SSE 8 ステップ<span class="arr">→</span>
+        <span class="n">S3</span> /dashboard/[id]<span class="arr">→</span>
+        <span class="n">S4-P</span> /print (Ctrl+P) もしくは <span class="n">S4-X</span> /api/report/excel<span class="arr">→</span>
+        DM / 提案書に添付
+      </div>
+    </div>
+
+    <div class="flow-summary" style="margin-top:18px">
+      <div class="flow-summary-title">再閲覧の動線</div>
+      <div class="flow-chain">
+        <span class="n">L0</span> ログイン<span class="arr">→</span>
+        <span class="n">S5</span> /history<span class="arr">→</span>
+        行クリック<span class="arr">→</span>
+        <span class="n">S3</span> /dashboard/[id]<span class="arr">→</span>
+        必要なら <span class="n">S4</span> 出力
+      </div>
+    </div>
+
+    <div class="note warn">
+      <strong>本資料の対象外</strong>
+      管理用ルート (<code>/admin</code> · <code>/admin/users</code>) と内部 API ルート (<code>/api/analyze</code> · <code>/api/report/pdf</code> 等) は遷移図から除外。エンドユーザー(=営業担当)が日常的に踏む画面のみを抜粋している。
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    post-pilot ｜ meoscope screen-flow ｜ 実コード裏取り済 (<code>src/app/**/page.tsx</code>) ｜ 2026-05-26
+  </div>
+</footer>
+
+</body>
+</html>

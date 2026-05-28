@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<!-- 2026-05-26 claude-opus-4-7 セッションターン数：4 社内向け / クライアント向け 2セクション化 -->
+<!-- 2026-05-26 20:15:00 claude-opus-4-7 セッションターン数：30 technical 3 枚（コスト試算含む）をクライアント向け→社内向けへ移動 -->
+<!-- 2026-05-26 claude-opus-4-7 セッションターン数：6 — タイトル「一覧」を grad span 内に含め全文字グラデ統一 -->
+<!-- 2026-05-28 claude-opus-4-7 セッションターン数：5 — ダークテーマ → 資料体裁ライトテーマへ統一（doc.css 共通CSS化） -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="auth.js"></script>
+<meta name="robots" content="noindex,nofollow">
+<title>Post-Pilot 提案資料一覧</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/doc.css">
+<style>
+  /* ページ固有: 料金早見表バナー */
+  .svcmap-banner{display:flex;align-items:center;gap:20px;padding:22px 28px;background:var(--paper);border:1px solid var(--border);border-left:5px solid var(--info);border-radius:14px;text-decoration:none;color:inherit;transition:box-shadow .2s;flex-wrap:wrap;margin-bottom:8px}
+  .svcmap-banner:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
+  .svcmap-icon{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:14px;font-size:26px;background:var(--info-soft);border:1px solid #bfdbfe;flex-shrink:0}
+  .svcmap-body{flex:1;min-width:200px}
+  .svcmap-title{font-size:18px;font-weight:900;margin-bottom:4px}
+  .svcmap-desc{font-size:13px;color:var(--text-dim);line-height:1.65}
+  .svcmap-btn{padding:10px 22px;background:var(--info-soft);border:1px solid #bfdbfe;border-radius:999px;font-size:13px;font-weight:700;color:var(--info);white-space:nowrap}
+  @media(max-width:540px){.svcmap-btn{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero center">
+  <div class="container wide">
+    <span class="hero-badge">POST-PILOT / PROPOSALS</span>
+    <h1 class="hero-title">提案資料一覧</h1>
+    <p class="hero-sub">SNS 投稿自動化と Google マップ（MEO）の各プランの資料一覧。社内マニュアル（使い方説明書）と顧客向け提案資料に分けています。</p>
+  </div>
+</header>
+
+<main>
+<div class="container wide">
+
+  <!-- 料金早見表 -->
+  <!-- 2026-05-28 claude-opus-4-7 セッションターン数：1 — 全集客サービス料金早見表への導線を最上段に新設 -->
+  <a class="svcmap-banner" href="service-map.html">
+    <span class="svcmap-icon">🗺</span>
+    <div class="svcmap-body">
+      <div class="svcmap-title">集客サービス 料金早見表</div>
+      <div class="svcmap-desc">動画・SNS投稿・MEO・LINE の全パッケージと価格を 1 枚で。「どれがいくら？」がパッと分かります。</div>
+    </div>
+    <span class="svcmap-btn">早見表を開く →</span>
+  </a>
+
+  <!-- 社内向け -->
+  <section class="audience internal">
+    <div class="audience-head">
+      <span class="audience-pill">🏛</span>
+      <div>
+        <div class="audience-title">社内向け（使い方マニュアル）</div>
+        <div class="audience-desc">リアンの職員・利用者がツールを日々使うための操作マニュアル</div>
+      </div>
+    </div>
+
+    <div class="cat">
+      <div class="cat-head">
+        <span class="cat-pill sns">S</span>
+        <div>
+          <div class="cat-title">SNS 投稿</div>
+          <!-- 2026-05-28 claude-opus-4-7 セッションターン数：3 — ジモティを営業ツール扱いに整合 -->
+          <div class="cat-desc">X・Threads・LINE 投稿プランの社内検討（ジモティは営業ツール）</div>
+        </div>
+      </div>
+
+      <div class="plan">
+        <div class="plan-name">簡単投稿プラン</div>
+        <div class="doc-grid">
+          <a class="doc-card internal" href="sns/kantan-tokoo-internal.html">
+            <span class="doc-tag internal">使い方マニュアル</span>
+            <div class="doc-title">簡単投稿プラン の使い方</div>
+            <div class="doc-desc">毎日の操作／職員代行と利用者投稿の 2 パターン／写真の選び方</div>
+          </a>
+          <a class="doc-card tech" href="sns/kantan-tokoo-technical.html">
+            <span class="doc-tag tech">技術仕様 ＋ コスト</span>
+            <div class="doc-title">簡単投稿プラン の技術スタック</div>
+            <div class="doc-desc">使用ライブラリ・データフロー・コスト試算（経営層向け）</div>
+          </a>
+        </div>
+      </div>
+
+      <div class="plan">
+        <div class="plan-name">盛り盛り MAX プラン</div>
+        <div class="doc-grid">
+          <a class="doc-card internal" href="sns/morimori-max-internal.html">
+            <span class="doc-tag internal">使い方マニュアル</span>
+            <div class="doc-title">盛り盛り MAX プラン の使い方</div>
+            <div class="doc-desc">初期セットアップ／毎日の承認フロー／ジモティ営業活用／月次レポート</div>
+          </a>
+          <a class="doc-card tech" href="sns/morimori-max-technical.html">
+            <span class="doc-tag tech">技術仕様 ＋ コスト</span>
+            <div class="doc-title">盛り盛り MAX プラン の技術スタック</div>
+            <div class="doc-desc">アーキテクチャ・連携 API・運用コスト内訳（経営層向け）</div>
+          </a>
+        </div>
+      </div>
+    </div><!-- /cat SNS -->
+
+    <div class="cat">
+      <div class="cat-head">
+        <span class="cat-pill meo">M</span>
+        <div>
+          <div class="cat-title">MEO サービス</div>
+          <div class="cat-desc">マップ動画 ＋ meoscope 診断の社内検討</div>
+        </div>
+      </div>
+      <div class="doc-grid">
+        <a class="doc-card internal" href="meo/meo-package-internal.html">
+          <span class="doc-tag internal">使い方マニュアル</span>
+          <div class="doc-title">meoscope の使い方 — リアン職員向け</div>
+          <div class="doc-desc">ログイン／分析手順／結果の見方／PDF 保存／営業ツールとしての活用／90 日後の再分析</div>
+        </a>
+        <a class="doc-card tech" href="meo/meo-package-technical.html">
+          <span class="doc-tag tech">技術仕様 ＋ コスト</span>
+          <div class="doc-title">meoscope ＋ 動画パッケージ の技術スタック</div>
+          <div class="doc-desc">動画自動生成 + MEO 診断レポートを支える技術と運用コスト（経営層向け）</div>
+        </a>
+      </div>
+    </div><!-- /cat MEO -->
+
+  </section><!-- /audience internal -->
+
+  <div class="divider"></div>
+
+  <!-- クライアント向け -->
+  <section class="audience client" style="padding-top:0">
+    <div class="audience-head client" style="margin-top:36px">
+      <span class="audience-pill">🌐</span>
+      <div>
+        <div class="audience-title">クライアント向け</div>
+        <div class="audience-desc">お客さん提示用の提案資料・サンプル</div>
+      </div>
+    </div>
+
+    <div class="cat">
+      <div class="cat-head">
+        <span class="cat-pill sns">S</span>
+        <div>
+          <div class="cat-title">SNS 投稿</div>
+          <div class="cat-desc">X（Twitter）・Threads の下書き生成 / 自動投稿プラン</div>
+        </div>
+      </div>
+
+      <div class="plan">
+        <div class="plan-name">簡単投稿プラン</div>
+        <div class="doc-grid">
+          <a class="doc-card proposal" href="sns/kantan-tokoo-presentation.html">
+            <span class="doc-tag proposal">提案資料</span>
+            <div class="doc-title">プラン概要</div>
+            <div class="doc-desc">下書きが毎日揃う・ボタンひとつで投稿する仕組みを紹介する顧客向け資料</div>
+          </a>
+          <!-- 2026-05-28 claude-opus-4-7 セッションターン数：4 — 遷移先を実装済みツール /post-pilot-kantan/ へ変更 -->
+          <a class="doc-card sample" href="/post-pilot-kantan/">
+            <span class="doc-tag sample">サンプル</span>
+            <div class="doc-title">今日の3案</div>
+            <div class="doc-desc">実際に生成される下書きサンプル。プラン概要から導線あり</div>
+          </a>
+        </div>
+      </div>
+
+      <div class="plan">
+        <div class="plan-name">盛り盛りMAXプラン</div>
+        <div class="doc-grid">
+          <a class="doc-card proposal" href="sns/morimori-max-presentation.html">
+            <span class="doc-tag proposal">提案資料</span>
+            <div class="doc-title">プラン概要</div>
+            <div class="doc-desc">X・Threads 自動投稿システムの全体像と提供価値を示す顧客向け資料</div>
+          </a>
+          <a class="doc-card form" href="sns/morimori-max-consult.html">
+            <span class="doc-tag form">無料相談</span>
+            <div class="doc-title">相談フォーム</div>
+            <div class="doc-desc">プラン概要から到達する無料相談フォームのデモ画面</div>
+          </a>
+        </div>
+      </div>
+    </div><!-- /cat SNS -->
+
+    <div class="cat">
+      <div class="cat-head">
+        <span class="cat-pill meo">M</span>
+        <div>
+          <div class="cat-title">MEO サービス</div>
+          <div class="cat-desc">Google マップ運用 × meoscope（ローカル検索分析ツール）</div>
+        </div>
+      </div>
+
+      <div class="plan">
+        <div class="plan-name">Google マップサービス × meoscope</div>
+        <div class="doc-grid">
+          <a class="doc-card proposal" href="meo/meo-package-presentation.html">
+            <span class="doc-tag proposal">社内提案</span>
+            <div class="doc-title">パッケージ提案</div>
+            <div class="doc-desc">動画 + MEO 診断まるごとパッケージの全体構想と訴求ポイント</div>
+          </a>
+          <a class="doc-card flow" href="meo/meoscope-screen-flow.html">
+            <span class="doc-tag flow">画面遷移</span>
+            <div class="doc-title">meoscope 画面遷移図</div>
+            <div class="doc-desc">分析ツール本体の画面構成と UX フローの社内資料</div>
+          </a>
+        </div>
+      </div>
+    </div><!-- /cat MEO -->
+
+  </section><!-- /audience client -->
+
+</div>
+</main>
+
+<footer>
+  <div class="container wide">
+    社内・関係者向け資料です ｜ <a href="https://kojinius.jp/">kojinius.jp</a> ／ Post-Pilot プロジェクト
+  </div>
+</footer>
+
+</body>
+</html>

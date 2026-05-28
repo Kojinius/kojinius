@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<!-- 2026-05-26 claude-opus-4-7 セッションターン数：18 — 盛り盛りMAX 相談フォーム画面新規作成（送信ダミー / サンクス画面遷移） -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../auth.js"></script>
+<title>無料相談 — 盛り盛りMAXプラン</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/doc.css">
+<style>
+/* 2026-05-28 claude-opus-4-7 セッションターン数：5 — ダーク→ライトテーマ（consult フォーム） */
+:root{
+  --bg:#f7f5f0;--paper:#fff;--paper-dim:#fafaf9;
+  --text:#1f2937;--text-dim:#4b5563;--text-mute:#9ca3af;
+  --border:#e5e7eb;--border-strong:#d1d5db;
+  --accent:#059669;--accent-soft:#ecfdf5;--accent-line:#34d399;
+  --tip:#7c3aed;
+  --warn:#d97706;--warn-soft:#fffbeb;
+  --ng:#dc2626;
+  --info:#2563eb;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:"Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.85;-webkit-font-smoothing:antialiased;min-height:100vh}
+body::before{display:none}
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+@media(max-width:640px){.container{padding:0 16px}}
+header.top{padding:14px 0;border-bottom:1px solid var(--border);margin-bottom:36px;background:var(--paper)}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:16px;color:var(--text)}
+.brand-dot{width:26px;height:26px;border-radius:7px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff}
+.brand small{display:block;font-size:10px;font-weight:500;color:var(--text-mute);letter-spacing:.08em;margin-top:1px}
+.top-badge{padding:7px 16px;background:var(--warn-soft);color:#92400e;font-weight:700;border-radius:999px;font-size:12px;border:1px solid #fde68a}
+.hero{text-align:center;margin-bottom:36px}
+.hero h1{font-size:clamp(24px,4vw,38px);font-weight:900;letter-spacing:-.02em;margin-bottom:12px;line-height:1.25;color:var(--text)}
+.hero h1 .grad{background:linear-gradient(135deg,var(--accent),var(--info));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--text-dim);font-size:15px;max-width:600px;margin:0 auto;line-height:1.8}
+.hero-stats{display:flex;justify-content:center;gap:24px;margin-top:18px;flex-wrap:wrap}
+.hero-stat{display:flex;flex-direction:column;align-items:center;gap:4px}
+.hero-stat strong{font-size:20px;font-weight:900;color:var(--accent);line-height:1}
+.hero-stat span{font-size:11px;color:var(--text-mute);letter-spacing:.06em}
+main.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:24px;margin-bottom:48px}
+@media(max-width:880px){main.grid{grid-template-columns:1fr}}
+.form-card{padding:28px;background:var(--paper);border:1px solid var(--border);border-radius:16px}
+.form-card h2{font-size:18px;font-weight:900;margin-bottom:5px;color:var(--text)}
+.form-card .form-sub{color:var(--text-dim);font-size:13px;margin-bottom:20px}
+.field{margin-bottom:15px}
+.field label{display:block;font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px}
+.field label .req{color:var(--ng);margin-left:4px;font-weight:900;font-size:12px}
+.field label .opt{color:var(--text-mute);font-size:11px;font-weight:400;margin-left:5px}
+.field input[type="text"],
+.field input[type="email"],
+.field input[type="tel"],
+.field select,
+.field textarea{width:100%;padding:10px 14px;background:var(--paper);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:14px;transition:border-color .15s,box-shadow .15s;line-height:1.5;-webkit-appearance:none;appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.field textarea{resize:vertical;min-height:90px}
+.field select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%239ca3af' d='M6 8L0 0h12z'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.field-grid{grid-template-columns:1fr}}
+.checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:7px;margin-top:4px}
+.check{padding:10px 12px;background:var(--paper);border:1.5px solid var(--border);border-radius:8px;display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;transition:all .15s;color:var(--text)}
+.check:hover{border-color:var(--accent);background:var(--accent-soft)}
+.check input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer}
+.check:has(input:checked){border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.form-actions{margin-top:22px;padding-top:18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.form-actions .note{font-size:12px;color:var(--text-mute);flex:1;min-width:180px;line-height:1.65}
+.submit-btn{padding:13px 30px;background:var(--accent);color:#fff;font-weight:900;border-radius:999px;border:none;font-size:14px;cursor:pointer;font-family:inherit;transition:background .15s;letter-spacing:.03em}
+.submit-btn:hover{background:#047857}
+.submit-btn:disabled{opacity:.6;cursor:not-allowed}
+.aside{display:flex;flex-direction:column;gap:16px}
+.side-card{padding:20px;background:var(--paper);border:1px solid var(--border);border-radius:14px}
+.side-card.featured{background:var(--accent-soft);border-color:var(--accent-line)}
+.side-card h3{font-size:14px;font-weight:900;margin-bottom:12px;display:flex;align-items:center;gap:7px;color:var(--text)}
+.side-card h3 .ico{width:24px;height:24px;border-radius:7px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--accent)}
+.side-card ul{list-style:none;font-size:13px;color:var(--text-dim)}
+.side-card li{padding:5px 0;display:flex;align-items:flex-start;gap:7px;line-height:1.65}
+.side-card li::before{content:"✓";color:var(--accent);font-weight:900;flex-shrink:0;font-size:13px}
+.price-row{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px dashed var(--border);font-size:13px}
+.price-row:last-child{border-bottom:none}
+.price-row .label{color:var(--text-dim)}
+.price-row .val{font-family:var(--mono);color:var(--text);font-weight:700}
+.price-row .val.accent{color:var(--accent);font-size:16px}
+.faq-mini{font-size:12px;color:var(--text-dim);padding:9px 0;border-bottom:1px dashed var(--border);line-height:1.65}
+.faq-mini:last-child{border-bottom:none}
+.faq-mini strong{color:var(--text);font-weight:700;display:block;margin-bottom:3px;font-size:12.5px}
+.thanks{padding:48px 32px;background:var(--paper);border:2px solid var(--accent);border-radius:20px;text-align:center;max-width:640px;margin:0 auto 60px}
+.thanks .ok-icon{width:64px;height:64px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 18px;color:#fff}
+.thanks h2{font-size:clamp(20px,3vw,28px);font-weight:900;margin-bottom:12px;color:var(--text)}
+.thanks p{color:var(--text-dim);font-size:15px;max-width:440px;margin:0 auto 18px;line-height:1.85}
+.thanks .summary-box{padding:16px;background:var(--paper-dim);border:1px solid var(--border);border-radius:10px;text-align:left;font-size:12.5px;color:var(--text-dim);margin-bottom:18px;font-family:var(--mono);line-height:1.75}
+.thanks .summary-box strong{color:var(--text)}
+.thanks .back-btn{display:inline-block;padding:12px 26px;background:var(--paper);border:1px solid var(--border);color:var(--text-dim);text-decoration:none;border-radius:999px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:all .15s}
+.thanks .back-btn:hover{border-color:var(--accent);color:var(--accent)}
+footer{padding:24px 0 40px;text-align:center;color:var(--text-mute);font-size:12px;border-top:1px solid var(--border)}
+footer a{color:var(--accent);text-decoration:none}
+.hidden{display:none!important}
+
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-inner">
+      <a class="topbar-back" href="../index.html">← 一覧に戻る</a>
+      <span class="topbar-tag form">無料相談</span>
+    </div>
+  </div>
+</div>
+
+<header class="top">
+  <div class="container">
+    <div class="top-row">
+      <div class="brand">
+        <div class="brand-dot">★</div>
+        <div>盛り盛りMAX <small>POST-PILOT PREMIUM PLAN</small></div>
+      </div>
+      <div class="top-badge">★ 無料相談・お見積り</div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- FORM SCREEN -->
+  <section id="screen-form">
+    <div class="hero">
+      <h1>あなたの SNS 運用、<br><span class="grad">5分のヒアリング</span>から始めましょう</h1>
+      <p>業種・現在の投稿頻度・気になることをお聞かせください。<br>御社にちょうど良い構成と概算費用を、3営業日以内にメールでお返事します。</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>無料</strong><span>相談・お見積り</span></div>
+        <div class="hero-stat"><strong>3日</strong><span>以内に返信</span></div>
+        <div class="hero-stat"><strong>1週間</strong><span>試験運用も可</span></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- FORM -->
+      <div class="form-card">
+        <h2>お問い合わせフォーム</h2>
+        <p class="form-sub">必須項目のみご入力ください。送信内容は社内のみで確認します。</p>
+
+        <form id="consultForm" novalidate>
+          <div class="field-grid">
+            <div class="field">
+              <label>お名前<span class="req">*</span></label>
+              <input type="text" name="name" required placeholder="例：山田 太郎">
+            </div>
+            <div class="field">
+              <label>会社名・店舗名<span class="opt">任意</span></label>
+              <input type="text" name="company" placeholder="例：株式会社○○ / カフェ○○">
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label>メールアドレス<span class="req">*</span></label>
+              <input type="email" name="email" required placeholder="例：name@example.com">
+            </div>
+            <div class="field">
+              <label>電話番号<span class="opt">任意</span></label>
+              <input type="tel" name="phone" placeholder="例：090-1234-5678">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>業種<span class="req">*</span></label>
+            <select name="industry" required>
+              <option value="">選択してください</option>
+              <!-- 2026-05-28 claude-opus-4-7 セッションターン数：3 — 業種を実装テンプレ9種に整合 -->
+              <option value="cafe">カフェ / 喫茶店</option>
+              <option value="restaurant">飲食店 / レストラン</option>
+              <option value="salon">美容室 / サロン</option>
+              <option value="osteopath">整骨院 / 接骨院</option>
+              <option value="medical">医療 / クリニック</option>
+              <option value="law">士業 / 事務所</option>
+              <option value="ec">ネットショップ / EC</option>
+              <option value="retail">小売 / 物販</option>
+              <option value="welfare">福祉 / 就労支援事業所</option>
+              <option value="other">その他</option>
+            </select>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label>現在の SNS 投稿頻度</label>
+              <select name="frequency">
+                <option value="">選択してください</option>
+                <option>ほぼ投稿していない</option>
+                <option>月に数回</option>
+                <option>週に数回</option>
+                <option>ほぼ毎日</option>
+                <option>これから始めたい</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>月の予算感<span class="opt">概算でOK</span></label>
+              <select name="budget">
+                <option value="">選択してください</option>
+                <option>〜 3,000円</option>
+                <option>3,000円 〜 10,000円</option>
+                <option>10,000円 〜 30,000円</option>
+                <option>30,000円 以上</option>
+                <option>まだ検討中</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>連絡を希望される時間帯<span class="opt">複数選択可</span></label>
+            <div class="checks">
+              <label class="check"><input type="checkbox" name="contactTime" value="weekday-am"> 平日午前</label>
+              <label class="check"><input type="checkbox" name="contactTime" value="weekday-pm"> 平日午後</label>
+              <label class="check"><input type="checkbox" name="contactTime" value="weekday-night"> 平日夜</label>
+              <label class="check"><input type="checkbox" name="contactTime" value="weekend"> 土日</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>ご質問・知りたいこと<span class="opt">任意</span></label>
+            <textarea name="message" placeholder="例：投稿の自動化に興味があるが、文章のトーンが心配。一度試験運用してみたい。"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <div class="note">送信後、3営業日以内に担当者よりメールでご返信します。<br>個人情報は問い合わせ対応の目的でのみ使用します。</div>
+            <button type="submit" class="submit-btn" id="submitBtn">この内容で送信 →</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- SIDEBAR -->
+      <aside class="aside">
+        <div class="side-card featured">
+          <!-- 2026-05-28 claude-opus-4-7 セッションターン数：3 — ジモティを営業ツール(連携未定)へリフレーム。自動チャネルは X/Threads/LINE -->
+          <h3><span class="ico">★</span>盛り盛りMAX の内容（自動3チャネル）</h3>
+          <ul>
+            <li>AI が毎日の原稿を自動生成</li>
+            <li>投稿に合わせた画像も自動描画</li>
+            <li>X / Threads は完全自動投稿</li>
+            <li>ジモティは営業ツールとして手動活用（システム連携は未定）</li>
+            <li>LINE 公式アカウントから友だちへ自動配信</li>
+            <li>朝・昼・夜のベスト時間で配信</li>
+            <li>事前承認モード・炎上リスク AI チェック</li>
+          </ul>
+        </div>
+
+        <div class="side-card">
+          <h3><span class="ico">¥</span>料金イメージ（月60投稿 + LINE週1配信）</h3>
+          <div class="price-row"><span class="label">原稿AI（Claude）</span><span class="val">¥260 / 月</span></div>
+          <div class="price-row"><span class="label">画像AI（fal.ai）</span><span class="val">¥30 / 月</span></div>
+          <div class="price-row"><span class="label">X 配信（従量）</span><span class="val">¥150 / 月</span></div>
+          <div class="price-row"><span class="label">Threads 配信</span><span class="val">¥0</span></div>
+          <div class="price-row"><span class="label">ジモティ（営業ツール）</span><span class="val">—</span></div>
+          <div class="price-row"><span class="label">LINE 公式アカウント</span><span class="val">¥0〜¥5,000 ※</span></div>
+          <div class="price-row"><span class="label">合計（新規発生分）</span><span class="val accent">¥440〜¥5,440 / 月</span></div>
+          <div style="font-size:11px;color:var(--text-mute);margin-top:10px;line-height:1.6">※ LINE 公式アカウントの料金は LINE Yahoo 社の料金プラン（無料200通／¥5,000で5,000通／¥15,000で30,000通）に基づく別途課金。2026/10 改定予定。友だち数と配信頻度から最適プランをご提案します。</div>
+        </div>
+
+        <div class="side-card">
+          <h3><span class="ico">?</span>よくあるご質問</h3>
+          <div class="faq-mini">
+            <strong>導入までどのくらい？</strong>
+            初期設定込みで、最短1週間で運用開始できます。
+          </div>
+          <div class="faq-mini">
+            <strong>途中でやめられますか？</strong>
+            月単位で停止可能です。違約金もありません。
+          </div>
+          <div class="faq-mini">
+            <strong>原稿は事前にチェックできる？</strong>
+            はい、Chatwork に下書きが届き、承認後に配信される設定が選べます。
+          </div>
+          <div class="faq-mini">
+            <strong>ジモティはシステムで投稿されるの？</strong>
+            ジモティは営業ツールとして、スタッフが手動で活用します。post-pilot システムからの下書き自動生成などの連携は現時点では未定で、今後検討します。
+          </div>
+          <div class="faq-mini">
+            <strong>LINE は何ができる？</strong>
+            LINE 公式アカウントを連携し、「友だち追加」したお客様へ Push 配信できます。X/Threads のような不特定多数への公開投稿ではなく、リピーター・既存顧客向けの通知用途です。
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- THANKS SCREEN -->
+  <section id="screen-thanks" class="hidden">
+    <div class="thanks">
+      <div class="ok-icon">✓</div>
+      <h2>お問い合わせを受け付けました</h2>
+      <p>ご記入ありがとうございます。3営業日以内に、ご入力いただいたメールアドレスへ担当者よりご返信いたします。</p>
+      <div class="summary-box" id="summary"></div>
+      <a href="morimori-max-presentation.html" class="back-btn">← プラン概要に戻る</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    これは <strong style="color:#c084fc">盛り盛りMAXプラン</strong> 相談フォームのデモです ｜ <a href="morimori-max-presentation.html">プラン概要に戻る</a>
+  </div>
+</footer>
+
+<script>
+const form = document.getElementById("consultForm");
+const screenForm = document.getElementById("screen-form");
+const screenThanks = document.getElementById("screen-thanks");
+const summary = document.getElementById("summary");
+
+form.addEventListener("submit", (e)=>{
+  e.preventDefault();
+
+  // 簡易バリデーション
+  const name = form.name.value.trim();
+  const email = form.email.value.trim();
+  const industry = form.industry.value;
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  if(!name){ alert("お名前を入力してください"); form.name.focus(); return; }
+  if(!emailOk){ alert("メールアドレスを正しく入力してください"); form.email.focus(); return; }
+  if(!industry){ alert("業種を選択してください"); form.industry.focus(); return; }
+
+  // 連絡時間
+  const times = [...form.querySelectorAll("[name=contactTime]:checked")].map(c=>c.value);
+  const timeLabels = {
+    "weekday-am":"平日午前", "weekday-pm":"平日午後",
+    "weekday-night":"平日夜", "weekend":"土日"
+  };
+
+  summary.innerHTML = `
+    <strong>受付内容（実際の送信は行われません）</strong><br>
+    お名前 ・・・ ${escapeHtml(name)}<br>
+    会社名 ・・・ ${escapeHtml(form.company.value || "—")}<br>
+    メール ・・・ ${escapeHtml(email)}<br>
+    電話 ・・・ ${escapeHtml(form.phone.value || "—")}<br>
+    業種 ・・・ ${escapeHtml(form.industry.options[form.industry.selectedIndex].text)}<br>
+    投稿頻度 ・・・ ${escapeHtml(form.frequency.value || "—")}<br>
+    予算感 ・・・ ${escapeHtml(form.budget.value || "—")}<br>
+    連絡時間 ・・・ ${times.length ? times.map(t=>timeLabels[t]).join(" / ") : "—"}<br>
+    ご質問 ・・・ ${escapeHtml(form.message.value || "—")}
+  `;
+
+  screenForm.classList.add("hidden");
+  screenThanks.classList.remove("hidden");
+  window.scrollTo({ top:0, behavior:"smooth" });
+});
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+</script>
+
+</body>
+</html>

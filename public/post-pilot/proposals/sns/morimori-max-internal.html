@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<!-- 2026-05-26 claude-opus-4-7 セッションターン数：7 リアン社内利用前提に振り直し（法的観点排除） -->
+<!-- 2026-05-26 18:54:22 claude-opus-4-7 セッションターン数：10 修正反映（再確認文削除／守ってほしいこと削除） -->
+<!-- 2026-05-26 19:30:00 claude-opus-4-7 セッションターン数：18 リアン・ラポール／デザイン部観点を導入（STEP 1 末尾に発信内容 2 軸 callout） -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../auth.js"></script>
+<meta name="robots" content="noindex,nofollow">
+<title>盛り盛りMAXプランの使い方 ｜ リアン職員向けマニュアル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#f7f5f0;
+    --paper:#ffffff;
+    --text:#1f2937;
+    --text-dim:#4b5563;
+    --text-mute:#9ca3af;
+    --border:#e5e7eb;
+    --accent:#7c3aed;
+    --accent-soft:#f5f3ff;
+    --ok:#059669;
+    --warn:#d97706;
+    --ng:#dc2626;
+  }
+  html{font-size:18px}
+  body{background:var(--bg);color:var(--text);font-family:"Noto Sans JP",-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.95;-webkit-font-smoothing:antialiased}
+  .container{max-width:800px;margin:0 auto;padding:0 24px}
+
+  .topbar{background:#fff;border-bottom:1px solid var(--border);padding:14px 0;position:sticky;top:0;z-index:10}
+  .topbar-inner{display:flex;align-items:center;gap:16px;font-size:14px}
+  .topbar-back{color:var(--text-dim);text-decoration:none}
+  .topbar-back:hover{color:var(--text)}
+  .topbar-tag{margin-left:auto;background:#fef3c7;color:#92400e;padding:5px 14px;border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.05em}
+
+  header.hero{padding:56px 0 24px}
+  .hero-eyebrow{font-size:13px;color:var(--text-mute);letter-spacing:.18em;margin-bottom:14px;font-weight:700}
+  h1.hero-title{font-size:32px;font-weight:900;line-height:1.45;margin-bottom:24px;letter-spacing:-.01em}
+  .hero-onephrase{padding:24px 28px;background:var(--paper);border:2px solid var(--accent);border-radius:10px;font-size:18px;line-height:1.85;color:var(--text)}
+  .hero-onephrase .lead{display:block;font-size:13px;color:var(--accent);font-weight:700;margin-bottom:8px;letter-spacing:.08em}
+
+  .status-banner{margin:20px 0 0;padding:18px 24px;background:#fffbeb;border:2px solid #d97706;border-radius:10px;color:#92400e;font-size:15px;line-height:1.7}
+  .status-banner strong{display:block;font-weight:900;margin-bottom:4px}
+
+  .toc{margin:32px 0 8px;padding:20px 24px;background:var(--paper);border:1px solid var(--border);border-radius:10px}
+  .toc-title{font-size:13px;color:var(--text-mute);font-weight:700;letter-spacing:.1em;margin-bottom:12px}
+  .toc ol{counter-reset:t;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px}
+  @media(max-width:560px){.toc ol{grid-template-columns:1fr}}
+  .toc li{padding:6px 0 6px 28px;position:relative;font-size:15px}
+  .toc li::before{counter-increment:t;content:counter(t);position:absolute;left:0;top:6px;width:20px;height:20px;background:var(--accent-soft);color:var(--accent);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;border:1px solid var(--accent)}
+  .toc a{color:var(--text);text-decoration:none}
+  .toc a:hover{color:var(--accent)}
+
+  section{padding:40px 0 4px}
+  .step-num{display:inline-block;font-size:13px;color:var(--accent);font-weight:900;letter-spacing:.15em;margin-bottom:8px}
+  h2.sec-title{font-size:26px;font-weight:900;margin-bottom:18px;padding-bottom:10px;border-bottom:3px solid var(--accent);display:inline-block;letter-spacing:-.005em}
+  .sec-body{font-size:17px;color:var(--text);line-height:1.95}
+  .sec-body p{margin-bottom:14px}
+  .sec-body strong{background:linear-gradient(transparent 65%,#ede9fe 65%);font-weight:700;padding:0 2px}
+
+  .steps{counter-reset:s;list-style:none;margin:8px 0}
+  .steps li{padding:16px 22px 16px 56px;background:var(--paper);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;position:relative;font-size:16.5px;line-height:1.85}
+  .steps li::before{counter-increment:s;content:counter(s);position:absolute;left:16px;top:16px;width:28px;height:28px;background:var(--accent-soft);color:var(--accent);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;border:2px solid var(--accent)}
+  .steps li strong{display:block;font-weight:900;color:var(--text);font-size:17px;margin-bottom:4px}
+
+  .callout{padding:20px 24px;border-radius:10px;margin:8px 0 16px;font-size:16px;line-height:1.85}
+  .callout strong{display:block;font-weight:900;margin-bottom:6px;font-size:16px}
+  .callout.ok{background:#ecfdf5;border-left:6px solid var(--ok);color:#065f46}
+  .callout.warn{background:#fffbeb;border-left:6px solid var(--warn);color:#92400e}
+  .callout.ng{background:#fef2f2;border-left:6px solid var(--ng);color:#991b1b}
+  .callout.info{background:#eff6ff;border-left:6px solid #2563eb;color:#1e40af}
+  .callout.tip{background:#f5f3ff;border-left:6px solid #7c3aed;color:#5b21b6}
+
+  .hearing{background:var(--paper);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:8px 0 16px}
+  .hearing .row{display:grid;grid-template-columns:200px 1fr;border-bottom:1px solid var(--border)}
+  .hearing .row:last-child{border-bottom:none}
+  .hearing .k{padding:14px 20px;background:#faf9f7;color:var(--text-dim);font-weight:700;font-size:15px}
+  .hearing .v{padding:14px 20px;font-size:16px}
+  @media(max-width:560px){.hearing .row{grid-template-columns:1fr}.hearing .k{padding-bottom:0;background:var(--paper)}}
+
+  .faq{background:var(--paper);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  .faq details{border-bottom:1px solid var(--border)}
+  .faq details:last-child{border-bottom:none}
+  .faq summary{padding:18px 22px;cursor:pointer;font-weight:700;font-size:16px;list-style:none;display:flex;align-items:flex-start;gap:12px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::before{content:"Q";display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--accent-soft);color:var(--accent);border-radius:50%;font-weight:900;font-size:13px;border:2px solid var(--accent);flex-shrink:0}
+  .faq details[open] summary{background:#faf9f7}
+  .faq .a{padding:0 22px 18px 60px;font-size:16px;color:var(--text-dim);line-height:1.85}
+
+  .future-box{margin:32px 0 0;padding:24px 28px;background:#fafaf9;border:1px dashed #d1d5db;border-radius:10px;font-size:15px;line-height:1.85;color:var(--text-dim)}
+  .future-box strong{display:block;font-weight:900;margin-bottom:6px;font-size:15px;color:var(--text);letter-spacing:.04em}
+
+  footer{padding:48px 0 64px;text-align:center;color:var(--text-mute);font-size:14px;margin-top:32px;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container">
+    <div class="topbar-inner">
+      <a class="topbar-back" href="../">← 一覧に戻る</a>
+      <span class="topbar-tag">社内マニュアル</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <header class="hero">
+    <div class="hero-eyebrow">社内マニュアル / 盛り盛りMAXプラン</div>
+    <h1 class="hero-title">盛り盛りMAXプランの使い方<br>リアン職員向けマニュアル</h1>
+    <div class="hero-onephrase">
+      <span class="lead">これはどんなツール？</span>
+      <!-- 2026-05-28 claude-opus-4-7 セッションターン数：3 — ジモティを自動媒体から外し営業ツール(連携未定)へ。自動配信は X/Threads/LINE の3媒体 -->
+      <strong>リアンの SNS 投稿を全自動で代行する</strong>仕組み。AI が毎日下書きと画像を作り、担当職員が Chatwork で承認すると、X（旧 Twitter）／ Threads ／ LINE 公式の <strong>3 媒体</strong>へ自動的に投稿されます（ジモティは営業ツールとして手動で活用。システム連携は未定）。「簡単投稿プラン」よりさらに手間を減らしたい時に切り替えます。
+    </div>
+
+    <div class="status-banner">
+      <strong>※ この仕組みは現在開発中です（完了予定: 2026-06-30）</strong>
+      この資料は完成後の運用フローを先にまとめたものです。
+    </div>
+
+    <div class="status-banner" style="background:#fef2f2;border-color:#dc2626;color:#991b1b">
+      <strong>※ ランニングコストが発生します（X API 料金 ＋ 月額運用費）</strong>
+      簡単投稿プランと違い、盛り盛りMAXプランは X（旧 Twitter）の有料 API を使うため、投稿ごとに料金が発生します。LINE 公式アカウントの配信通数や Anthropic API も加算されます。詳細はコスト試算資料へ:<br>
+      ・<a href="../cost-estimate.html#x-api-pricing" style="color:#991b1b;font-weight:700;text-decoration:underline">X API 料金実測（2026-05 verified）</a><br>
+      ・<a href="../cost-estimate.html#monthly-cost" style="color:#991b1b;font-weight:700;text-decoration:underline">月額コスト試算</a>
+    </div>
+
+    <div class="toc">
+      <div class="toc-title">この資料の目次</div>
+      <ol>
+        <li><a href="#step1">このツールの位置づけ</a></li>
+        <li><a href="#step2">最初に決めておくこと（AIの人格）</a></li>
+        <li><a href="#step3">初期セットアップ（最初に 1 回）</a></li>
+        <li><a href="#step4">毎日の運用の流れ</a></li>
+        <li><a href="#step5">投稿前の社内承認フロー</a></li>
+        <li><a href="#step6">ジモティーの手動投稿</a></li>
+        <li><a href="#step7">投稿内容の調整・変更</a></li>
+        <li><a href="#step8">月次レポートの活用</a></li>
+        <li><a href="#faq">よくある質問</a></li>
+      </ol>
+    </div>
+  </header>
+
+  <section id="step1">
+    <div class="step-num">STEP 1</div>
+    <h2 class="sec-title">このツールの位置づけ</h2>
+    <div class="sec-body">
+      <p>リアンの SNS 発信を、職員の手作業ではなく <strong>AI による自動運転</strong>に切り替える仕組みです。「<strong>簡単投稿プラン</strong>」が「下書きを毎日出す」だけだったのに対して、こちらは <strong>下書きの生成・画像の生成・投稿まで全部自動</strong>。職員は <strong>朝の承認操作 1 回</strong>だけで済みます。</p>
+      <p>狙いどころは、SNS 担当の職員にかかっている時間を <strong>毎日 30 分→ 5 分</strong>に圧縮すること。浮いた時間を支援業務に回せます。</p>
+    </div>
+    <div class="callout tip">
+      <strong>リアンの SNS で発信する内容（2 つの軸）</strong>
+      この AI は、リアン・ラポール（就労継続支援A型事業所）の SNS 発信を全て担います。発信内容は大きく 2 軸：<br>
+      ① <b>福祉施設としての日々の活動</b> ── 利用者の方々の作業所活動・地域交流・施設のお知らせなど<br>
+      ② <b>デザイン部のサービス紹介</b> ── <b>動画コンテンツ制作 / Google マップ動画掲載 / LINE 公式アカウント運用</b> の 3 サービスについて、作品例・事例・「お店でもどうですか」と案内する投稿<br>
+      AI が両方を自動で組み合わせて毎日の下書きを生成。承認担当の職員は内容を確認するだけで OK。デザイン部の宣伝色のある下書きが出てきても、それは設計通りなのでそのまま承認して構いません。
+    </div>
+  </section>
+
+  <section id="step2">
+    <div class="step-num">STEP 2</div>
+    <h2 class="sec-title">最初に決めておくこと（AIの人格）</h2>
+    <div class="sec-body">
+      <p>運用を始める前に、職員間で次の点を共有しておきます。</p>
+    </div>
+    <div class="hearing">
+      <div class="row"><div class="k">承認の担当</div><div class="v">毎朝 Chatwork で投稿を承認する職員（メイン 1 名 ＋ 代わり 1 名）</div></div>
+      <div class="row"><div class="k">トーン</div><div class="v">丁寧 ／ 親しみやすい ／ 落ち着いた など、リアンらしい言葉づかい</div></div>
+      <div class="row"><div class="k">使いたい言葉</div><div class="v">リアンの理念・取り組み・施設名・作業所製品名など、毎回入れたい固有名詞</div></div>
+      <div class="row"><div class="k">避けたい言葉</div><div class="v">事業所として使いたくない単語、表現、固有名詞</div></div>
+      <div class="row"><div class="k">投稿時間帯</div><div class="v">朝（7-9 時）／昼（12-13 時）／夕方（17-19 時）など、利用者ご家族や地域の方が見そうな時間帯</div></div>
+      <div class="row"><div class="k">投稿頻度</div><div class="v">1 日 2 回 ／ 1 日 1 回 ／ 週 3 回 など</div></div>
+      <div class="row"><div class="k">使う媒体</div><div class="v">自動配信は X／Threads／LINE 公式の 3 媒体（すべて／一部）。LINE 公式の友だち数を確認。ジモティは営業ツールとして手動活用</div></div>
+      <div class="row"><div class="k">停止のルール</div><div class="v">休業日・利用者の方の体調不良で活動写真が無い日 など、止める基準を決めておく</div></div>
+    </div>
+  </section>
+
+  <section id="step3">
+    <div class="step-num">STEP 3</div>
+    <h2 class="sec-title">初期セットアップ（最初に 1 回）</h2>
+    <ol class="steps">
+      <li><strong>SNS アカウントの連携</strong>X／Threads／LINE 公式の各アカウントを管理画面と連携。連携作業は管理者が担当。</li>
+      <li><strong>リアンの基本情報を登録</strong>STEP 2 で決めた内容をすべて管理画面に入力。これが AI の毎日のインプットになります。</li>
+      <li><strong>テスト投稿を 3 件作る</strong>すぐに本番運用せず、まず 3 件だけ生成して職員間で確認。トーンや言葉づかいのズレをここで吸収します。</li>
+      <li><strong>OK が出たら定期投稿を開始</strong>翌朝から自動運転に入ります。</li>
+    </ol>
+    <div class="callout warn">
+      <strong>SNS のパスワードは管理者経由で</strong>
+      パスワードを直接やりとりせず、管理者を通じて安全な方法で受け渡ししてください。
+    </div>
+  </section>
+
+  <section id="step4">
+    <div class="step-num">STEP 4</div>
+    <h2 class="sec-title">毎日の運用の流れ</h2>
+    <ol class="steps">
+      <li><strong>朝（投稿の 1 時間前）AI が下書きを生成</strong>本文・画像・投稿先媒体 が自動でまとまります。</li>
+      <li><strong>Chatwork に通知が届く</strong>承認担当の職員に「本日の投稿候補です」と通知が入ります。</li>
+      <li><strong>職員が内容を確認</strong>STEP 5 のチェック項目に沿って中身を見ます。</li>
+      <li><strong>OK なら承認 → 自動的に各媒体へ投稿</strong>NG ／ 修正依頼なら STEP 5 の対応へ。</li>
+      <li><strong>投稿完了の通知が Chatwork に届く</strong>これで朝の作業は完了。所要時間 <b>5 分程度</b>。</li>
+    </ol>
+  </section>
+
+  <section id="step5">
+    <div class="step-num">STEP 5</div>
+    <h2 class="sec-title">投稿前の社内承認フロー</h2>
+    <div class="sec-body">
+      <p>AI が生成した投稿は、<strong>必ず人の目を通してから</strong>媒体に流します。職員が見るべきポイントは以下の通り。</p>
+    </div>
+    <div class="callout info">
+      <strong>承認時のチェック項目</strong>
+      <ul style="margin-top:8px;padding-left:20px;line-height:2">
+        <li>施設名・作業所製品名・固有名詞にタイプミスがないか</li>
+        <li>避けたい言葉（STEP 2 で決めたもの）が混ざっていないか</li>
+        <li>季節・時期に合っているか（真夏に「あったか」など違和感がないか）</li>
+        <li>添付画像が文章と合っているか</li>
+        <li>画像に利用者の顔・名札・個人が特定できるものが写っていないか</li>
+      </ul>
+    </div>
+    <ol class="steps">
+      <li><strong>OK なら Chatwork のタスクを「完了」にする</strong>これで投稿が自動的に各媒体に流れます。</li>
+      <li><strong>修正が必要なら「修正依頼」と返信</strong>AI が再生成し、また Chatwork に届きます。</li>
+      <li><strong>NG なら「停止」と返信</strong>その日の投稿はキャンセル。理由を職員間で共有しておくと、次回の生成精度が上がります。</li>
+    </ol>
+  </section>
+
+  <section id="step6">
+    <div class="step-num">STEP 6</div>
+    <h2 class="sec-title">ジモティーの手動投稿</h2>
+    <div class="sec-body">
+      <!-- 2026-05-28 claude-opus-4-7 セッションターン数：3 — ジモティは営業ツール・手動運用。原稿の自動生成などシステム連携は未定 -->
+      <p>ジモティーは <strong>営業ツールとして、職員が手動で投稿</strong>する運用です。原稿の自動生成など post-pilot システムとの連携は未定（今後検討）で、現状は職員が内容を用意して投稿します。</p>
+    </div>
+    <ol class="steps">
+      <li><strong>投稿する内容（本文・画像）を用意する</strong>※ 将来システム連携した場合は Chatwork に下書きが届く想定（未定）。</li>
+      <li><strong>ジモティーの管理画面にログイン</strong>リアンの専用アカウントで。</li>
+      <li><strong>本文と画像を手でコピー＆貼り付け</strong>カテゴリは事前に決めたもの（地域コミュニティ ／ 福祉作業所製品の販売告知 など）に統一します。</li>
+      <li><strong>投稿ボタンを押す</strong>投稿完了後、Chatwork のタスクを「完了」にします。</li>
+    </ol>
+    <div class="callout tip">
+      <strong>ジモティー投稿の主な用途</strong>
+      ・福祉作業所の製品（パン・お菓子・農作物・手工芸品など）の販売告知<br>
+      ・施設見学会・地域交流イベントのお知らせ<br>
+      ・地域の方への作業所利用・お問い合わせ案内
+    </div>
+  </section>
+
+  <section id="step7">
+    <div class="step-num">STEP 7</div>
+    <h2 class="sec-title">投稿内容の調整・変更</h2>
+    <div class="sec-body">
+      <p>運用していくと「ここを変えたい」「来週はイベントを混ぜたい」などが出てきます。基本は <strong>気付いた職員が Chatwork で共有 → 担当が反映</strong>のルールで進めます。</p>
+    </div>
+    <ol class="steps">
+      <li><strong>気付いた職員が Chatwork で内容を提案</strong>「来週○○のイベントがあるので投稿に入れたい」など。</li>
+      <li><strong>担当が管理画面で設定を更新</strong>使いたい言葉 ／ 避けたい言葉 ／ 強調したい話題を書き換える。</li>
+      <li><strong>翌営業日の投稿から反映</strong>大きな変更の場合は、テスト投稿 1 件を職員間で確認してから本番に流します。</li>
+      <li><strong>反映完了したら Chatwork で報告</strong>「ご提案の内容、本日から反映しています」と一言。</li>
+    </ol>
+  </section>
+
+  <section id="step8">
+    <div class="step-num">STEP 8</div>
+    <h2 class="sec-title">月次レポートの活用</h2>
+    <div class="sec-body">
+      <p>月末に、その月の投稿実績がまとまったレポートが自動的に作成されます。職員会議の資料として活用してください。</p>
+    </div>
+    <ol class="steps">
+      <li><strong>管理画面から先月の実績データを出力</strong>投稿数 ／ 反応数（いいね・コメント・シェア）／よく反応された投稿 TOP 3 が自動でまとまります。</li>
+      <li><strong>職員会議でレポートを共有</strong>「先月は○○の投稿に一番反応があった」「来月は△△を増やそう」など、来月の方針を話し合う材料にします。</li>
+      <li><strong>レポートに気付きを書き加える</strong>反応が良かった理由・改善したい点を職員が手書きで足す。次回の AI 生成にも反映できます。</li>
+    </ol>
+  </section>
+
+  <section id="faq">
+    <h2 class="sec-title">よくある質問</h2>
+    <div class="faq">
+      <details>
+        <summary>承認担当の職員が休みの日はどうなる？</summary>
+        <div class="a">代わりの担当（STEP 2 で決めた人）が承認します。両方とも不在になりそうな日は、前日のうちに「○日は投稿停止」と管理画面で設定しておけます。</div>
+      </details>
+      <details>
+        <summary>変な投稿が流れたら？</summary>
+        <div class="a">承認時に必ず人の目を通すので、変な投稿が流れることは基本ありません。万一誤って流れた場合は、各 SNS の管理画面から削除できます。</div>
+      </details>
+      <details>
+        <summary>休業日や臨時休業の時は？</summary>
+        <div class="a">前日のうちに管理画面で「○日は投稿停止」と設定すれば止められます。当日朝でも、承認担当が「停止」と返信すれば止められます。</div>
+      </details>
+      <details>
+        <summary>利用者の方の活動写真を使いたい時は？</summary>
+        <div class="a">写真をアップロードする前に、職員間で確認します。顔が写っていないこと・名札が写っていないこと・本人やご家族の同意があることを確認してから登録してください。</div>
+      </details>
+      <details>
+        <summary>「今日は活動が落ち着いていて投稿するネタがない」時は？</summary>
+        <div class="a">AI が季節の話題・施設の理念・作業所製品の紹介などで自動的に下書きを作ります。それでも合うものが無いと感じたら、職員判断で停止して構いません。</div>
+      </details>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="container">社内マニュアル ｜ 盛り盛りMAXプラン（リアンの SNS を全自動で運用する仕組み）</div>
+</footer>
+
+</body>
+</html>
