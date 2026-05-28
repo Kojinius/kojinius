@@ -1,0 +1,1372 @@
+<!-- 2026-05-28 claude-sonnet-4-6 セッションターン数：- Typolish 譲渡先(SKYDIRECTION様)向け技術引き継ぎ書。kojinius.jp/typolish/ 配下・シンプルログイン(post-pilot流用)。DNS=Cloudflare/Craftica退避済/Cron5本の実態反映・トーン丁寧化 -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Typolish 技術引き継ぎ資料 — SKYDIRECTION 様向け</title>
+<script src="auth.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #000000;
+    --card: #0a0a0a;
+    --card2: #111111;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: rgba(255,255,255,0.92);
+    --sub: rgba(255,255,255,0.5);
+    --accent: #e86c00;
+    --info-border: rgba(80,140,255,0.6);
+    --info-bg: rgba(80,140,255,0.06);
+    --nav-w: 260px;
+    --transition: 0.28s cubic-bezier(.4,0,.2,1);
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--nav-w);
+    height: 100vh;
+    background: #050505;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    transition: transform var(--transition), width var(--transition);
+    overflow: hidden;
+  }
+  #sidebar.collapsed {
+    width: 0;
+    transform: translateX(-100%);
+  }
+
+  .sidebar-logo {
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .sidebar-logo-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .sidebar-logo-sub {
+    font-size: 10.5px;
+    color: var(--sub);
+    margin-top: 3px;
+  }
+
+  /* ── SEARCH BOX ── */
+  .sidebar-search {
+    padding: 10px 10px 8px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 8px;
+    color: var(--sub);
+    pointer-events: none;
+    flex-shrink: 0;
+  }
+  #search-input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 6px 8px 6px 30px;
+    font-size: 12.5px;
+    color: var(--text);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  #search-input:focus { border-color: var(--border2); }
+  #search-input::placeholder { color: var(--sub); }
+  .search-count {
+    font-size: 11px;
+    color: var(--sub);
+    padding: 4px 4px 0;
+    min-height: 18px;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 8px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
+  }
+  .sidebar-nav::-webkit-scrollbar { width: 4px; }
+  .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 12.5px;
+    color: var(--sub);
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+  .nav-item.active { background: rgba(255,255,255,0.1); color: #fff; font-weight: 600; }
+  .nav-item.search-match { background: rgba(232,108,0,0.1); color: rgba(255,180,100,0.9); }
+  .nav-item .nav-icon { flex-shrink: 0; width: 24px; height: 24px; }
+
+  /* ── TOPBAR ── */
+  #topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 52px;
+    background: rgba(0,0,0,0.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 200;
+    gap: 12px;
+    transition: padding-left var(--transition);
+  }
+  #topbar.has-sidebar { padding-left: calc(var(--nav-w) + 20px); }
+  #topbar.no-sidebar  { padding-left: 20px; }
+
+  #toggle-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+    transition: background 0.15s;
+    color: var(--sub);
+  }
+  #toggle-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+  .topbar-title {
+    font-size: 14px; font-weight: 600;
+    color: var(--text); flex: 1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.2px;
+    border: 1px solid; flex-shrink: 0;
+  }
+  .badge-green { background: rgba(0,200,100,0.1); border-color: rgba(0,200,100,0.25); color: #00c864; }
+  .badge-blue  { background: rgba(80,140,255,0.1); border-color: rgba(80,140,255,0.25); color: #5098ff; }
+
+  /* ── MAIN ── */
+  #main {
+    padding-top: 52px;
+    transition: padding-left var(--transition);
+  }
+  #main.has-sidebar { padding-left: var(--nav-w); }
+  #main.no-sidebar  { padding-left: 0; }
+
+  .content-wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 32px 96px;
+  }
+
+  .page-header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-header h1 {
+    font-size: 28px; font-weight: 800;
+    letter-spacing: -0.8px; line-height: 1.2;
+    color: #fff; margin-bottom: 10px;
+  }
+  .page-header-meta {
+    display: flex; flex-wrap: wrap;
+    gap: 8px; align-items: center; margin-top: 14px;
+  }
+  .page-header-sub {
+    font-size: 13px; color: var(--sub); margin-top: 6px;
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    margin-bottom: 64px;
+    scroll-margin-top: 72px;
+  }
+  .section-header {
+    display: flex; align-items: center;
+    gap: 14px; margin-bottom: 22px;
+  }
+  .section-icon { width: 36px; height: 36px; flex-shrink: 0; }
+  .section-title {
+    font-size: 20px; font-weight: 700;
+    letter-spacing: -0.4px; color: #fff;
+  }
+
+  /* ── TABLES ── */
+  .tbl-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); margin-top: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: rgba(255,255,255,0.04); }
+  thead th {
+    text-align: left; padding: 10px 14px;
+    font-weight: 600; font-size: 12px; color: var(--sub);
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.025); }
+  tbody td { padding: 9px 14px; vertical-align: top; }
+
+  /* ── CALLOUTS ── */
+  .callout {
+    border-left: 3px solid;
+    border-radius: 0 8px 8px 0;
+    padding: 14px 16px; margin: 18px 0;
+    font-size: 13px; line-height: 1.65;
+  }
+  .callout-info   { border-color: var(--info-border); background: var(--info-bg); }
+  .callout-note   { border-color: rgba(232,108,0,0.5); background: rgba(232,108,0,0.06); }
+  .callout-title {
+    font-weight: 700; margin-bottom: 6px;
+    font-size: 12.5px; letter-spacing: 0.2px;
+  }
+  .callout-info .callout-title   { color: #5098ff; }
+  .callout-note .callout-title   { color: var(--accent); }
+
+  /* ── CODE ── */
+  code {
+    font-family: "SF Mono","Cascadia Code","Fira Code",Consolas,monospace;
+    font-size: 12.5px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px; padding: 1px 6px;
+    color: rgba(255,255,255,0.85);
+  }
+  pre {
+    background: #0d0d0d;
+    border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px;
+    overflow-x: auto;
+    font-family: "SF Mono","Cascadia Code","Fira Code",Consolas,monospace;
+    font-size: 12.5px; line-height: 1.6;
+    margin: 14px 0; color: rgba(255,255,255,0.82);
+  }
+
+  /* ── MISC ── */
+  p { margin-bottom: 10px; }
+  p:last-child { margin-bottom: 0; }
+  ul, ol { padding-left: 20px; }
+  li { margin-bottom: 4px; }
+  strong { color: #fff; font-weight: 600; }
+  .tag {
+    display: inline-block; padding: 2px 8px;
+    border-radius: 4px; font-size: 11.5px; font-weight: 600;
+  }
+  .tag-secret { background: rgba(255,85,85,0.12); color: #ff8888; border: 1px solid rgba(255,85,85,0.2); }
+  .tag-plain  { background: rgba(80,200,100,0.1); color: #60d080; border: 1px solid rgba(80,200,100,0.2); }
+  .tag-opt    { background: rgba(255,255,255,0.06); color: var(--sub); border: 1px solid var(--border); }
+  .check { color: #60d080; }
+  .cross { color: #ff6060; }
+  .tbl-section-head { background:rgba(255,255,255,0.03);color:var(--sub);font-size:11.5px;letter-spacing:0.3px; }
+
+  /* ── SEARCH HIGHLIGHT ── */
+  mark.hl0 { background: rgba(255,200,50,0.35);  color: inherit; border-radius: 2px; }
+  mark.hl1 { background: rgba(100,220,150,0.35); color: inherit; border-radius: 2px; }
+  mark.hl2 { background: rgba(100,180,255,0.35); color: inherit; border-radius: 2px; }
+  mark.hl3 { background: rgba(255,120,200,0.35); color: inherit; border-radius: 2px; }
+  mark.hl4 { background: rgba(200,150,255,0.35); color: inherit; border-radius: 2px; }
+  mark.hl5 { background: rgba(255,160,80,0.35);  color: inherit; border-radius: 2px; }
+
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.mobile-open { transform: translateX(0); width: var(--nav-w); }
+    #topbar { padding-left: 20px !important; }
+    #main { padding-left: 0 !important; }
+    .content-wrap { padding: 32px 16px 64px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ SVG ICON DEFS ══ -->
+<svg style="display:none" aria-hidden="true">
+  <defs>
+    <!-- Logo -->
+    <symbol id="ico-logo" viewBox="0 0 28 28">
+      <rect width="28" height="28" rx="7" fill="url(#g-logo-bg)"/>
+      <circle cx="14" cy="14" r="7" fill="url(#g-logo-orb)"/>
+      <circle cx="11.5" cy="11.5" r="2.2" fill="rgba(255,255,255,0.28)"/>
+      <defs>
+        <linearGradient id="g-logo-bg" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#1a1a1a"/>
+          <stop offset="100%" stop-color="#050505"/>
+        </linearGradient>
+        <radialGradient id="g-logo-orb" cx="40%" cy="35%" r="60%" gradientUnits="objectBoundingBox">
+          <stop offset="0%" stop-color="#e86c00"/>
+          <stop offset="60%" stop-color="#c44800"/>
+          <stop offset="100%" stop-color="#7a2000"/>
+        </radialGradient>
+      </defs>
+    </symbol>
+
+    <!-- 1. Overview: document lines -->
+    <symbol id="ico-overview" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-ov-bg)"/>
+      <rect x="5" y="7" width="16" height="2.5" rx="1.2" fill="rgba(255,255,255,0.75)"/>
+      <rect x="5" y="12" width="11" height="2" rx="1" fill="rgba(255,255,255,0.5)"/>
+      <rect x="5" y="16.5" width="13.5" height="2" rx="1" fill="rgba(255,255,255,0.35)"/>
+      <defs><linearGradient id="g-ov-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1e2836"/><stop offset="100%" stop-color="#0d1520"/></linearGradient></defs>
+    </symbol>
+
+    <!-- 2. Stack: layered blocks / 2026-05-28 claude-opus-4-7[1m] セッションターン数：- 黒背景で不可視だった層の色を明るい青に変更（§2アイコン視認性修正） -->
+    <symbol id="ico-stack" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-stk-bg)"/>
+      <rect x="4" y="16.5" width="18" height="4.5" rx="2.5" fill="rgba(96,165,250,0.92)"/>
+      <rect x="4" y="10.5" width="18" height="4.5" rx="2.5" fill="rgba(147,197,253,0.9)"/>
+      <rect x="4" y="5" width="18" height="4" rx="2" fill="rgba(191,219,254,0.97)"/>
+      <defs>
+        <linearGradient id="g-stk-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#23304a"/><stop offset="100%" stop-color="#101826"/></linearGradient>
+        <linearGradient id="g-stk-1" x1="0" y1="0" x2="18" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#2563eb"/></linearGradient>
+        <linearGradient id="g-stk-2" x1="0" y1="0" x2="18" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#60a5fa"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient>
+        <linearGradient id="g-stk-3" x1="0" y1="0" x2="18" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#93c5fd"/><stop offset="100%" stop-color="#60a5fa"/></linearGradient>
+      </defs>
+    </symbol>
+
+    <!-- 3. Architecture: hub+spokes -->
+    <symbol id="ico-arch" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-arch-bg)"/>
+      <circle cx="13" cy="13" r="4" fill="none" stroke="rgba(100,200,255,0.75)" stroke-width="1.5"/>
+      <circle cx="13" cy="4.5" r="2" fill="rgba(100,200,255,0.55)"/>
+      <circle cx="21.5" cy="18" r="2" fill="rgba(100,200,255,0.45)"/>
+      <circle cx="4.5" cy="18" r="2" fill="rgba(100,200,255,0.45)"/>
+      <line x1="13" y1="6.5" x2="13" y2="9.5" stroke="rgba(100,200,255,0.5)" stroke-width="1.2"/>
+      <line x1="17.1" y1="16.2" x2="19.7" y2="16.8" stroke="rgba(100,200,255,0.5)" stroke-width="1.2"/>
+      <line x1="8.9" y1="16.2" x2="6.3" y2="16.8" stroke="rgba(100,200,255,0.5)" stroke-width="1.2"/>
+      <defs><linearGradient id="g-arch-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#0a1e2e"/><stop offset="100%" stop-color="#040c14"/></linearGradient></defs>
+    </symbol>
+
+    <!-- 4. Scope: triangle+dot -->
+    <symbol id="ico-scope" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-sc-bg)"/>
+      <path d="M13 4.5 L22 21.5 L4 21.5 Z" fill="none" stroke="rgba(200,160,255,0.65)" stroke-width="1.5" stroke-linejoin="round"/>
+      <circle cx="13" cy="10" r="2" fill="rgba(200,160,255,0.75)"/>
+      <defs><linearGradient id="g-sc-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1a0e2a"/><stop offset="100%" stop-color="#0a0612"/></linearGradient></defs>
+    </symbol>
+
+    <!-- 5. Env: lock+vars -->
+    <symbol id="ico-env" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-env-bg)"/>
+      <rect x="5" y="10" width="16" height="10" rx="2.5" fill="none" stroke="rgba(100,220,150,0.65)" stroke-width="1.3"/>
+      <path d="M9 10 L9 8 Q9 5.5 11 5.5 L15 5.5 Q17 5.5 17 8 L17 10" stroke="rgba(100,220,150,0.65)" stroke-width="1.3" fill="none"/>
+      <circle cx="13" cy="15" r="2" fill="rgba(100,220,150,0.6)"/>
+      <defs><linearGradient id="g-env-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#0a2018"/><stop offset="100%" stop-color="#040e0a"/></linearGradient></defs>
+    </symbol>
+
+    <!-- 6. Cron: clock -->
+    <symbol id="ico-cron" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-cr-bg)"/>
+      <circle cx="13" cy="13" r="7.5" fill="none" stroke="rgba(255,200,80,0.55)" stroke-width="1.3"/>
+      <line x1="13" y1="6.5" x2="13" y2="13" stroke="rgba(255,200,80,0.85)" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="13" y1="13" x2="17.5" y2="15.5" stroke="rgba(255,200,80,0.65)" stroke-width="1.3" stroke-linecap="round"/>
+      <circle cx="13" cy="13" r="1.2" fill="rgba(255,200,80,0.9)"/>
+      <defs><linearGradient id="g-cr-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1e1800"/><stop offset="100%" stop-color="#0c0a00"/></linearGradient></defs>
+    </symbol>
+
+    <!-- 7. MaxDuration: progress bar -->
+    <symbol id="ico-dur" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-dur-bg)"/>
+      <rect x="5" y="11.5" width="16" height="4" rx="2" fill="rgba(200,150,255,0.2)"/>
+      <rect x="5" y="11.5" width="11" height="4" rx="2" fill="url(#g-dur-bar)"/>
+      <circle cx="16" cy="13.5" r="2.5" fill="rgba(200,150,255,0.9)"/>
+      <defs>
+        <linearGradient id="g-dur-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1a0e28"/><stop offset="100%" stop-color="#0a0612"/></linearGradient>
+        <linearGradient id="g-dur-bar" x1="0" y1="0" x2="11" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="rgba(200,150,255,0.4)"/><stop offset="100%" stop-color="rgba(200,150,255,0.8)"/></linearGradient>
+      </defs>
+    </symbol>
+
+    <!-- 8. Integrations: two nodes + dash line -->
+    <symbol id="ico-int" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-int-bg)"/>
+      <circle cx="6.5" cy="13" r="3" fill="rgba(255,160,60,0.65)"/>
+      <circle cx="19.5" cy="13" r="3" fill="rgba(255,160,60,0.65)"/>
+      <line x1="9.5" y1="13" x2="16.5" y2="13" stroke="rgba(255,160,60,0.55)" stroke-width="1.5" stroke-dasharray="2.5,2"/>
+      <defs><linearGradient id="g-int-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1e1008"/><stop offset="100%" stop-color="#0c0804"/></linearGradient></defs>
+    </symbol>
+
+    <!-- 9. Deploy: upload arrow -->
+    <symbol id="ico-deploy" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-dep-bg)"/>
+      <line x1="13" y1="18" x2="13" y2="9" stroke="rgba(120,220,120,0.85)" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M9 13 L13 9 L17 13" stroke="rgba(120,220,120,0.85)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <rect x="7" y="18.5" width="12" height="2.5" rx="1.2" fill="rgba(120,220,120,0.45)"/>
+      <defs><linearGradient id="g-dep-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#0a2010"/><stop offset="100%" stop-color="#040c08"/></linearGradient></defs>
+    </symbol>
+
+    <!-- 10. Monitor: pulse line -->
+    <symbol id="ico-mon" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-mon-bg)"/>
+      <polyline points="5,18 9,12 13,15 17,8 21,11" stroke="rgba(80,180,255,0.8)" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <defs><linearGradient id="g-mon-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#081828"/><stop offset="100%" stop-color="#030a12"/></linearGradient></defs>
+    </symbol>
+
+    <!-- 11. Rollback: curved arrow left -->
+    <symbol id="ico-rollback" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-rb-bg)"/>
+      <path d="M9 9.5 L5 13.5 L9 17.5" stroke="rgba(200,150,255,0.85)" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M5 13.5 Q12.5 6 20 13.5" stroke="rgba(200,150,255,0.6)" stroke-width="1.3" fill="none"/>
+      <defs><linearGradient id="g-rb-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#180e28"/><stop offset="100%" stop-color="#0a0612"/></linearGradient></defs>
+    </symbol>
+
+    <!-- 12. Secret: padlock -->
+    <symbol id="ico-secret" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-sec-bg)"/>
+      <circle cx="13" cy="10" r="4" fill="none" stroke="rgba(255,200,80,0.75)" stroke-width="1.4"/>
+      <rect x="8" y="13" width="10" height="8" rx="2" fill="rgba(255,200,80,0.22)" stroke="rgba(255,200,80,0.55)" stroke-width="1.2"/>
+      <circle cx="13" cy="17" r="1.3" fill="rgba(255,200,80,0.85)"/>
+      <defs><linearGradient id="g-sec-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1e1800"/><stop offset="100%" stop-color="#0c0a00"/></linearGradient></defs>
+    </symbol>
+
+    <!-- 13. Permissions: magnifier -->
+    <symbol id="ico-perm" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-pm-bg)"/>
+      <circle cx="11" cy="11" r="5" fill="none" stroke="rgba(180,220,255,0.65)" stroke-width="1.4"/>
+      <circle cx="11" cy="11" r="2" fill="rgba(180,220,255,0.5)"/>
+      <line x1="15.5" y1="15.5" x2="21" y2="21" stroke="rgba(180,220,255,0.65)" stroke-width="2" stroke-linecap="round"/>
+      <defs><linearGradient id="g-pm-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#0a1020"/><stop offset="100%" stop-color="#040810"/></linearGradient></defs>
+    </symbol>
+
+    <!-- 14. Roles: two people -->
+    <symbol id="ico-roles" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-ro-bg)"/>
+      <circle cx="9.5" cy="9" r="3.5" fill="rgba(255,180,100,0.55)" stroke="rgba(255,180,100,0.75)" stroke-width="1"/>
+      <circle cx="17.5" cy="9" r="3.5" fill="rgba(100,200,255,0.45)" stroke="rgba(100,200,255,0.7)" stroke-width="1"/>
+      <path d="M5 23 Q5 18 9.5 18 Q12 18 13.5 19.5 Q15 18 17.5 18 Q22 18 22 23" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.3"/>
+      <defs><linearGradient id="g-ro-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#1e1208"/><stop offset="100%" stop-color="#0c0804"/></linearGradient></defs>
+    </symbol>
+
+    <!-- 15. Checklist: checkmark -->
+    <symbol id="ico-check" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-ch-bg)"/>
+      <path d="M7 13.5 L10.5 17 L19 9" stroke="rgba(80,220,120,0.9)" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <defs><linearGradient id="g-ch-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#0a2010"/><stop offset="100%" stop-color="#040c08"/></linearGradient></defs>
+    </symbol>
+
+    <!-- 16. Docs: open book -->
+    <symbol id="ico-docs" viewBox="0 0 26 26">
+      <rect width="26" height="26" rx="6" fill="url(#g-dc-bg)"/>
+      <rect x="6" y="5" width="14" height="16" rx="2" fill="none" stroke="rgba(200,200,220,0.55)" stroke-width="1.3"/>
+      <line x1="9" y1="10" x2="17" y2="10" stroke="rgba(200,200,220,0.55)" stroke-width="1"/>
+      <line x1="9" y1="13.5" x2="17" y2="13.5" stroke="rgba(200,200,220,0.45)" stroke-width="1"/>
+      <line x1="9" y1="17" x2="14" y2="17" stroke="rgba(200,200,220,0.35)" stroke-width="1"/>
+      <defs><linearGradient id="g-dc-bg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#10101e"/><stop offset="100%" stop-color="#08080e"/></linearGradient></defs>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ══ SIDEBAR ══ -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-title">
+      <svg style="width:26px;height:26px;flex-shrink:0"><use href="#ico-logo"/></svg>
+      Typolish
+    </div>
+    <div class="sidebar-logo-sub">技術引き継ぎ資料 — SKYDIRECTION 様向け</div>
+  </div>
+
+  <div class="sidebar-search">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.4"/>
+        <line x1="9.2" y1="9.2" x2="13" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <input id="search-input" type="text" placeholder="検索 (スペースで AND)">
+    </div>
+    <div id="search-count" class="search-count"></div>
+  </div>
+
+  <div class="sidebar-nav">
+    <a href="#sec-overview"  class="nav-item active"><svg class="nav-icon"><use href="#ico-overview"/></svg>1. 概要</a>
+    <a href="#sec-stack"     class="nav-item"><svg class="nav-icon"><use href="#ico-stack"/></svg>2. 技術スタック</a>
+    <a href="#sec-arch"      class="nav-item"><svg class="nav-icon"><use href="#ico-arch"/></svg>3. アーキテクチャ</a>
+    <a href="#sec-scope"     class="nav-item"><svg class="nav-icon"><use href="#ico-scope"/></svg>4. 譲渡スコープ</a>
+    <a href="#sec-env"       class="nav-item"><svg class="nav-icon"><use href="#ico-env"/></svg>5. 環境変数</a>
+    <a href="#sec-cron"      class="nav-item"><svg class="nav-icon"><use href="#ico-cron"/></svg>6. Cron Jobs（5本）</a>
+    <a href="#sec-dur"       class="nav-item"><svg class="nav-icon"><use href="#ico-dur"/></svg>7. maxDuration</a>
+    <a href="#sec-int"       class="nav-item"><svg class="nav-icon"><use href="#ico-int"/></svg>8. 外部連携</a>
+    <a href="#sec-deploy"    class="nav-item"><svg class="nav-icon"><use href="#ico-deploy"/></svg>9. デプロイフロー</a>
+    <a href="#sec-mon"       class="nav-item"><svg class="nav-icon"><use href="#ico-mon"/></svg>10. 監視ポイント</a>
+    <a href="#sec-rollback"  class="nav-item"><svg class="nav-icon"><use href="#ico-rollback"/></svg>11. Rollback 戦略</a>
+    <a href="#sec-secret"    class="nav-item"><svg class="nav-icon"><use href="#ico-secret"/></svg>12. Secret Rotation</a>
+    <a href="#sec-perm"      class="nav-item"><svg class="nav-icon"><use href="#ico-perm"/></svg>13. 権限マトリクス</a>
+    <a href="#sec-roles"     class="nav-item"><svg class="nav-icon"><use href="#ico-roles"/></svg>14. 役割分担</a>
+    <a href="#sec-checklist" class="nav-item"><svg class="nav-icon"><use href="#ico-check"/></svg>15. 譲渡前チェックリスト</a>
+    <a href="#sec-docs"      class="nav-item"><svg class="nav-icon"><use href="#ico-docs"/></svg>16. 参照ドキュメント</a>
+  </div>
+</nav>
+
+<!-- ══ TOPBAR ══ -->
+<header id="topbar" class="has-sidebar">
+  <button id="toggle-btn" aria-label="メニュー開閉">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <line x1="2" y1="4" x2="14" y2="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="2" y1="12" x2="14" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </button>
+  <span class="topbar-title">Typolish 技術引き継ぎ資料</span>
+  <span class="badge badge-green">Vercel 本番稼働中</span>
+  <span class="badge badge-blue">SKYDIRECTION 様向け</span>
+</header>
+
+<!-- ══ MAIN ══ -->
+<main id="main" class="has-sidebar">
+<div class="content-wrap">
+
+  <div class="page-header">
+    <h1>Typolish<br>技術引き継ぎ資料</h1>
+    <p class="page-header-sub">本資料は Typolish 事業の引き継ぎにあたり、SKYDIRECTION 様が運用・保守に必要な技術情報を 1 ページに集約したものです。</p>
+    <div class="page-header-meta">
+      <span class="badge badge-green">Vercel 本番稼働中</span>
+      <span class="badge badge-blue">B案：運用 = SKYDIRECTION 様 / 保守 = 橋本晃治</span>
+      <span style="font-size:12px;color:var(--sub)">最終更新日: 2026-05-28</span>
+    </div>
+  </div>
+
+  <!-- §1 概要 -->
+  <section id="sec-overview">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-overview"/></svg>
+      <h2 class="section-title">1. 概要</h2>
+    </div>
+    <p><strong>Typolish（タイポリッシュ）</strong>は、画像・PDF・Web・動画・Office ファイルをアップロードしてピンポイントのフィードバック（アノテーション）と承認ワークフローを管理するビジュアル校正・プルーフィングツールです。共有リンクで非ログインゲストもアノテーション・承認に参加できます。</p>
+    <p style="margin-top:10px">語源は <em>Typo（誤字）+ Polish（磨く）</em>。ドメインは <strong>typolish.com</strong>（さくらインターネット取得）。</p>
+    <p style="margin-top:8px">現在は <strong>Vercel 本番稼働中</strong>です（A レコード: <code>76.76.21.21</code>）。Firebase App Hosting から Vercel への移行（DNS 切替）は 2026-05-24 に完了しており、<code>apphosting.yaml</code> は削除済みです。</p>
+    <div class="callout callout-info" style="margin-top:20px">
+      <div class="callout-title">料金プラン</div>
+      <p>Free ¥0 / Pro ¥4,980 / Business ¥14,800（月額・税込表示は契約書に準じます）。プロジェクト単位課金でメンバーは無制限招待できます。1 ライセンス = 1 アカウントで、アカウント共有・同時ログインは単一セッション強制により制御されています。</p>
+    </div>
+  </section>
+
+  <!-- §2 技術スタック -->
+  <section id="sec-stack">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-stack"/></svg>
+      <h2 class="section-title">2. 技術スタック</h2>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>分類</th><th>技術・バージョン</th><th>備考</th></tr></thead>
+        <tbody>
+          <tr><td>フレームワーク</td><td>Next.js <strong>16.2.3</strong> (App Router) / React <strong>19.2.4</strong> / TypeScript 5</td><td>Node.js ≥20（Vercel: Node.js 24）</td></tr>
+          <tr><td>スタイル</td><td>Tailwind CSS v4</td><td>light / dark / wire 3テーマ</td></tr>
+          <tr><td>ホスティング</td><td><strong>Vercel</strong>（Fluid Compute / region: hnd1 / Node.js 24）</td><td><code>vercel.ts</code> が一次ソース</td></tr>
+          <tr><td>DNS</td><td><strong>Cloudflare</strong>（権威NS: pranab / hazel.ns.cloudflare.com）</td><td>レジストラはさくらインターネット</td></tr>
+          <tr><td>認証</td><td>Firebase Auth（Google ログイン）</td><td></td></tr>
+          <tr><td>データベース</td><td>Firestore（named DB: <code>default</code>）/ Firebase RTDB（プレゼンス）</td><td>asia-southeast1</td></tr>
+          <tr><td>ファイルストレージ</td><td>Cloudflare R2（<code>typolish-files</code>）</td><td>Signed URL 経由・直接アクセス禁止</td></tr>
+          <tr><td>変換サービス</td><td>Cloud Run（asia-northeast1）</td><td>Playwright + LibreOffice + ImageMagick</td></tr>
+          <tr><td>非同期処理</td><td>Cloud Tasks（asia-northeast1 / <code>proof-transfer</code> Queue）</td><td></td></tr>
+          <tr><td>メール</td><td>Resend Pro（<code>noreply@typolish.com</code>）</td><td>typolish.com 認証ドメイン</td></tr>
+          <tr><td>課金</td><td>Stripe（KOJINIUS アカウント）</td><td>譲渡対象</td></tr>
+          <tr><td>AI</td><td>Anthropic Claude API（Vision・AI 校正アシスタント）</td><td>Business プラン限定機能</td></tr>
+          <tr><td>主要 SDK バージョン</td><td>firebase ^12 / firebase-admin ^13 / stripe ^22 / @anthropic-ai/sdk ^0.89</td><td></td></tr>
+          <tr><td>UI ライブラリ</td><td>framer-motion / lucide-react / @dnd-kit / @tiptap / pdfjs-dist</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- §3 アーキテクチャ -->
+  <section id="sec-arch">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-arch"/></svg>
+      <h2 class="section-title">3. アーキテクチャ</h2>
+    </div>
+    <p>Vercel Functions（Fluid Compute / Node.js 24 / region: hnd1）を中心に、各サービスと接続する構成です。</p>
+    <pre>
+[typolish.com]
+  DNS: Cloudflare (NS: pranab/hazel.ns.cloudflare.com)
+  レジストラ: さくらインターネット
+  A record: 76.76.21.21 (Vercel)
+         │
+         ▼
+[Vercel Functions (Fluid Compute / Node.js 24 / region: hnd1)]
+         │
+         ├─→ Firebase Auth (FIREBASE_SERVICE_ACCOUNT env で Admin SDK)
+         ├─→ Firestore default DB
+         ├─→ Firebase RTDB (asia-southeast1 / プレゼンス)
+         ├─→ Cloudflare R2 (Signed URL / 直接アクセス禁止)
+         ├─→ Cloud Run (asia-northeast1) → Playwright/LibreOffice/ImageMagick
+         ├─→ Cloud Tasks (asia-northeast1) → proof-transfer Queue
+         ├─→ Anthropic Claude API
+         ├─→ Resend (noreply@typolish.com)
+         └─→ Stripe (Webhook: https://typolish.com/api/stripe/webhook)
+
+[Vercel Cron (vercel.ts の crons 5本)]
+  Authorization: Bearer CRON_SECRET → /api/cron/*
+
+[Kalenex (橋本晃治保有 / 別サービス)]
+  HMAC → typolish.com/api/v1/integrations/* (Vercel)
+  ← Webhook ── Vercel → Kalenex
+
+[Chrome 拡張機能 v2.2.0]
+  content-script → typolish.com (Vercel)</pre>
+    <div class="callout callout-info" style="margin-top:14px">
+      <div class="callout-title">コード変更ゼロで動作するサービス</div>
+      <p>Cloud Run 4 エンドポイント（env 経由）/ R2 / Firestore / RTDB / Auth / Resend / Anthropic / Stripe SDK / MCP エンドポイント（PAT 認証）/ Integration API（HMAC 検証）は、ホスト環境に依存しないため現行コードのまま動作します。</p>
+    </div>
+    <p style="margin-top:14px"><code>craftica.typolish.com</code> は <code>craftica.jp</code> への移行が完了しており、現在は DNS 上で NXDOMAIN（未使用）です。</p>
+  </section>
+
+  <!-- §4 譲渡スコープ -->
+  <section id="sec-scope">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-scope"/></svg>
+      <h2 class="section-title">4. 譲渡スコープ</h2>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>サービス / PJ</th><th>スコープ</th><th>備考</th></tr></thead>
+        <tbody>
+          <tr><td>Typolish 本体（Next.js アプリ）</td><td class="check">譲渡対象</td><td>本資料のスコープ</td></tr>
+          <tr><td>GitHub Repository（Kojinius/typolish）</td><td class="check">譲渡対象</td><td>Repo Transfer</td></tr>
+          <tr><td>GCP Project <code>typolish</code></td><td class="check">譲渡対象</td><td>Cloud Run / Cloud Tasks / Firebase 含む</td></tr>
+          <tr><td>Cloudflare R2 bucket（<code>typolish-files</code>）</td><td class="check">譲渡対象</td><td>bucket 共有 or migrate（要協議）</td></tr>
+          <tr><td>Stripe アカウント（KOJINIUS）</td><td class="check">譲渡対象</td><td>Stripe Account Transfer（Stripe サポート経由）</td></tr>
+          <tr><td>Resend ドメイン認証（typolish.com）</td><td class="check">譲渡対象</td><td>typolish.com ドメインと一緒に移管</td></tr>
+          <tr><td>Anthropic API key（typolish 専用）</td><td class="check">譲渡対象</td><td>Org 譲渡 or rotate</td></tr>
+          <tr><td>Domain <code>typolish.com</code></td><td class="check">譲渡対象</td><td>さくらインターネット ドメイン移管 + Cloudflare DNS ゾーン移管</td></tr>
+          <tr><td>Chrome 拡張機能 v2.2.0</td><td class="check">譲渡対象</td><td>Chrome Web Store オーナー譲渡。URL は <code>typolish.com</code> ハードコードのため同ドメインで動作継続</td></tr>
+          <tr><td>Craftica（craftica.jp）</td><td class="cross">対象外（橋本晃治保有）</td><td>craftica.typolish.com は移行完了済みで現在未使用</td></tr>
+          <tr><td>Kalenex</td><td class="cross">対象外（橋本晃治保有）</td><td>Integration API 接続継続/停止は譲渡契約事項</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-info" style="margin-top:14px">
+      <div class="callout-title">ドメイン移管について</div>
+      <p>typolish.com はさくらインターネットで取得・管理されており、DNS は Cloudflare に委任しています。譲渡時にはさくらインターネットでのレジストラ移管（ドメイン自体の移管）と、Cloudflare の DNS ゾーン引き渡しの両方が必要です。手順は §15 チェックリストをご参照ください。</p>
+    </div>
+  </section>
+
+  <!-- §5 環境変数 -->
+  <section id="sec-env">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-env"/></svg>
+      <h2 class="section-title">5. 環境変数</h2>
+    </div>
+    <p>一次ソースは <code>.env.example</code>（リポジトリ内）。Vercel Dashboard &gt; Project &gt; Settings &gt; Environment Variables で管理します。</p>
+    <div class="callout callout-info" style="margin-top:12px">
+      <div class="callout-title">Service Account JSON の投入方法</div>
+      <p><code>FIREBASE_SERVICE_ACCOUNT</code> と <code>GOOGLE_APPLICATION_CREDENTIALS_JSON</code> は GCP で発行した Service Account JSON の内容を <strong>1 行化</strong>（改行を削除）して Vercel env に投入します。Vercel では ADC（Application Default Credentials）が使えないため、JSON の直接設定が必要です。</p>
+      <pre>gcloud iam service-accounts keys create key.json --iam-account=&lt;SA email&gt;
+cat key.json | tr -d '\n'   # 1 行化して Vercel env に貼り付け</pre>
+    </div>
+    <div class="tbl-wrap" style="margin-top:16px">
+      <table>
+        <thead><tr><th>変数名</th><th>種別</th><th>用途・備考</th></tr></thead>
+        <tbody>
+          <!-- 2026-05-28 claude-opus-4-7[1m] セッションターン数：- 譲渡前文書のため Firebase config / Stripe price ID の実値を伏せプレースホルダ化（クライアントサイドゲートのため実質公開になる懸念。実値は Vercel env で引き継ぎ） -->
+          <tr><td colspan="3" class="tbl-section-head">Firebase Client SDK（クライアント公開）</td></tr>
+          <tr><td><code>NEXT_PUBLIC_FIREBASE_API_KEY</code></td><td><span class="tag tag-plain">plain</span></td><td>Firebase Web API キー（Vercel env を参照）</td></tr>
+          <tr><td><code>NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN</code></td><td><span class="tag tag-plain">plain</span></td><td>認証ドメイン（Vercel env を参照）</td></tr>
+          <tr><td><code>NEXT_PUBLIC_FIREBASE_PROJECT_ID</code></td><td><span class="tag tag-plain">plain</span></td><td>Firebase プロジェクト ID（Vercel env を参照）</td></tr>
+          <tr><td><code>NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET</code></td><td><span class="tag tag-plain">plain</span></td><td>Storage バケット（Vercel env を参照）</td></tr>
+          <tr><td><code>NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID</code></td><td><span class="tag tag-plain">plain</span></td><td>メッセージング Sender ID（Vercel env を参照）</td></tr>
+          <tr><td><code>NEXT_PUBLIC_FIREBASE_APP_ID</code></td><td><span class="tag tag-plain">plain</span></td><td>Firebase App ID（Vercel env を参照）</td></tr>
+          <tr><td><code>NEXT_PUBLIC_FIREBASE_DATABASE_URL</code></td><td><span class="tag tag-plain">plain</span></td><td>RTDB URL（asia-southeast1）</td></tr>
+          <tr><td><code>FIREBASE_DATABASE_URL</code></td><td><span class="tag tag-plain">plain</span></td><td>Admin SDK 用 RTDB URL</td></tr>
+          <tr><td colspan="3" class="tbl-section-head">Firebase Admin SDK</td></tr>
+          <tr><td><code>FIREBASE_SERVICE_ACCOUNT</code></td><td><span class="tag tag-secret">secret</span></td><td>Service Account JSON（1 行化）</td></tr>
+          <tr><td colspan="3" class="tbl-section-head">Cloud Run 変換サービス URL</td></tr>
+          <tr><td><code>CONVERT_OFFICE_FUNCTION_URL</code></td><td><span class="tag tag-plain">plain</span></td><td>Cloud Run <code>/convert-office</code> エンドポイント URL</td></tr>
+          <tr><td><code>CONVERT_DESIGN_FUNCTION_URL</code></td><td><span class="tag tag-plain">plain</span></td><td>Cloud Run <code>/convert-design</code> エンドポイント URL</td></tr>
+          <tr><td><code>THUMBNAIL_FUNCTION_URL</code></td><td><span class="tag tag-plain">plain</span></td><td>Cloud Run <code>/thumbnail</code> エンドポイント URL</td></tr>
+          <tr><td><code>RENDER_HTML_FUNCTION_URL</code></td><td><span class="tag tag-plain">plain</span></td><td>Cloud Run <code>/render-html</code> エンドポイント URL</td></tr>
+          <tr><td colspan="3" class="tbl-section-head">Cloud Tasks</td></tr>
+          <tr><td><code>CLOUD_TASKS_QUEUE_NAME</code></td><td><span class="tag tag-plain">plain</span></td><td><code>proof-transfer</code></td></tr>
+          <tr><td><code>CLOUD_TASKS_LOCATION</code></td><td><span class="tag tag-plain">plain</span></td><td><code>asia-northeast1</code></td></tr>
+          <tr><td><code>CLOUD_TASKS_WORKER_SA</code></td><td><span class="tag tag-plain">plain</span></td><td>Cloud Tasks Worker Service Account email</td></tr>
+          <tr><td><code>PROOF_PROCESS_URL</code></td><td><span class="tag tag-plain">plain</span></td><td><code>https://typolish.com/api/v1/integrations/proofs/process</code></td></tr>
+          <tr><td><code>GOOGLE_APPLICATION_CREDENTIALS_JSON</code></td><td><span class="tag tag-secret">secret</span></td><td>Cloud Tasks Client 初期化用 SA JSON（1 行化）</td></tr>
+          <tr><td colspan="3" class="tbl-section-head">Cloudflare R2</td></tr>
+          <tr><td><code>CLOUDFLARE_R2_ENDPOINT</code></td><td><span class="tag tag-plain">plain</span></td><td>R2 S3-compatible endpoint URL</td></tr>
+          <tr><td><code>CLOUDFLARE_R2_BUCKET_NAME</code></td><td><span class="tag tag-plain">plain</span></td><td><code>typolish-files</code></td></tr>
+          <tr><td><code>CLOUDFLARE_R2_ACCESS_KEY_ID</code></td><td><span class="tag tag-secret">secret</span></td><td></td></tr>
+          <tr><td><code>CLOUDFLARE_R2_SECRET_ACCESS_KEY</code></td><td><span class="tag tag-secret">secret</span></td><td></td></tr>
+          <tr><td colspan="3" class="tbl-section-head">外部サービス</td></tr>
+          <tr><td><code>RESEND_API_KEY</code></td><td><span class="tag tag-secret">secret</span></td><td>Resend メール送信 API キー</td></tr>
+          <tr><td><code>ANTHROPIC_API_KEY</code></td><td><span class="tag tag-secret">secret</span></td><td>typolish 専用キー</td></tr>
+          <tr><td><code>STRIPE_SECRET_KEY</code></td><td><span class="tag tag-secret">secret</span></td><td>Stripe live mode Secret Key</td></tr>
+          <tr><td><code>STRIPE_WEBHOOK_SECRET</code></td><td><span class="tag tag-secret">secret</span></td><td>Stripe Webhook Signing Secret（Vercel endpoint 用）</td></tr>
+          <tr><td><code>STRIPE_PRICE_PRO</code></td><td><span class="tag tag-plain">plain</span></td><td>Pro プラン Stripe Price ID（Vercel env を参照）</td></tr>
+          <tr><td><code>STRIPE_PRICE_BUSINESS</code></td><td><span class="tag tag-plain">plain</span></td><td>Business プラン Stripe Price ID（Vercel env を参照）</td></tr>
+          <tr><td colspan="3" class="tbl-section-head">暗号化キー</td></tr>
+          <tr><td><code>CHATWORK_ENCRYPTION_KEY</code></td><td><span class="tag tag-secret">secret</span></td><td>Chatwork トークン暗号化（AES-256-GCM / 64hex）</td></tr>
+          <tr><td><code>IFRAME_TOKEN_SECRET</code></td><td><span class="tag tag-secret">secret</span></td><td>HTML プルーフ iframe トークン HMAC 鍵（base64 32byte）</td></tr>
+          <tr><td><code>EXTENSION_TOKEN_SECRET</code></td><td><span class="tag tag-secret">secret</span></td><td>Chrome 拡張機能トークン HMAC 鍵（base64 32byte）</td></tr>
+          <tr><td><code>CRON_SECRET</code></td><td><span class="tag tag-secret">secret</span></td><td>Vercel Cron 認証トークン（Vercel が <code>Authorization: Bearer</code> で自動付与）</td></tr>
+          <tr><td colspan="3" class="tbl-section-head">アプリ設定</td></tr>
+          <tr><td><code>NEXT_PUBLIC_APP_ORIGIN</code></td><td><span class="tag tag-plain">plain</span></td><td>Production: <code>https://typolish.com</code></td></tr>
+          <tr><td><code>NODE_OPTIONS</code></td><td><span class="tag tag-plain">plain</span></td><td><code>--max-old-space-size=4096</code>（Build 時 OOM 対策）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- §6 Cron Jobs -->
+  <section id="sec-cron">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-cron"/></svg>
+      <h2 class="section-title">6. Cron Jobs（5本）</h2>
+    </div>
+    <p><code>vercel.ts</code> の <code>crons</code> に定義された 5 本です。<strong>Production 環境のみ</strong>実行され、Preview 環境では実行されません。</p>
+    <p style="margin-top:8px">Vercel が自動で <code>Authorization: Bearer &lt;CRON_SECRET&gt;</code> ヘッダーを付与するため、各エンドポイントはこのヘッダーで認証を行います。</p>
+    <div class="tbl-wrap" style="margin-top:14px">
+      <table>
+        <thead><tr><th>エンドポイント</th><th>スケジュール</th><th>JST</th><th>役割</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>/api/cron/expiry-notifications</code></td>
+            <td><code>0 0 * * *</code></td>
+            <td>毎日 9:00</td>
+            <td>プルーフ期限が近いユーザーへの通知メール送信</td>
+          </tr>
+          <tr>
+            <td><code>/api/cron/presence-sweep</code></td>
+            <td><code>*/2 * * * *</code></td>
+            <td>2 分ごと</td>
+            <td>RTDB のプレゼンス（在席情報）の stale エントリ掃除</td>
+          </tr>
+          <tr>
+            <td><code>/api/cron/expire-free-proofs</code></td>
+            <td><code>0 18 * * *</code></td>
+            <td>毎日 3:00</td>
+            <td>Free プランで 30 日経過した proof に <code>deletionMarker</code> をセット（論理削除）。R2 オブジェクトはこの時点では削除しません</td>
+          </tr>
+          <tr>
+            <td><code>/api/cron/hard-delete-expired-proofs</code></td>
+            <td><code>0 18 * * *</code></td>
+            <td>毎日 3:00</td>
+            <td>論理削除（<code>deletionMarker</code>）から 7 日経過した proof の物理削除（R2 オブジェクト含む）。冪等設計のため <code>expire-free-proofs</code> との並列実行に対応しています</td>
+          </tr>
+          <tr>
+            <td><code>/api/cron/notify-pat-expiry</code></td>
+            <td><code>0 18 * * *</code></td>
+            <td>毎日 3:00</td>
+            <td>PAT（Personal Access Token）の期限 7 日前・1 日前に通知メール送信。期限切れ PAT を自動失効（<code>disabledAt</code> セット）</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-info" style="margin-top:14px">
+      <div class="callout-title">Cron の動作確認方法</div>
+      <p>Vercel Dashboard &gt; プロジェクト &gt; Crons タブで各 Cron の実行ログと最終実行時刻をご確認いただけます。手動発火は <code>Authorization: Bearer &lt;CRON_SECRET&gt;</code> ヘッダーを付けて当該エンドポイントを curl することで可能です。</p>
+    </div>
+  </section>
+
+  <!-- §7 maxDuration -->
+  <section id="sec-dur">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-dur"/></svg>
+      <h2 class="section-title">7. 長時間 Function / maxDuration</h2>
+    </div>
+    <p><code>vercel.ts</code> の <code>functions</code> フィールドで個別に <code>maxDuration</code> を設定しています。</p>
+    <div class="tbl-wrap" style="margin-top:14px">
+      <table>
+        <thead><tr><th>Route</th><th>maxDuration</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td><code>src/app/api/v1/integrations/proofs/process/route.ts</code></td><td style="color:#c080ff;font-weight:600">540 秒</td><td>外部連携 Proof 転送 worker（Cloud Tasks から呼ばれる）</td></tr>
+          <tr><td><code>src/app/api/conversion/trigger/route.ts</code></td><td>120 秒</td><td>ファイル変換キャッシュ（Cloud Run 呼び出し）</td></tr>
+          <tr><td><code>src/app/api/render-html/route.ts</code></td><td>90 秒</td><td>HTML プルーフ 3 viewport スクショ（Cloud Run 呼び出し）</td></tr>
+          <tr><td><code>src/app/api/thumbnail/route.ts</code></td><td>60 秒</td><td>サムネ生成（Cloud Run 呼び出し）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-note" style="margin-top:18px">
+      <div class="callout-title">Vercel プランについて</div>
+      <p>最長 540 秒の Function は <strong>Vercel Pro プラン以上</strong>で動作します。Hobby プランは 300 秒固定上限のため、<code>/api/v1/integrations/proofs/process</code>（外部連携 Proof 転送）がタイムアウトします。Vercel Pro プランの maxDuration 上限は 800 秒で、540 秒は余裕を持って収まります。</p>
+    </div>
+  </section>
+
+  <!-- §8 外部連携 -->
+  <section id="sec-int">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-int"/></svg>
+      <h2 class="section-title">8. 外部連携</h2>
+    </div>
+
+    <h3 style="font-size:15px;font-weight:600;margin:0 0 10px;color:#fff">① MCP サーバー（<code>/api/mcp</code>）</h3>
+    <p>PAT（Personal Access Token）認証で外部からアクセスできる MCP サーバーです。Typolish の各種操作（proof 作成・アノテーション・承認等）を外部ツールから呼び出せます。PAT は <code>/developers</code> ページで発行・管理します。</p>
+
+    <h3 style="font-size:15px;font-weight:600;margin:22px 0 10px;color:#fff">② Integration API（<code>/api/v1/integrations/*</code> — 15 ルート）</h3>
+    <p>HMAC 署名認証の外部連携 API です。現在 Kalenex（橋本晃治保有）が接続しています。</p>
+    <ul style="margin-top:8px">
+      <li>HMAC 検証: <code>src/lib/integration-auth.ts</code></li>
+      <li>Webhook 配信: <code>src/lib/integration-webhook.ts</code></li>
+      <li>Integration 設定: Firestore <code>integrations/{clientId}</code>（<code>clientSecret</code> / <code>webhookSecret</code> / <code>allowedScopes</code> / <code>webhookUrl</code>）</li>
+      <li>自己管理 UI: <code>/developers</code> ページ（プロジェクト Owner が管理）</li>
+    </ul>
+    <div class="callout callout-info" style="margin-top:12px">
+      <div class="callout-title">Kalenex との連携について</div>
+      <p>Kalenex は橋本晃治保有の別サービスで、譲渡対象外です。Kalenex との Integration API 連携を継続するか停止するかは、譲渡契約で明確にしていただけますようお願いします。継続の場合、<code>integrations/{clientId}</code> の <code>clientSecret</code> を rotate することをお勧めします。</p>
+    </div>
+
+    <h3 style="font-size:15px;font-weight:600;margin:22px 0 10px;color:#fff">③ Chrome 拡張機能 v2.2.0</h3>
+    <p>Chrome Web Store 公開済みの「Typolish - Page Capture」拡張機能です。<code>typolish.com</code> 上で content-script として動作し、Web ページキャプチャを Typolish に送信します。</p>
+    <ul style="margin-top:8px">
+      <li>認証: <code>/api/extension/issue-token</code> でトークン取得</li>
+      <li>コールバック: <code>/api/extension/render-callback</code> へ POST</li>
+      <li>Chrome Web Store Item オーナーも譲渡対象です（Publisher Group に橋本晃治を追加することで保守継続も可能です）</li>
+    </ul>
+  </section>
+
+  <!-- §9 デプロイフロー -->
+  <section id="sec-deploy">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-deploy"/></svg>
+      <h2 class="section-title">9. デプロイフロー</h2>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>トリガー</th><th>経路</th></tr></thead>
+        <tbody>
+          <tr><td>通常変更</td><td>feature branch → PR → main merge → <strong>Vercel 自動デプロイ</strong></td></tr>
+          <tr><td>緊急修正</td><td>hotfix branch → PR → 即 merge → 自動デプロイ</td></tr>
+          <tr><td>ロールバック</td><td>Vercel Dashboard &gt; Deployments &gt; 過去 deployment を <strong>Promote to Production</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-info" style="margin-top:16px">
+      <div class="callout-title">Preview と Production の違い</div>
+      <p>main 以外のブランチは自動的に Preview デプロイされます。Cron Jobs は Production のみ実行されます。Vercel Dashboard &gt; Deployments で各デプロイの状態・ログをご確認いただけます。</p>
+    </div>
+  </section>
+
+  <!-- §10 監視ポイント -->
+  <section id="sec-mon">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-mon"/></svg>
+      <h2 class="section-title">10. 監視ポイント</h2>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>領域</th><th>確認場所</th><th>目安頻度</th></tr></thead>
+        <tbody>
+          <tr><td>Vercel Function ログ</td><td>Vercel Dashboard &gt; Logs</td><td>障害時</td></tr>
+          <tr><td>Cron 実行ログ</td><td>Vercel Dashboard &gt; Crons</td><td>週次</td></tr>
+          <tr><td>Firestore 読み書きエラー</td><td>Firebase Console &gt; Logs</td><td>障害時</td></tr>
+          <tr><td>Cloud Run（変換）エラー</td><td>GCP Console &gt; Cloud Run &gt; Logs</td><td>障害時</td></tr>
+          <tr><td>Stripe Webhook 配信状況</td><td>Stripe Dashboard &gt; Webhooks</td><td>月次</td></tr>
+          <tr><td>Resend メール送信失敗</td><td>Resend Dashboard &gt; Logs</td><td>月次</td></tr>
+          <tr><td>Vercel Usage（540s endpoint の Active CPU）</td><td>Vercel Dashboard &gt; Usage</td><td>月次</td></tr>
+          <tr><td>MCP PAT 使用状況</td><td>Firestore <code>audit_logs</code></td><td>月次</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- §11 Rollback 戦略 -->
+  <section id="sec-rollback">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-rollback"/></svg>
+      <h2 class="section-title">11. Rollback 戦略</h2>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>状況</th><th>rollback 方法</th><th>目安時間</th></tr></thead>
+        <tbody>
+          <tr><td>Vercel Preview デプロイ失敗</td><td>Preview 環境破棄</td><td>即時</td></tr>
+          <tr><td>Production デプロイ後に問題が発生した場合</td><td>Vercel Dashboard &gt; Deployments &gt; 正常だった過去の deployment を「Promote to Production」</td><td>数分</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-info" style="margin-top:14px">
+      <div class="callout-title">データについて</div>
+      <p>Firestore / RTDB / R2 / Stripe はアプリとは独立したサービスです。アプリをロールバックしても同じデータベースを参照するだけなので、データのロールバックは通常発生しません。</p>
+    </div>
+  </section>
+
+  <!-- §12 Secret Rotation -->
+  <section id="sec-secret">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-secret"/></svg>
+      <h2 class="section-title">12. Secret Rotation</h2>
+    </div>
+    <p>譲渡実行前後に全 secret を 1 度 rotate することをお勧めします。下表の手順でご対応いただけます。</p>
+    <div class="tbl-wrap" style="margin-top:14px">
+      <table>
+        <thead><tr><th>Secret</th><th>rotate 方法</th><th>優先度</th></tr></thead>
+        <tbody>
+          <tr><td><code>ANTHROPIC_API_KEY</code></td><td>Anthropic Console で新規キー発行 → Vercel env 更新</td><td>高</td></tr>
+          <tr><td><code>CLOUDFLARE_R2_ACCESS_KEY_ID</code> / <code>SECRET_ACCESS_KEY</code></td><td>Cloudflare Dashboard で新規 Token 発行 → Vercel env 更新</td><td>高</td></tr>
+          <tr><td><code>STRIPE_WEBHOOK_SECRET</code></td><td>Stripe Dashboard &gt; Webhooks &gt; endpoint &gt; Roll secret</td><td>高</td></tr>
+          <tr><td><code>GOOGLE_APPLICATION_CREDENTIALS_JSON</code></td><td>GCP Console で新規 SA key 発行・旧 key 削除 → Vercel env 更新</td><td>高</td></tr>
+          <tr><td><code>FIREBASE_SERVICE_ACCOUNT</code></td><td>GCP Console で Firebase Admin SA key rotate</td><td>中</td></tr>
+          <tr><td><code>CRON_SECRET</code></td><td>新規生成 → Vercel env 更新（Cron 認証が即時切替）</td><td>中</td></tr>
+          <tr><td><code>CHATWORK_ENCRYPTION_KEY</code></td><td>新規 64hex 生成 → Vercel env 更新（既存暗号化データの再暗号化が必要になる場合があります）</td><td>低</td></tr>
+          <tr><td>Integration API <code>clientSecret</code></td><td>Firestore <code>integrations/{clientId}.clientSecret</code> を更新 → 連携先 env も更新</td><td>中</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-info" style="margin-top:14px">
+      <div class="callout-title">Stripe Webhook の動作確認方法（実 Checkout 不要）</div>
+      <pre>STRIPE_LIVE_KEY=sk_live_xxxx
+# 過去の live event を新 endpoint に resend して動作確認
+stripe events resend evt_xxxx --webhook-endpoint we_xxxx --api-key "$STRIPE_LIVE_KEY"</pre>
+      <p><code>stripe trigger --api-key sk_live_xxx</code> は実 customer / 課金を作成するため、この用途では使わないことをお勧めします。</p>
+    </div>
+  </section>
+
+  <!-- §13 権限マトリクス -->
+  <section id="sec-perm">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-perm"/></svg>
+      <h2 class="section-title">13. 権限マトリクス（B案）</h2>
+    </div>
+    <p>B案（運用 = SKYDIRECTION 様・保守 = 橋本晃治）を前提とした権限設計です。各リソースで Owner（運用権）と Maintainer（保守権）を分離しています。</p>
+    <p style="margin-top:8px;font-size:12.5px;color:var(--sub)">権限移行の順序として <strong>「Owner 追加 → 旧 Owner 降格」</strong> の順で実行することで、一時的なアクセス不能を防ぐことができます。</p>
+    <div class="tbl-wrap" style="margin-top:14px">
+      <table>
+        <thead><tr><th>#</th><th>サービス</th><th>Owner（SKYDIRECTION 様・運用）</th><th>Maintainer（橋本晃治・保守）</th><th>移管方式</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>GitHub</td>
+            <td><strong>Admin</strong>（settings / secrets / billing）</td>
+            <td><strong>Maintainer</strong>（PR / merge / release）</td>
+            <td>Repo Transfer → Maintainer 招待</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Vercel Team / Project</td>
+            <td><strong>Owner</strong>（billing / domain / env 編集）</td>
+            <td><strong>Developer</strong>（コード push / Preview / 本番 deploy）</td>
+            <td>Project Transfer → Developer 招待</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Firebase / GCP（<code>typolish</code>）</td>
+            <td><strong>Owner</strong>（billing / IAM 管理）</td>
+            <td><strong>Editor</strong>（Cloud Run deploy / Firestore Rules deploy / ログ閲覧）</td>
+            <td>GCP IAM で Owner 追加 → 旧 Owner を Editor に変更</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Cloudflare（DNS + R2）</td>
+            <td><strong>Account Owner</strong></td>
+            <td>API Token（R2 read/write）または Member with R2:Edit</td>
+            <td>Cloudflare Account 移管 or Token 発行</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Stripe アカウント</td>
+            <td><strong>Account Owner</strong></td>
+            <td>Developer（API key read / Webhook log 閲覧）または None</td>
+            <td>Stripe Account Transfer（Stripe サポート）</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Resend</td>
+            <td><strong>Owner</strong></td>
+            <td>Member（template 編集 / log 閲覧）または None</td>
+            <td>Resend Team Transfer + typolish.com ドメイン認証</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>Anthropic</td>
+            <td><strong>Org Owner</strong></td>
+            <td>Member（API key read / usage 閲覧）または None</td>
+            <td>Console アクセス権移管 or 新規キー発行</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>Domain（typolish.com）<br>レジストラ: さくらインターネット<br>DNS: Cloudflare</td>
+            <td><strong>ドメイン Owner</strong></td>
+            <td>None（DNS 変更は SKYDIRECTION 様のみ）</td>
+            <td>さくらインターネット ドメイン移管 + Cloudflare DNS ゾーン引き渡し</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>Chrome Web Store</td>
+            <td><strong>Item Owner</strong></td>
+            <td>Publisher Group Member（更新申請）</td>
+            <td>Web Store オーナー譲渡 + Publisher Group 招待</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- §14 役割分担 -->
+  <section id="sec-roles">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-roles"/></svg>
+      <h2 class="section-title">14. 役割分担（B案）</h2>
+    </div>
+    <p>B案（運用 = SKYDIRECTION 様・保守 = 橋本晃治）の詳細な役割分担です。</p>
+    <div class="tbl-wrap" style="margin-top:14px">
+      <table>
+        <thead><tr><th>作業</th><th>橋本晃治（保守）</th><th>SKYDIRECTION 様（運用）</th></tr></thead>
+        <tbody>
+          <tr><td>バグ報告受付</td><td>報告は SKYDIRECTION 様経由</td><td>1 次受付</td></tr>
+          <tr><td>原因究明・修正 PR 作成</td><td class="check">担当</td><td>—</td></tr>
+          <tr><td>PR レビュー</td><td class="check">保守者として</td><td class="check">承認者として</td></tr>
+          <tr><td>main merge</td><td class="check">SKYDIRECTION 様承認後</td><td class="check">可</td></tr>
+          <tr><td>Vercel 本番デプロイ</td><td colspan="2" style="text-align:center">自動（main merge）/ 手動 Promote は双方可</td></tr>
+          <tr><td>障害対応</td><td>2 次（コード起因）</td><td>1 次（運用起因）</td></tr>
+          <tr><td>機能追加</td><td class="check">受託開発として</td><td>要望集約</td></tr>
+          <tr><td>顧客対応</td><td>—</td><td class="check">担当</td></tr>
+          <tr><td>課金管理（Stripe）</td><td>—</td><td class="check">担当</td></tr>
+          <tr><td>Secret rotation</td><td>必要時にご連絡</td><td>実施</td></tr>
+          <tr><td>依存ライブラリ更新</td><td class="check">担当</td><td>—</td></tr>
+          <tr><td>セキュリティパッチ適用</td><td class="check">担当</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-info" style="margin-top:16px">
+      <div class="callout-title">他のシナリオについて</div>
+      <p>A案（完全分離）/ C案（段階引継ぎ 3〜6 ヶ月）/ D案（一時保守 1〜3 ヶ月）は、契約内容に応じてご選択いただけます。B案以外を選択される場合は §13 の権限マトリクスをシナリオに合わせてお読み替えください。</p>
+    </div>
+  </section>
+
+  <!-- §15 譲渡前チェックリスト -->
+  <section id="sec-checklist">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-check"/></svg>
+      <h2 class="section-title">15. 譲渡前チェックリスト</h2>
+    </div>
+    <p>以下の項目をご確認の上、譲渡を実行いただけますようお願いします。</p>
+    <div class="callout callout-info" style="margin-top:14px">
+      <div class="callout-title">Craftica について（対応済み）</div>
+      <p>Craftica は <code>craftica.jp</code> への移行が完了しており、<code>craftica.typolish.com</code> は現在 DNS 上で未使用（NXDOMAIN）です。この点についてはご対応いただく必要はありません。</p>
+    </div>
+    <div class="tbl-wrap" style="margin-top:14px">
+      <table>
+        <thead><tr><th>項目</th><th>確認方法</th><th>状態</th></tr></thead>
+        <tbody>
+          <tr><td>Craftica の craftica.jp 移行完了</td><td><code>dig craftica.typolish.com</code> が NXDOMAIN を返すこと</td><td class="check">完了済み</td></tr>
+          <tr><td>本引き継ぎ資料の内容確認</td><td>本ページをご一読いただき、ご不明点を橋本晃治までご連絡ください</td><td></td></tr>
+          <tr><td>譲渡契約で役割分担シナリオ（A/B/C/D）の確定</td><td>契約書の確認</td><td></td></tr>
+          <tr><td>各サービスで Owner 追加 → 旧 Owner 降格の順で権限移行</td><td>§13 の権限マトリクスを順に実施</td><td></td></tr>
+          <tr><td>SKYDIRECTION 様が各サービスにアクセスできることの確認</td><td>GitHub / Vercel / Firebase / R2 / Stripe / Resend / Anthropic</td><td></td></tr>
+          <tr><td>全 secret の rotate（譲渡直前推奨）</td><td>§12 の rotate 手順に従って実施</td><td></td></tr>
+          <tr><td>Kalenex 連携継続/停止の契約での明確化</td><td>停止の場合は Firestore <code>integrations/{clientId}</code> の削除</td><td></td></tr>
+          <tr><td>Chrome Web Store オーナー譲渡 + Publisher Group 招待</td><td>Web Store Developer Console</td><td></td></tr>
+          <tr><td>さくらインターネット ドメイン移管手続き</td><td>移管申請（移管元・移管先の双方での操作が必要）</td><td></td></tr>
+          <tr><td>Cloudflare DNS ゾーンの引き渡し</td><td>Cloudflare アカウント移管またはゾーン設定の共有</td><td></td></tr>
+          <tr><td>Stripe Account Transfer 申請</td><td>Stripe サポートへの申請</td><td></td></tr>
+          <tr><td>譲渡当日: SKYDIRECTION 様で typolish.com ログイン確認</td><td>実機ブラウザでのログイン</td><td></td></tr>
+          <tr><td>譲渡当日: 主要機能の動作確認</td><td>ログイン / アップロード / 承認 / Stripe 課金 / メール送信</td><td></td></tr>
+          <tr><td>譲渡当日: 橋本晃治から main への PR + Preview 動作確認</td><td>B案の保守フロー確認</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- §16 参照ドキュメント -->
+  <section id="sec-docs">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-docs"/></svg>
+      <h2 class="section-title">16. 参照ドキュメント</h2>
+    </div>
+    <p>詳細な設計書はリポジトリ内の <code>documents/design/</code> ディレクトリに Markdown ファイルとして収録されています。本引き継ぎ資料は主要情報の概要版ですので、技術詳細については設計書をご参照ください。</p>
+    <div class="tbl-wrap" style="margin-top:14px">
+      <table>
+        <thead><tr><th>ファイル</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><td><code>documents/design/vercel-migration.md</code></td><td>Vercel 移行設計書（本資料の主たる一次ソース）。Phase 別手順・env マッピング・Stripe Webhook 冪等性・DNS 切替手順など移行全体像</td></tr>
+          <tr><td><code>documents/design/main.md</code></td><td>Typolish 機能カタログ・料金プラン・技術スタックの詳細</td></tr>
+          <tr><td><code>documents/DESIGN_DECISIONS.md</code></td><td>設計決定の履歴。なぜその設計を選んだかの経緯が記録されています</td></tr>
+          <tr><td><code>documents/WORKLOG.md</code></td><td>作業履歴</td></tr>
+          <tr><td><code>documents/REMAINING_TASKS.md</code></td><td>残タスク一覧</td></tr>
+          <tr><td><code>CLAUDE.md</code>（プロジェクトルート）</td><td>アーキテクチャ要点・Firestore Security Rules の特殊事情・API Route 構成など開発者向け情報</td></tr>
+          <tr><td><code>vercel.ts</code></td><td>Vercel 設定の一次ソース（Cron 5本・maxDuration・region hnd1）</td></tr>
+          <tr><td><code>.env.example</code></td><td>環境変数テンプレートの一次ソース</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-info" style="margin-top:16px">
+      <div class="callout-title">設計書の閲覧について</div>
+      <p>詳細設計書（<code>documents/design/*.md</code>）は現時点では本資料に同梱しておりません。引き継ぎ後、橋本晃治より別途ご共有いたします。ご不明な点がございましたら橋本晃治までお気軽にご連絡ください。</p>
+    </div>
+  </section>
+
+  <div style="border-top:1px solid var(--border);padding-top:24px;margin-top:16px;font-size:12px;color:var(--sub);display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between">
+    <span>Typolish 技術引き継ぎ資料 — SKYDIRECTION 様向け — 最終更新 2026-05-28</span>
+    <span>一次ソース: <code>documents/design/vercel-migration.md</code> / <code>vercel.ts</code> / <code>.env.example</code></span>
+  </div>
+
+</div>
+</main>
+
+<script>
+(function(){
+  // ── サイドバー開閉 ──
+  var sidebar   = document.getElementById('sidebar');
+  var main      = document.getElementById('main');
+  var topbar    = document.getElementById('topbar');
+  var toggleBtn = document.getElementById('toggle-btn');
+  var isMobile  = window.innerWidth <= 768;
+  var collapsed = isMobile;
+
+  function applyState(){
+    if(collapsed){
+      sidebar.classList.add('collapsed');
+      main.classList.remove('has-sidebar');
+      main.classList.add('no-sidebar');
+      topbar.classList.remove('has-sidebar');
+      topbar.classList.add('no-sidebar');
+    } else {
+      sidebar.classList.remove('collapsed');
+      main.classList.add('has-sidebar');
+      main.classList.remove('no-sidebar');
+      topbar.classList.add('has-sidebar');
+      topbar.classList.remove('no-sidebar');
+    }
+  }
+  applyState();
+
+  toggleBtn.addEventListener('click', function(){
+    collapsed = !collapsed;
+    applyState();
+  });
+
+  window.addEventListener('resize', function(){
+    isMobile = window.innerWidth <= 768;
+    if(isMobile && !collapsed){ collapsed = true; applyState(); }
+    if(!isMobile && collapsed){ collapsed = false; applyState(); }
+  });
+
+  // ── スクロールスパイ (IntersectionObserver) ──
+  var navItems = Array.from(document.querySelectorAll('.nav-item'));
+  var sections = Array.from(document.querySelectorAll('section[id]'));
+  var activeNav = null;
+
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        var id = e.target.id;
+        var link = document.querySelector('.nav-item[href="#'+id+'"]');
+        if(link && link !== activeNav){
+          navItems.forEach(function(n){ n.classList.remove('active'); });
+          link.classList.add('active');
+          activeNav = link;
+          link.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
+    });
+  }, { rootMargin: '-52px 0px -60% 0px', threshold: 0 });
+
+  sections.forEach(function(s){ observer.observe(s); });
+
+  // ── 検索機能 ──
+  var searchInput = document.getElementById('search-input');
+  var searchCount = document.getElementById('search-count');
+  var debounceTimer = null;
+  // ハイライト用カラークラス (6色循環)
+  var HL_CLASSES = ['hl0','hl1','hl2','hl3','hl4','hl5'];
+
+  // オリジナルHTML保存
+  var contentMain = document.querySelector('.content-wrap');
+  var originalHTML = contentMain.innerHTML;
+
+  function clearHighlight(){
+    contentMain.innerHTML = originalHTML;
+    // イベント再バインド
+    rebindEvents();
+    searchCount.textContent = '';
+    navItems.forEach(function(n){ n.classList.remove('search-match'); });
+  }
+
+  function escapeRegex(s){
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function doSearch(query){
+    // originalHTML から再構築
+    contentMain.innerHTML = originalHTML;
+    rebindEvents();
+
+    var words = query.trim().split(/\s+/).filter(function(w){ return w.length > 0; });
+    if(words.length === 0){
+      searchCount.textContent = '';
+      navItems.forEach(function(n){ n.classList.remove('search-match'); });
+      return;
+    }
+
+    var totalCount = 0;
+    var matchedSections = new Set();
+
+    // TreeWalker でテキストノードを走査
+    var walker = document.createTreeWalker(
+      contentMain,
+      NodeFilter.SHOW_TEXT,
+      function(node){
+        var parent = node.parentElement;
+        if(!parent) return NodeFilter.FILTER_REJECT;
+        var tag = parent.tagName.toLowerCase();
+        // script/style は除外
+        if(tag === 'script' || tag === 'style') return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    );
+
+    var textNodes = [];
+    var n;
+    while((n = walker.nextNode())){ textNodes.push(n); }
+
+    textNodes.forEach(function(textNode){
+      var text = textNode.nodeValue;
+      if(!text) return;
+
+      // 全ワードがこのノードに含まれているかチェック（AND検索）
+      var allMatch = words.every(function(w){
+        return text.toLowerCase().indexOf(w.toLowerCase()) >= 0;
+      });
+      if(!allMatch) return;
+
+      // マッチしたテキストノードをマーク化
+      // 各ワードを順にマーク、元のノードを分割して置換
+      var frag = document.createDocumentFragment();
+      var remaining = text;
+      var lastIdx = 0;
+      var totalText = text;
+
+      // 全ワードのマッチ位置を収集
+      var matches = [];
+      words.forEach(function(w, wi){
+        var re = new RegExp(escapeRegex(w), 'gi');
+        var m;
+        while((m = re.exec(totalText)) !== null){
+          matches.push({ start: m.index, end: m.index + m[0].length, wordIdx: wi, original: m[0] });
+          totalCount++;
+        }
+      });
+
+      // ソート + 重複排除
+      matches.sort(function(a,b){ return a.start - b.start; });
+      var filtered = [];
+      var lastEnd = -1;
+      matches.forEach(function(m){
+        if(m.start >= lastEnd){
+          filtered.push(m);
+          lastEnd = m.end;
+        }
+      });
+
+      if(filtered.length === 0) return;
+
+      // フラグメント構築
+      var cursor = 0;
+      filtered.forEach(function(m){
+        if(m.start > cursor){
+          frag.appendChild(document.createTextNode(totalText.slice(cursor, m.start)));
+        }
+        var mark = document.createElement('mark');
+        mark.className = HL_CLASSES[m.wordIdx % HL_CLASSES.length];
+        mark.textContent = m.original;
+        frag.appendChild(mark);
+        cursor = m.end;
+      });
+      if(cursor < totalText.length){
+        frag.appendChild(document.createTextNode(totalText.slice(cursor)));
+      }
+
+      textNode.parentNode.replaceChild(frag, textNode);
+
+      // セクション特定
+      var el = textNode.parentElement || filtered[0] && document.querySelector('mark.'+HL_CLASSES[0]);
+      // セクション祖先を探す
+      var ancestor = el;
+      while(ancestor && ancestor.tagName && ancestor.tagName.toLowerCase() !== 'section'){
+        ancestor = ancestor.parentElement;
+      }
+      if(ancestor && ancestor.id) matchedSections.add(ancestor.id);
+    });
+
+    // カウント表示
+    searchCount.textContent = totalCount > 0 ? totalCount + ' 件' : '一致なし';
+
+    // ナビハイライト
+    navItems.forEach(function(n){
+      var href = n.getAttribute('href');
+      if(!href) return;
+      var secId = href.replace('#','');
+      if(matchedSections.has(secId)){
+        n.classList.add('search-match');
+      } else {
+        n.classList.remove('search-match');
+      }
+    });
+
+    // 最初のマッチへスクロール
+    if(matchedSections.size > 0){
+      var firstId = null;
+      // sections の順序で最初のマッチを探す
+      sections.forEach(function(s){
+        if(!firstId && matchedSections.has(s.id)) firstId = s.id;
+      });
+      if(firstId){
+        var el = document.getElementById(firstId);
+        if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }
+
+  function rebindEvents(){
+    // toggleBtn / observer / resize は外側スコープで保持されているため再バインド不要
+    // ただし navItems / sections の参照を更新する必要がある場合はここで
+  }
+
+  searchInput.addEventListener('input', function(){
+    clearTimeout(debounceTimer);
+    var q = searchInput.value;
+    if(!q.trim()){
+      clearHighlight();
+      return;
+    }
+    debounceTimer = setTimeout(function(){ doSearch(q); }, 180);
+  });
+
+  searchInput.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      searchInput.value = '';
+      clearHighlight();
+    }
+  });
+
+})();
+</script>
+</body>
+</html>

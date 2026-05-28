@@ -1,0 +1,114 @@
+<!-- 2026-05-28 claude-sonnet-4-6 セッションターン数：- Typolish 譲渡先(SKYDIRECTION様)向け技術引き継ぎ書。kojinius.jp/typolish/ 配下・シンプルログイン(post-pilot流用)。DNS=Cloudflare/Craftica退避済/Cron5本の実態反映・トーン丁寧化 -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>ログイン ｜ Typolish 引き継ぎ資料</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0a0a0a;
+    --bg-card:rgba(255,255,255,.04);
+    --border:rgba(255,255,255,.12);
+    --border-hover:rgba(255,255,255,.24);
+    --text:rgba(255,255,255,.92);
+    --text-dim:rgba(255,255,255,.55);
+    --text-mute:rgba(255,255,255,.3);
+    --accent:#e86c00;
+    --error:#f87171;
+  }
+  html,body{background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI",system-ui,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;min-height:100vh}
+  body{display:flex;align-items:center;justify-content:center;padding:24px}
+  body::before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 15% 10%,rgba(232,108,0,.12) 0%,transparent 45%),radial-gradient(circle at 85% 30%,rgba(232,108,0,.08) 0%,transparent 50%),radial-gradient(circle at 50% 100%,rgba(100,100,255,.07) 0%,transparent 55%);pointer-events:none;z-index:-1}
+
+  .login-card{width:100%;max-width:420px;padding:40px 36px;background:var(--bg-card);border:1px solid var(--border);border-radius:18px;backdrop-filter:blur(8px)}
+  .badge{display:inline-block;padding:6px 14px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text-dim);font-weight:700;border-radius:999px;font-size:11px;letter-spacing:.12em;margin-bottom:20px}
+  h1.title{font-size:24px;font-weight:900;line-height:1.4;letter-spacing:-.01em;margin-bottom:8px;color:var(--text)}
+  h1.title .highlight{color:var(--accent)}
+  .desc{font-size:13px;color:var(--text-dim);margin-bottom:28px;line-height:1.65}
+
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:12px;font-weight:700;color:var(--text-dim);letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase}
+  .field input{display:block;width:100%;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color .15s}
+  .field input:focus{border-color:var(--border-hover)}
+  .field input::placeholder{color:var(--text-mute)}
+
+  .btn{display:block;width:100%;margin-top:8px;padding:13px 16px;background:#fff;color:#000;font-size:15px;font-weight:700;letter-spacing:.03em;border:none;border-radius:10px;cursor:pointer;transition:transform .15s,box-shadow .15s,opacity .15s;font-family:inherit}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,255,255,.15);opacity:.92}
+  .btn:active{transform:translateY(0)}
+
+  .error{display:none;margin-top:14px;padding:10px 14px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.4);border-radius:8px;color:var(--error);font-size:13px}
+  .error.show{display:block}
+
+  .footnote{margin-top:24px;font-size:11px;color:var(--text-mute);text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+  <main class="login-card">
+    <span class="badge">TYPOLISH / HANDOVER</span>
+    <h1 class="title"><span class="highlight">引き継ぎ資料</span>へログイン</h1>
+    <p class="desc">SKYDIRECTION 様向けの技術引き継ぎ資料です。ID とパスワードを入力してください。</p>
+
+    <form id="login-form" autocomplete="off">
+      <div class="field">
+        <label for="uid">ID</label>
+        <input type="text" id="uid" name="uid" required autocomplete="off" autofocus>
+      </div>
+      <div class="field">
+        <label for="pwd">パスワード</label>
+        <input type="password" id="pwd" name="pwd" required autocomplete="off">
+      </div>
+      <button type="submit" class="btn">ログイン</button>
+      <div id="error" class="error">ID またはパスワードが違います</div>
+    </form>
+
+    <p class="footnote">SKYDIRECTION 様および橋本晃治のみアクセス可能</p>
+  </main>
+
+<script>
+// SHA-256 ハッシュ値（事前計算済み）
+const UID_HASH = "a2424343b2053e273bd351e807ffce21de670696c87d5673a791a4764474475f";
+const PWD_HASH = "90a464ab2c18dca98be9c9e21378cd29bcd1f66e1421fd6e741c8be5e66df8e5";
+
+async function sha256(text) {
+  const buf = new TextEncoder().encode(text);
+  const hash = await crypto.subtle.digest("SHA-256", buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+function getReturnTo() {
+  const params = new URLSearchParams(location.search);
+  const raw = params.get("returnTo");
+  if (!raw) return "/typolish/";
+  try {
+    const decoded = decodeURIComponent(raw);
+    // オープンリダイレクト防止: /typolish/ 配下のパスのみ許可
+    if (decoded.startsWith("/typolish/")) return decoded;
+  } catch (_) {}
+  return "/typolish/";
+}
+
+document.getElementById("login-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const uid = document.getElementById("uid").value;
+  const pwd = document.getElementById("pwd").value;
+  const error = document.getElementById("error");
+  const [uidHash, pwdHash] = await Promise.all([sha256(uid), sha256(pwd)]);
+  if (uidHash === UID_HASH && pwdHash === PWD_HASH) {
+    sessionStorage.setItem("typolish-authed", "1");
+    location.replace(getReturnTo());
+  } else {
+    error.classList.add("show");
+    document.getElementById("pwd").value = "";
+  }
+});
+
+// 既に認証済みなら returnTo へ即遷移
+if (sessionStorage.getItem("typolish-authed") === "1") {
+  location.replace(getReturnTo());
+}
+</script>
+</body>
+</html>
