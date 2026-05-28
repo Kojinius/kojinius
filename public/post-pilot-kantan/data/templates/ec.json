@@ -1,0 +1,128 @@
+{
+  "industry": "ec",
+  "label": "ネットショップ / EC",
+  "version": "2026.05",
+  "defaultHashtags": ["ネットショップ", "通販"],
+  "drafts": [
+    {
+      "id": "ec-spring-001",
+      "tone": "polite",
+      "seasonTags": ["spring", "new-arrival"],
+      "weight": 1.4,
+      "text": "🌸 春の新作入荷\n\nリネン素材のロングシャツ、本日より販売開始しました。\n軽やかな着心地で、これからの季節にぴったりです。",
+      "hashtags": ["ネットショップ", "春コーデ", "新作"]
+    },
+    {
+      "id": "ec-rainy-002",
+      "tone": "friendly",
+      "seasonTags": ["rainy-season"],
+      "weight": 1.3,
+      "text": "梅雨入りしましたね☔\n\n撥水加工のミニトート、ジメっとした日でも気分が上がるおすすめアイテムです。\n通勤バッグの中の小物入れにも◎",
+      "hashtags": ["ネットショップ", "梅雨", "撥水", "雨の日"]
+    },
+    {
+      "id": "ec-summer-003",
+      "tone": "promo",
+      "seasonTags": ["summer", "sale"],
+      "weight": 1.7,
+      "text": "🌞 SUMMER SALE\n\n夏物全品 最大30%OFF、本日スタート。\n気になっていたあのアイテム、お得なこの機会にぜひ。",
+      "hashtags": ["ネットショップ", "サマーセール", "30OFF", "夏物"]
+    },
+    {
+      "id": "ec-autumn-004",
+      "tone": "polite",
+      "seasonTags": ["autumn", "new-arrival"],
+      "weight": 1.3,
+      "text": "🍂 秋の新作コレクション\n\nやさしい色合いのウールニット、再入荷しました。\n肌寒くなる季節の主役に、ぜひ。",
+      "hashtags": ["ネットショップ", "秋コーデ", "ニット"]
+    },
+    {
+      "id": "ec-winter-005",
+      "tone": "friendly",
+      "seasonTags": ["winter"],
+      "weight": 1.1,
+      "text": "本格的に冷え込んできましたね🧣\n\n足元から温める、もこもこルームソックスが今シーズン特に人気です。\nおうち時間のお供にどうぞ。",
+      "hashtags": ["ネットショップ", "冬の暖かグッズ", "ルームソックス"]
+    },
+    {
+      "id": "ec-christmas-006",
+      "tone": "promo",
+      "seasonTags": ["christmas"],
+      "weight": 1.7,
+      "text": "🎁 クリスマスギフト特集\n\nラッピング無料 + メッセージカード対応中。\n大切な方への贈り物は、12/20までのご注文がおすすめです。",
+      "hashtags": ["ネットショップ", "クリスマス", "ギフト", "ラッピング無料"]
+    },
+    {
+      "id": "ec-newyear-007",
+      "tone": "promo",
+      "seasonTags": ["new-year", "sale"],
+      "weight": 1.6,
+      "text": "🎍 新春初売り\n\n対象アイテム最大50%OFFの福袋セール、1/1 0:00 スタート。\nお気に入りをお得にゲットしてください。",
+      "hashtags": ["ネットショップ", "初売り", "福袋", "50OFF"]
+    },
+    {
+      "id": "ec-valentine-008",
+      "tone": "polite",
+      "seasonTags": ["valentine"],
+      "weight": 1.4,
+      "text": "💝 バレンタインギフト\n\nラッピング無料、メッセージカード対応の限定セットをご用意しました。\n2/10 注文分まで2/14お届けが間に合います。",
+      "hashtags": ["ネットショップ", "バレンタイン", "ギフト"]
+    },
+    {
+      "id": "ec-weekstart-009",
+      "tone": "friendly",
+      "seasonTags": ["week-start"],
+      "weight": 1.0,
+      "text": "おはようございます☀\n\n月曜更新のおすすめアイテム、サイトトップにまとめました。\n新しい週のはじめに、お気に入りを見つけてくださいね。",
+      "hashtags": ["ネットショップ", "月曜更新"]
+    },
+    {
+      "id": "ec-weekend-010",
+      "tone": "promo",
+      "seasonTags": ["weekend"],
+      "weight": 1.0,
+      "text": "📦 週末送料無料\n\n本日0時〜日曜23時59分まで、全国送料無料でお届けします。\n気になっていたアイテム、この機会にいかがですか？",
+      "hashtags": ["ネットショップ", "送料無料", "週末"]
+    },
+    {
+      "id": "ec-always-011",
+      "tone": "friendly",
+      "seasonTags": [],
+      "weight": 0.8,
+      "text": "👀 店主のおすすめ\n\nお気に入りのブランドから入荷した小さなマグカップ。\n手にすっと馴染むサイズで、朝のコーヒータイムが少し楽しくなります☕",
+      "hashtags": ["ネットショップ", "店主のおすすめ", "マグカップ"]
+    },
+    {
+      "id": "ec-always-012",
+      "tone": "polite",
+      "seasonTags": [],
+      "weight": 0.9,
+      "text": "📷 お客様レビュー\n\n「サイズ感がぴったりで、毎日着ています」と嬉しいお声をいただきました。\nレビューはサイトでもご覧いただけます。",
+      "hashtags": ["ネットショップ", "お客様の声", "レビュー"]
+    },
+    {
+      "id": "ec-restock-013",
+      "tone": "polite",
+      "seasonTags": ["restock"],
+      "weight": 0.9,
+      "text": "🔁 再入荷のお知らせ\n\n大変好評をいただいておりました定番アイテム、本日より再入荷分の販売を開始しました。\n数量限定ですので、お早めにどうぞ。",
+      "hashtags": ["ネットショップ", "再入荷", "定番"]
+    },
+    {
+      "id": "ec-fridays-014",
+      "tone": "friendly",
+      "seasonTags": ["friday"],
+      "weight": 1.0,
+      "text": "今週もお疲れさまでした💐\n\n週末のおうち時間にぴったりのアイテム、特集ページでまとめています。\nゆったりとした時間のおともにどうぞ。",
+      "hashtags": ["ネットショップ", "金曜日", "週末おうち時間"]
+    },
+    {
+      "id": "ec-coupon-015",
+      "tone": "promo",
+      "seasonTags": [],
+      "weight": 0.8,
+      "text": "🎟 メンバー限定クーポン配布中\n\n会員登録（無料）で、初回 ¥500 OFF クーポンをプレゼント。\nお気に入りのアイテムを、もっとお得に。",
+      "hashtags": ["ネットショップ", "クーポン", "メンバー限定"]
+    }
+  ]
+}

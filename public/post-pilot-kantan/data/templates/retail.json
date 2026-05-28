@@ -1,0 +1,104 @@
+{
+  "industry": "retail",
+  "label": "小売 / 物販（実店舗）",
+  "version": "2026.05",
+  "defaultHashtags": ["お店", "ご来店お待ちしています"],
+  "drafts": [
+    {
+      "id": "retail-arrival-001",
+      "tone": "polite",
+      "seasonTags": ["spring", "new-arrival"],
+      "weight": 1.3,
+      "text": "🌸 春の新商品が入荷しました\n\n店頭に並べてお待ちしております。\n実際に手に取って、お気に入りを見つけてください。",
+      "hashtags": ["お店", "新入荷", "春"]
+    },
+    {
+      "id": "retail-hours-002",
+      "tone": "polite",
+      "seasonTags": [],
+      "weight": 0.8,
+      "text": "🕐 営業時間のご案内\n\n本日も10:00〜19:00で営業しております。\nお近くにお越しの際は、ぜひお立ち寄りください。",
+      "hashtags": ["お店", "営業時間"]
+    },
+    {
+      "id": "retail-pick-003",
+      "tone": "friendly",
+      "seasonTags": [],
+      "weight": 0.8,
+      "text": "店主のイチオシ、入りました👀\n\n自信を持っておすすめできる一品です。\n気になった方は、ぜひ店頭でご覧ください。",
+      "hashtags": ["お店", "店主のおすすめ"]
+    },
+    {
+      "id": "retail-sale-004",
+      "tone": "promo",
+      "seasonTags": ["summer", "sale"],
+      "weight": 1.6,
+      "text": "🏷 店頭セール開催中\n\n対象商品をお得な価格でご用意しました。\n数に限りがございますので、お早めのご来店を。",
+      "hashtags": ["お店", "セール", "店頭"]
+    },
+    {
+      "id": "retail-point-005",
+      "tone": "promo",
+      "seasonTags": [],
+      "weight": 0.9,
+      "text": "🎯 本日はポイントデー\n\nお買い上げでポイントが通常より多くたまります。\nこの機会に、ぜひお買い物をお楽しみください。",
+      "hashtags": ["お店", "ポイントデー", "お得"]
+    },
+    {
+      "id": "retail-reserve-006",
+      "tone": "polite",
+      "seasonTags": [],
+      "weight": 0.8,
+      "text": "🛍 お取り置き承ります\n\n気になる商品は、お電話でお取り置きも可能です。\nご来店までお預かりいたしますので、お気軽にどうぞ。",
+      "hashtags": ["お店", "取り置き"]
+    },
+    {
+      "id": "retail-winter-007",
+      "tone": "polite",
+      "seasonTags": ["winter"],
+      "weight": 1.2,
+      "text": "❄ 冬のあったかアイテム、揃いました\n\n寒い季節を心地よく過ごすための品をご用意しています。\n店頭でぜひお手に取ってください。",
+      "hashtags": ["お店", "冬", "新入荷"]
+    },
+    {
+      "id": "retail-weekend-008",
+      "tone": "promo",
+      "seasonTags": ["weekend"],
+      "weight": 1.0,
+      "text": "🎉 週末のご来店特典\n\n土日ご来店のお客様に、ささやかなプレゼントをご用意しました。\nぜひお買い物のついでにお立ち寄りください。",
+      "hashtags": ["お店", "週末", "ご来店特典"]
+    },
+    {
+      "id": "retail-weekstart-009",
+      "tone": "friendly",
+      "seasonTags": ["week-start"],
+      "weight": 1.0,
+      "text": "おはようございます☀\n\n新しい週の始まり、お店も元気に開けています。\n気分転換のお買い物に、ぜひどうぞ。",
+      "hashtags": ["お店", "月曜日"]
+    },
+    {
+      "id": "retail-yearend-010",
+      "tone": "promo",
+      "seasonTags": ["new-year", "sale"],
+      "weight": 1.5,
+      "text": "🎍 新春初売り\n\n年明けはお得な初売りからスタート。\n店頭で皆さまのご来店をお待ちしております。",
+      "hashtags": ["お店", "初売り", "新春"]
+    },
+    {
+      "id": "retail-restock-011",
+      "tone": "polite",
+      "seasonTags": ["restock"],
+      "weight": 0.9,
+      "text": "🔁 人気商品が再入荷しました\n\nご好評につき品切れしていた商品、店頭に再び並びました。\nお求めの方はお早めにどうぞ。",
+      "hashtags": ["お店", "再入荷"]
+    },
+    {
+      "id": "retail-always-012",
+      "tone": "friendly",
+      "seasonTags": [],
+      "weight": 0.7,
+      "text": "🛒 ふらっと立ち寄れるお店でありたい。\n\n見るだけでも大歓迎です。\n今日はどんな出会いがあるか、お待ちしています。",
+      "hashtags": ["お店", "ご来店お待ちしています"]
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "industry": "cafe",
+  "label": "カフェ / 喫茶店",
+  "version": "2026.05",
+  "defaultHashtags": ["カフェ", "喫茶店", "おうちカフェ"],
+  "drafts": [
+    {
+      "id": "cafe-spring-001",
+      "tone": "polite",
+      "seasonTags": ["spring", "new-menu"],
+      "weight": 1.4,
+      "text": "🌸 春の新メニュー登場\n\n桜あんパンケーキ、本日より販売開始しました。\n季節限定の優しい味わいを、ぜひ店内でお召し上がりください。",
+      "hashtags": ["カフェ", "新メニュー", "春", "パンケーキ"]
+    },
+    {
+      "id": "cafe-rainy-002",
+      "tone": "promo",
+      "seasonTags": ["rainy-season"],
+      "weight": 1.5,
+      "text": "🌧 雨の日サービス\n\n本日ご来店のお客様、ホットドリンクを50円引きでご提供しています。\nお足元の悪い中ご来店いただく皆さまへ、ささやかなお礼です☕",
+      "hashtags": ["カフェ", "雨の日サービス", "梅雨"]
+    },
+    {
+      "id": "cafe-summer-003",
+      "tone": "friendly",
+      "seasonTags": ["summer"],
+      "weight": 1.2,
+      "text": "暑い日が続きますね🥵\n\nそんな日のおすすめは、自家製ジンジャーレモネード🍋\n氷をたっぷり入れて、シュワッと爽やか。\nお店で見つけたら、ぜひ試してみてくださいね。",
+      "hashtags": ["カフェ", "夏ドリンク", "レモネード"]
+    },
+    {
+      "id": "cafe-autumn-004",
+      "tone": "polite",
+      "seasonTags": ["autumn", "new-menu"],
+      "weight": 1.3,
+      "text": "🍁 秋の新作スイーツ\n\n本日より、栗とさつまいものモンブランタルトを販売いたします。\nお店の薪窯で焼き上げた、香ばしい一品です。",
+      "hashtags": ["カフェ", "秋スイーツ", "モンブラン"]
+    },
+    {
+      "id": "cafe-winter-005",
+      "tone": "friendly",
+      "seasonTags": ["winter"],
+      "weight": 1.1,
+      "text": "☃️ 寒い日のごほうび\n\n身体を芯から温める、シナモンチャイラテはじめました。\n外の空気が冷たい日ほど、染み入る一杯です。",
+      "hashtags": ["カフェ", "冬ドリンク", "チャイ"]
+    },
+    {
+      "id": "cafe-christmas-006",
+      "tone": "polite",
+      "seasonTags": ["christmas"],
+      "weight": 1.8,
+      "text": "🎄 クリスマス限定メニュー\n\n12月限定で、ベリーとピスタチオのホリデーケーキをご提供いたします。\n大切な方とのひとときに、ぜひ。",
+      "hashtags": ["カフェ", "クリスマス", "ホリデー"]
+    },
+    {
+      "id": "cafe-newyear-007",
+      "tone": "polite",
+      "seasonTags": ["new-year"],
+      "weight": 1.6,
+      "text": "🎍 新年のごあいさつ\n\n旧年中はたくさんのご来店、誠にありがとうございました。\n本年も、皆さまにとってのほっとひと息の場でありたいと思います。",
+      "hashtags": ["カフェ", "新年", "ごあいさつ"]
+    },
+    {
+      "id": "cafe-valentine-008",
+      "tone": "promo",
+      "seasonTags": ["valentine"],
+      "weight": 1.5,
+      "text": "💝 バレンタインフェア開催中\n\n自家製ガトーショコラ、本日より2/14まで販売中。\n大切な方への贈り物としても、ご自分へのご褒美にも🍫",
+      "hashtags": ["カフェ", "バレンタイン", "ガトーショコラ"]
+    },
+    {
+      "id": "cafe-weekstart-009",
+      "tone": "friendly",
+      "seasonTags": ["week-start"],
+      "weight": 1.0,
+      "text": "おはようございます☀\n\n月曜日、無理せずゆっくり始めましょう。\nお店は今日も朝8時から開けています。\nコーヒー1杯から、お気軽にどうぞ。",
+      "hashtags": ["カフェ", "月曜日", "朝活"]
+    },
+    {
+      "id": "cafe-weekend-010",
+      "tone": "promo",
+      "seasonTags": ["weekend"],
+      "weight": 1.0,
+      "text": "🎉 週末限定セット\n\n土日のみ、コーヒー + 焼き菓子セットを 100円引きでご提供しています。\nゆっくり過ごす週末のおともに、いかがでしょうか。",
+      "hashtags": ["カフェ", "週末セット", "土日"]
+    },
+    {
+      "id": "cafe-always-011",
+      "tone": "friendly",
+      "seasonTags": [],
+      "weight": 0.8,
+      "text": "本日も、店主が一杯ずつ丁寧に淹れています☕\n\n何気ない一日に、ちょっとした「美味しい」を添えられたら嬉しいです。",
+      "hashtags": ["カフェ", "コーヒー", "ハンドドリップ"]
+    },
+    {
+      "id": "cafe-always-012",
+      "tone": "polite",
+      "seasonTags": [],
+      "weight": 0.9,
+      "text": "📚 読書スペースのお知らせ\n\n店内には、自由にお読みいただける書棚をご用意しています。\nお気に入りの一冊と、ゆったりとした時間をどうぞ。",
+      "hashtags": ["カフェ", "読書", "ブックカフェ"]
+    },
+    {
+      "id": "cafe-always-013",
+      "tone": "promo",
+      "seasonTags": [],
+      "weight": 0.7,
+      "text": "🎁 スタンプカードはじめました\n\nご来店ごとに1スタンプ、10個たまると珈琲1杯プレゼント。\nレジでお気軽にお声がけください。",
+      "hashtags": ["カフェ", "スタンプカード", "お得"]
+    },
+    {
+      "id": "cafe-fridays-014",
+      "tone": "friendly",
+      "seasonTags": ["friday"],
+      "weight": 1.0,
+      "text": "今日は金曜日💐\n\n一週間お疲れさまでした。\n金曜の夜は20時までゆっくりオープン。\n好きなドリンクで、自分をねぎらってあげてくださいね。",
+      "hashtags": ["カフェ", "金曜日", "夜カフェ"]
+    },
+    {
+      "id": "cafe-mothers-015",
+      "tone": "polite",
+      "seasonTags": ["mothers-day"],
+      "weight": 1.5,
+      "text": "💐 母の日ギフト\n\n5月限定で、カーネーション付きのスイーツボックスをご用意しております。\n感謝の気持ちを、おいしさと一緒に。",
+      "hashtags": ["カフェ", "母の日", "ギフト"]
+    }
+  ]
+}

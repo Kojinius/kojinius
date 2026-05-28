@@ -1,0 +1,104 @@
+{
+  "industry": "restaurant",
+  "label": "飲食店 / レストラン",
+  "version": "2026.05",
+  "defaultHashtags": ["飲食店", "ランチ"],
+  "drafts": [
+    {
+      "id": "restaurant-lunch-001",
+      "tone": "polite",
+      "seasonTags": [],
+      "weight": 0.9,
+      "text": "🍴 ランチ営業のご案内\n\n本日も11:30より、ランチ営業しております。\n日替わりは数量限定です。お早めのご来店をおすすめします。",
+      "hashtags": ["飲食店", "ランチ", "日替わり"]
+    },
+    {
+      "id": "restaurant-season-002",
+      "tone": "polite",
+      "seasonTags": ["spring"],
+      "weight": 1.3,
+      "text": "🌸 春の季節メニュー\n\n旬の食材を使った春限定の一皿をご用意しました。\nこの時期だけの味わいを、ぜひお楽しみください。",
+      "hashtags": ["飲食店", "季節限定", "春メニュー"]
+    },
+    {
+      "id": "restaurant-today-003",
+      "tone": "friendly",
+      "seasonTags": [],
+      "weight": 0.8,
+      "text": "本日のおすすめ、入りました😋\n\n仕入れたばかりの新鮮な食材を使っています。\nなくなり次第終了ですので、お早めにどうぞ。",
+      "hashtags": ["飲食店", "本日のおすすめ"]
+    },
+    {
+      "id": "restaurant-takeout-004",
+      "tone": "promo",
+      "seasonTags": [],
+      "weight": 1.0,
+      "text": "🥡 テイクアウトはじめました\n\n人気メニューをご自宅でも。\nお電話でご予約いただくと、スムーズにお受け取りいただけます。",
+      "hashtags": ["飲食店", "テイクアウト", "お持ち帰り"]
+    },
+    {
+      "id": "restaurant-closed-005",
+      "tone": "promo",
+      "seasonTags": [],
+      "weight": 0.9,
+      "text": "📅 定休日のお知らせ\n\n毎週○曜日を定休日とさせていただいております。\nご来店の際はお間違いのないようお願いいたします。",
+      "hashtags": ["飲食店", "定休日のお知らせ"]
+    },
+    {
+      "id": "restaurant-summer-006",
+      "tone": "friendly",
+      "seasonTags": ["summer"],
+      "weight": 1.2,
+      "text": "暑い日にぴったりの冷たい一品、はじめました🍧\n\nさっぱり食べられて、夏バテ気味の日にもおすすめです。\nぜひ涼みにいらしてください。",
+      "hashtags": ["飲食店", "夏メニュー", "冷たい"]
+    },
+    {
+      "id": "restaurant-yearend-007",
+      "tone": "promo",
+      "seasonTags": ["year-end"],
+      "weight": 1.5,
+      "text": "🍻 忘年会のご予約承り中\n\n年末はご予約が混み合います。\nコースのご相談もお受けしますので、お早めにお問い合わせください。",
+      "hashtags": ["飲食店", "忘年会", "宴会予約"]
+    },
+    {
+      "id": "restaurant-weekstart-008",
+      "tone": "friendly",
+      "seasonTags": ["week-start"],
+      "weight": 1.0,
+      "text": "おはようございます☀\n\n月曜のランチ、しっかり食べて午後もうひと頑張り。\n今週もおいしいものをご用意してお待ちしています。",
+      "hashtags": ["飲食店", "ランチ", "月曜日"]
+    },
+    {
+      "id": "restaurant-fridays-009",
+      "tone": "friendly",
+      "seasonTags": ["friday"],
+      "weight": 1.0,
+      "text": "今週もおつかれさまでした🍺\n\n金曜の夜は、ゆっくり食事を楽しむ時間に。\nご予約なしでもお気軽にどうぞ。",
+      "hashtags": ["飲食店", "金曜日", "ディナー"]
+    },
+    {
+      "id": "restaurant-reserve-010",
+      "tone": "polite",
+      "seasonTags": [],
+      "weight": 0.8,
+      "text": "📞 ご予約のお願い\n\nお席に限りがございます。\n人数の多いご利用は、事前にご予約いただけますと確実です。",
+      "hashtags": ["飲食店", "予約受付"]
+    },
+    {
+      "id": "restaurant-winter-011",
+      "tone": "polite",
+      "seasonTags": ["winter"],
+      "weight": 1.2,
+      "text": "🍲 あたたかい鍋メニュー、はじめました\n\n寒い季節にうれしい、身体の芯から温まる一品です。\n仲間と囲むのにもぴったりです。",
+      "hashtags": ["飲食店", "冬メニュー", "鍋"]
+    },
+    {
+      "id": "restaurant-always-012",
+      "tone": "polite",
+      "seasonTags": [],
+      "weight": 0.7,
+      "text": "🍚 ひとつひとつ、ていねいに。\n\n素材選びから調理まで、心を込めてお作りしています。\n今日もお腹も心も満たされる時間を。",
+      "hashtags": ["飲食店", "こだわり"]
+    }
+  ]
+}

@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<!-- 2026-05-26 claude-opus-4-7 セッションターン数：12 — 差別化5要素（業種テンプレJSON/季節カレンダー/3案生成/重複防止LocalStorage/Notification API）の実装仕様を追加 -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../auth.js"></script>
+<title>簡単投稿プラン｜技術スタック詳細</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#06140f;
+    --bg-card:rgba(255,255,255,.04);
+    --bg-code:#091a14;
+    --border:rgba(255,255,255,.08);
+    --border-strong:rgba(16,185,129,.4);
+    --text:#e9f5ee;
+    --text-dim:#9fbcaf;
+    --text-mute:#6b8a7d;
+    --green:#10b981;
+    --emerald:#34d399;
+    --teal:#14b8a6;
+    --cyan:#06b6d4;
+    --amber:#fbbf24;
+    --red:#ef4444;
+    --grad-hero:linear-gradient(135deg,#10b981 0%,#14b8a6 50%,#06b6d4 100%);
+    --grad-card:linear-gradient(135deg,rgba(16,185,129,.18) 0%,rgba(20,184,166,.12) 100%);
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
+  }
+  html,body{background:var(--bg);color:var(--text);font-family:"Noto Sans JP","Inter",-apple-system,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 15% 15%,rgba(16,185,129,.14) 0%,transparent 45%),radial-gradient(circle at 85% 60%,rgba(20,184,166,.10) 0%,transparent 50%);pointer-events:none;z-index:-1}
+  .container{max-width:1240px;margin:0 auto;padding:0 32px}
+  @media(max-width:640px){.container{padding:0 20px}}
+  code,kbd,pre,.mono{font-family:var(--mono);font-size:.92em}
+
+  header.hero{padding:60px 0 70px;border-bottom:1px solid var(--border)}
+  .breadcrumb{font-size:13px;color:var(--text-mute);margin-bottom:24px;letter-spacing:.05em}
+  .breadcrumb code{padding:3px 8px;background:var(--bg-code);border-radius:6px;border:1px solid var(--border);color:var(--emerald)}
+  h1.hero-title{font-size:clamp(32px,5vw,52px);font-weight:900;line-height:1.2;letter-spacing:-.02em;margin-bottom:16px}
+  h1.hero-title .grad{background:var(--grad-hero);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero-sub{font-size:17px;color:var(--text-dim);max-width:840px;margin-bottom:32px}
+  .meta{display:flex;flex-wrap:wrap;gap:10px}
+  .meta-tag{padding:6px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:999px;font-size:12px;color:var(--text-dim);font-family:var(--mono)}
+  .meta-tag.ok{color:var(--green);border-color:rgba(16,185,129,.3)}
+  .meta-tag.free{color:var(--emerald);border-color:rgba(52,211,153,.4);font-weight:700}
+
+  section{padding:64px 0;border-bottom:1px solid var(--border)}
+  section:last-of-type{border-bottom:none}
+  h2{font-size:28px;font-weight:900;letter-spacing:-.01em;margin-bottom:8px;display:flex;align-items:center;gap:14px}
+  h2 .sec-num{font-family:var(--mono);font-size:14px;color:var(--green);background:rgba(16,185,129,.12);padding:4px 10px;border-radius:8px;font-weight:600}
+  .sec-desc{color:var(--text-dim);font-size:15px;margin-bottom:32px;max-width:840px}
+  h3{font-size:18px;font-weight:700;margin:32px 0 12px;letter-spacing:-.01em}
+
+  /* ARCHITECTURE DIAGRAM (rich) */
+  .arch-canvas{padding:48px 32px;background:linear-gradient(180deg,rgba(16,185,129,.05) 0%,rgba(6,182,212,.04) 100%),var(--bg-code);border:1px solid var(--border);border-radius:20px;margin-bottom:24px;position:relative;overflow:hidden}
+  .arch-canvas::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(16,185,129,.10) 0%,transparent 60%),radial-gradient(circle at 50% 100%,rgba(6,182,212,.06) 0%,transparent 60%);pointer-events:none}
+  .arch-layer-label{font-family:var(--mono);font-size:10px;color:var(--text-mute);letter-spacing:.25em;text-align:center;text-transform:uppercase;margin-bottom:14px;position:relative;z-index:1}
+  .arch-layer-label::before,.arch-layer-label::after{content:"";display:inline-block;width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);vertical-align:middle;margin:0 12px}
+  .arch-row{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;position:relative;z-index:1}
+  .arch-row.tight{gap:14px}
+  .arch-card{flex:0 1 280px;min-width:240px;padding:18px 20px;border-radius:14px;border:1px solid var(--border);background:rgba(9,26,20,.85);backdrop-filter:blur(8px);position:relative;transition:transform .2s,border-color .2s,box-shadow .2s}
+  .arch-card.compact{flex:0 1 200px;min-width:180px;padding:14px 16px}
+  .arch-card:hover{transform:translateY(-3px);border-color:rgba(16,185,129,.5);box-shadow:0 12px 32px rgba(16,185,129,.18)}
+  .arch-card.hosting{border-color:rgba(20,184,166,.4);background:linear-gradient(135deg,rgba(20,184,166,.10) 0%,rgba(9,26,20,.85) 100%)}
+  .arch-card.asset{border-color:rgba(52,211,153,.35);background:linear-gradient(135deg,rgba(52,211,153,.08) 0%,rgba(9,26,20,.85) 100%)}
+  .arch-card.browser{border-color:rgba(16,185,129,.4);background:linear-gradient(135deg,rgba(16,185,129,.12) 0%,rgba(9,26,20,.85) 100%)}
+  .arch-card.logic{border-color:rgba(6,182,212,.4);background:linear-gradient(135deg,rgba(6,182,212,.10) 0%,rgba(9,26,20,.85) 100%)}
+  .arch-card.user{border-color:rgba(168,85,247,.4);background:linear-gradient(135deg,rgba(168,85,247,.10) 0%,rgba(9,26,20,.85) 100%)}
+  .arch-card.button{border-color:rgba(34,197,94,.5);background:linear-gradient(135deg,rgba(34,197,94,.14) 0%,rgba(9,26,20,.85) 100%)}
+  .arch-card.external{border-color:rgba(148,163,184,.35);background:linear-gradient(135deg,rgba(148,163,184,.06) 0%,rgba(9,26,20,.85) 100%);border-style:dashed}
+  .arch-card.worker{border-color:rgba(244,114,182,.4);background:linear-gradient(135deg,rgba(244,114,182,.10) 0%,rgba(9,26,20,.85) 100%)}
+  .arch-card.copy{border-color:rgba(251,191,36,.45);background:linear-gradient(135deg,rgba(251,191,36,.12) 0%,rgba(9,26,20,.85) 100%);border-style:dashed}
+  .arch-card.line{border-color:rgba(6,199,85,.55);background:linear-gradient(135deg,rgba(6,199,85,.14) 0%,rgba(9,26,20,.85) 100%)}
+  .arch-card-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .arch-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,255,255,.06);flex-shrink:0}
+  .arch-card.compact .arch-icon{width:30px;height:30px;font-size:15px;border-radius:8px}
+  .arch-card.hosting .arch-icon{background:rgba(20,184,166,.18);color:#5eead4}
+  .arch-card.asset .arch-icon{background:rgba(52,211,153,.16);color:#86efac}
+  .arch-card.browser .arch-icon{background:rgba(16,185,129,.18);color:#34d399}
+  .arch-card.logic .arch-icon{background:rgba(6,182,212,.18);color:#67e8f9}
+  .arch-card.user .arch-icon{background:rgba(168,85,247,.18);color:#c084fc}
+  .arch-card.button .arch-icon{background:rgba(34,197,94,.18);color:#86efac}
+  .arch-card.external .arch-icon{background:rgba(148,163,184,.14);color:#cbd5e1}
+  .arch-card.worker .arch-icon{background:rgba(244,114,182,.18);color:#f9a8d4}
+  .arch-card.copy .arch-icon{background:rgba(251,191,36,.18);color:#fbbf24}
+  .arch-card.line .arch-icon{background:rgba(6,199,85,.20);color:#4ade80}
+  .arch-card-badge.copy{background:#d97706;color:#1a0f00}
+  .arch-card-badge.line{background:#06c755;color:#062510}
+  .arch-card-badge.mobile-only{background:#94a3b8;color:#0f172a}
+  .arch-card-meta{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--text-mute);text-transform:uppercase}
+  .arch-card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:-.01em}
+  .arch-card.compact .arch-card-title{font-size:13px;margin-bottom:4px}
+  .arch-card-spec{font-family:var(--mono);font-size:11px;color:var(--text-dim);line-height:1.5;word-break:break-all}
+  .arch-card.compact .arch-card-spec{font-size:10px}
+  .arch-card-badge{position:absolute;top:-8px;right:12px;padding:2px 8px;border-radius:6px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em}
+  .arch-card-badge.free{background:#10b981;color:#06140f}
+  .arch-card-badge.exist{background:#a78bfa;color:#1a1033}
+  .arch-card-badge.client{background:#5eead4;color:#062520}
+  .arch-flow{display:flex;flex-direction:column;align-items:center;margin:14px 0;position:relative;z-index:1}
+  .arch-flow-line{width:2px;height:30px;background:linear-gradient(180deg,var(--green),var(--cyan));border-radius:2px;position:relative}
+  .arch-flow-line::after{content:"";position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid var(--cyan)}
+  .arch-flow-label{position:absolute;left:calc(50% + 14px);top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:10px;color:var(--green);white-space:nowrap;letter-spacing:.05em;background:var(--bg-code);padding:2px 6px;border-radius:4px}
+  .arch-fanout,.arch-fanin{width:100%;max-width:760px;margin:8px auto 0;display:block}
+  .arch-section{border:1px dashed rgba(16,185,129,.25);border-radius:18px;padding:20px;margin:18px 0;background:rgba(16,185,129,.025);position:relative;z-index:1}
+  .arch-section-title{position:absolute;top:-10px;left:20px;background:var(--bg-code);padding:0 10px;font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:.15em;text-transform:uppercase;font-weight:700}
+  .arch-legend{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:24px;padding-top:20px;border-top:1px dashed var(--border);position:relative;z-index:1}
+  .arch-legend-item{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--text-dim)}
+  .arch-legend-dot{width:10px;height:10px;border-radius:3px}
+  .arch-side{display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:start;position:relative;z-index:1}
+  .arch-side-main{}
+  .arch-side-aside{padding-top:32px}
+  @media(max-width:900px){
+    .arch-side{grid-template-columns:1fr}
+    .arch-side-aside{padding-top:0}
+  }
+  @media(max-width:768px){
+    .arch-card{flex:1 1 100%}
+    .arch-fanout,.arch-fanin{display:none}
+    .arch-row{flex-direction:column}
+  }
+
+  .stack-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+  .stack-card{padding:24px;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;transition:border-color .2s}
+  .stack-card:hover{border-color:var(--border-strong)}
+  .stack-layer{font-family:var(--mono);font-size:11px;color:var(--emerald);letter-spacing:.15em;margin-bottom:8px}
+  .stack-card h4{font-size:17px;font-weight:700;margin-bottom:6px}
+  .stack-ver{font-family:var(--mono);font-size:12px;color:var(--text-mute);margin-bottom:12px}
+  .stack-card p{font-size:14px;color:var(--text-dim)}
+  .stack-card .why{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);font-size:13px;color:var(--text-mute)}
+  .stack-card .why strong{color:var(--green);font-weight:600}
+
+  .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:14px;margin-bottom:24px}
+  table{width:100%;border-collapse:collapse;font-size:14px;min-width:640px}
+  th,td{padding:14px 18px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+  thead{background:rgba(16,185,129,.08)}
+  th{font-weight:700;color:var(--text);font-size:13px;letter-spacing:.05em}
+  tbody tr:hover{background:rgba(255,255,255,.02)}
+  tbody tr:last-child td{border-bottom:none}
+  td.mono{font-family:var(--mono);font-size:12px;color:var(--emerald);word-break:break-all}
+  td.num{font-family:var(--mono);text-align:right}
+  td.green{color:var(--green);font-weight:600}
+  td.amber{color:var(--amber);font-weight:600}
+
+  pre.code{padding:24px;background:var(--bg-code);border:1px solid var(--border);border-radius:14px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.6;color:var(--text-dim);margin-bottom:20px}
+  pre.code .k{color:#c4b5fd}
+  pre.code .s{color:#86efac}
+  pre.code .c{color:#6b8a7d;font-style:italic}
+  pre.code .f{color:#5eead4}
+  pre.code .n{color:#fbbf24}
+
+  .url-block{padding:20px 24px;background:var(--bg-code);border:1px solid var(--border);border-radius:14px;font-family:var(--mono);font-size:13px;overflow-x:auto;margin-bottom:16px;word-break:break-all}
+  .url-block .scheme{color:var(--cyan)}
+  .url-block .host{color:var(--emerald)}
+  .url-block .path{color:#fbbf24}
+  .url-block .qkey{color:#c4b5fd}
+  .url-block .qval{color:#86efac}
+
+  .note{padding:20px 24px;border-radius:12px;margin:20px 0;border-left:3px solid;font-size:14px}
+  .note.warn{background:rgba(251,191,36,.08);border-color:var(--amber);color:#fde68a}
+  .note.info{background:rgba(20,184,166,.08);border-color:var(--teal);color:#a7f3d0}
+  .note.danger{background:rgba(239,68,68,.08);border-color:var(--red);color:#fecaca}
+  .note.green{background:rgba(16,185,129,.08);border-color:var(--green);color:#bbf7d0}
+  .note strong{display:block;font-weight:700;margin-bottom:6px;font-size:13px;letter-spacing:.05em;text-transform:uppercase}
+
+  .cost-summary{padding:32px;background:var(--grad-card);border:1px solid var(--border-strong);border-radius:20px;margin-top:24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;text-align:center}
+  .cost-summary .item{padding:0 12px;border-right:1px solid var(--border)}
+  .cost-summary .item:last-child{border-right:none}
+  .cost-summary .label{font-size:12px;color:var(--text-mute);letter-spacing:.1em;margin-bottom:8px}
+  .cost-summary .value{font-size:28px;font-weight:900;background:var(--grad-hero);-webkit-background-clip:text;background-clip:text;color:transparent;font-family:var(--mono)}
+  .cost-summary .unit{font-size:13px;color:var(--text-dim);margin-top:4px}
+
+  footer{padding:40px 0 60px;text-align:center;color:var(--text-mute);font-size:13px}
+  footer code{font-family:var(--mono)}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <div class="breadcrumb">post-pilot / <code>plan: kantan-tokoo</code> / technical-spec</div>
+    <h1 class="hero-title">簡単投稿プラン<br><span class="grad">Client-Side Draft Supply + Web Intent</span></h1>
+    <p class="hero-sub">サーバ常駐ゼロのクライアントサイド完結型。コアバリューは <b>「下書き供給機構 + Web Intent 投稿起動」</b>。業種テンプレ × 季節カレンダー × LocalStorage 履歴で 3案生成、Notifications API でリマインド、X/Threads の Web Intent で公式アプリへ deep-link。OAuth・API キー・cron 一切不要。</p>
+    <div class="meta">
+      <span class="meta-tag">Runtime: Static + Service Worker</span>
+      <span class="meta-tag">Auth: 不要</span>
+      <span class="meta-tag free">¥0 / 月</span>
+      <span class="meta-tag ok">X Intent (加重280)</span>
+      <span class="meta-tag ok">Threads Intent (500)</span>
+      <span class="meta-tag">Storage: LocalStorage</span>
+      <span class="meta-tag">Notification: Web Notifications API</span>
+      <span class="meta-tag">Verified: 2026-05-26</span>
+    </div>
+  </div>
+</header>
+
+<!-- 2026-05-28 claude-opus-4-7 セッションターン数：13 — チャネルを X / Threads に整合 -->
+<div class="container">
+  <div class="note warn" style="margin-top:24px">
+    <strong>2026-05-28 改訂 — 対応チャネルは X / Threads の2媒体</strong>
+    本仕様書は当初 4 チャネル（X / Threads / LINE / Jimoty）想定で作成しましたが、現行の簡単投稿プランは <b>X / Threads の2媒体</b>に整合済みです。<b>Jimoty は提供側で外部投稿の仕組みが廃止</b>、<b>LINE は本プランでは現状外し</b>（友だち配信は「盛り盛りMAXプラン」の LINE Messaging API へ）。各媒体は本文＋ハッシュタグの文字数上限（X=全角2換算の加重280／Threads=500）を超えると投稿ボタンが無効になります。以降の §03・§04 等に残る LINE / Jimoty の記述は、当時の設計根拠として参考掲載しています。
+  </div>
+</div>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">01</span>システム構成図</h2>
+    <p class="sec-desc">下書き供給（クライアント側で業種×季節×履歴を合成）→ 3案レンダリング → ユーザ選択 → Web Intent。サーバサイドは静的配信のみ。</p>
+
+    <div class="arch-canvas">
+
+      <div class="arch-layer-label">Static Hosting (CDN-only)</div>
+      <div class="arch-row">
+        <div class="arch-card hosting">
+          <span class="arch-card-badge free">FREE</span>
+          <div class="arch-card-head">
+            <div class="arch-icon">🌐</div>
+            <div><div class="arch-card-meta">HOSTING · CDN</div><div class="arch-card-title">Vercel Static / Cloudflare Pages</div></div>
+          </div>
+          <div class="arch-card-spec">No functions · No DB<br>Edge cached · global delivery</div>
+        </div>
+      </div>
+
+      <div class="arch-layer-label">Static Assets in /public</div>
+      <div class="arch-row tight">
+        <div class="arch-card asset compact">
+          <div class="arch-card-head"><div class="arch-icon">📄</div><div><div class="arch-card-meta">UI</div><div class="arch-card-title">today.html</div></div></div>
+          <div class="arch-card-spec">今日の3案 UI</div>
+        </div>
+        <div class="arch-card asset compact">
+          <div class="arch-card-head"><div class="arch-icon">🏷️</div><div><div class="arch-card-meta">DATA</div><div class="arch-card-title">templates/*.json</div></div></div>
+          <div class="arch-card-spec">業種テンプレ<br>cafe / salon / law / ec ...</div>
+        </div>
+        <div class="arch-card asset compact">
+          <div class="arch-card-head"><div class="arch-icon">📅</div><div><div class="arch-card-meta">DATA</div><div class="arch-card-title">seasonal/{year}.json</div></div></div>
+          <div class="arch-card-spec">季節・イベント<br>カレンダー</div>
+        </div>
+        <div class="arch-card asset compact">
+          <div class="arch-card-head"><div class="arch-icon">⚙️</div><div><div class="arch-card-meta">WORKER</div><div class="arch-card-title">sw.js</div></div></div>
+          <div class="arch-card-spec">Service Worker<br>(通知発火)</div>
+        </div>
+      </div>
+
+      <div class="arch-flow"><div class="arch-flow-line"><div class="arch-flow-label">fetch static</div></div></div>
+
+      <div class="arch-section">
+        <div class="arch-section-title">▼ Browser (client-only runtime)</div>
+
+        <div class="arch-side">
+          <div class="arch-side-main">
+
+            <div class="arch-layer-label">① 取得</div>
+            <div class="arch-row tight">
+              <div class="arch-card browser compact">
+                <span class="arch-card-badge client">CLIENT</span>
+                <div class="arch-card-head"><div class="arch-icon">🏷️</div><div><div class="arch-card-meta">FETCH</div><div class="arch-card-title">Industry Template</div></div></div>
+              </div>
+              <div class="arch-card browser compact">
+                <span class="arch-card-badge client">CLIENT</span>
+                <div class="arch-card-head"><div class="arch-icon">📅</div><div><div class="arch-card-meta">FETCH</div><div class="arch-card-title">Seasonal Calendar</div></div></div>
+              </div>
+              <div class="arch-card browser compact">
+                <span class="arch-card-badge client">CLIENT</span>
+                <div class="arch-card-head"><div class="arch-icon">💾</div><div><div class="arch-card-meta">READ</div><div class="arch-card-title">LocalStorage 履歴</div></div></div>
+                <div class="arch-card-spec">kt:posted:v1</div>
+              </div>
+            </div>
+
+            <svg class="arch-fanin" viewBox="0 0 760 50" preserveAspectRatio="none" aria-hidden="true">
+              <defs><marker id="ah-kt-in" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#67e8f9"/></marker></defs>
+              <path d="M130,0 C130,30 380,20 380,45" fill="none" stroke="#67e8f9" stroke-width="1.5" opacity=".75" marker-end="url(#ah-kt-in)"/>
+              <path d="M380,0 L380,45" fill="none" stroke="#67e8f9" stroke-width="1.5" opacity=".75" marker-end="url(#ah-kt-in)"/>
+              <path d="M630,0 C630,30 380,20 380,45" fill="none" stroke="#67e8f9" stroke-width="1.5" opacity=".75" marker-end="url(#ah-kt-in)"/>
+            </svg>
+
+            <div class="arch-layer-label">② 合成 → ③ 重複排除 → ④ Top 3 選定</div>
+            <div class="arch-row tight">
+              <div class="arch-card logic compact">
+                <div class="arch-card-head"><div class="arch-icon">🧮</div><div><div class="arch-card-meta">STEP 1</div><div class="arch-card-title">合成</div></div></div>
+                <div class="arch-card-spec">候補プール<br>10-30 案</div>
+              </div>
+              <div class="arch-card logic compact">
+                <div class="arch-card-head"><div class="arch-icon">⛔</div><div><div class="arch-card-meta">STEP 2</div><div class="arch-card-title">重複排除</div></div></div>
+                <div class="arch-card-spec">過去30日<br>履歴と照合</div>
+              </div>
+              <div class="arch-card logic compact">
+                <div class="arch-card-head"><div class="arch-icon">🏆</div><div><div class="arch-card-meta">STEP 3</div><div class="arch-card-title">Top 3 選定</div></div></div>
+                <div class="arch-card-spec">トーン別<br>A 丁寧 / B 親しみ / C お得</div>
+              </div>
+            </div>
+
+            <div class="arch-flow"><div class="arch-flow-line"><div class="arch-flow-label">render</div></div></div>
+
+            <div class="arch-layer-label">⑤ User Interaction</div>
+            <div class="arch-row">
+              <div class="arch-card user">
+                <div class="arch-card-head">
+                  <div class="arch-icon">👆</div>
+                  <div><div class="arch-card-meta">USER ACTION</div><div class="arch-card-title">タブで1案を選択</div></div>
+                </div>
+                <div class="arch-card-spec">A / B / C から好みを選ぶ<br>下書きの編集も可</div>
+              </div>
+            </div>
+
+            <svg class="arch-fanout" viewBox="0 0 760 50" preserveAspectRatio="none" aria-hidden="true">
+              <defs><marker id="ah-kt-out" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#86efac"/></marker></defs>
+              <path d="M380,0 C380,30 250,15 250,45" fill="none" stroke="#86efac" stroke-width="1.5" opacity=".85" marker-end="url(#ah-kt-out)"/>
+              <path d="M380,0 C380,30 510,15 510,45" fill="none" stroke="#86efac" stroke-width="1.5" opacity=".85" marker-end="url(#ah-kt-out)"/>
+            </svg>
+
+            <div class="arch-layer-label">⑥ 投稿チャネル（X / Threads）</div>
+            <div class="arch-row">
+              <div class="arch-card button">
+                <span class="arch-card-badge free">FREE</span>
+                <div class="arch-card-head">
+                  <div class="arch-icon">𝕏</div>
+                  <div><div class="arch-card-meta">INTENT · 公開投稿</div><div class="arch-card-title">X で投稿</div></div>
+                </div>
+                <div class="arch-card-spec">window.open(<br>twitter.com/intent/tweet?text=...)<br>加重 280 上限</div>
+              </div>
+              <div class="arch-card button">
+                <span class="arch-card-badge free">FREE</span>
+                <div class="arch-card-head">
+                  <div class="arch-icon">@</div>
+                  <div><div class="arch-card-meta">INTENT · 公開投稿</div><div class="arch-card-title">Threads で投稿</div></div>
+                </div>
+                <div class="arch-card-spec">window.open(<br>threads.net/intent/post?text=...)<br>500 字上限</div>
+              </div>
+            </div>
+
+            <div class="arch-flow"><div class="arch-flow-line"><div class="arch-flow-label">deep link</div></div></div>
+
+            <div class="arch-layer-label">⑦ External (公式サービス — 投稿確定はユーザ)</div>
+            <div class="arch-row">
+              <div class="arch-card external">
+                <div class="arch-card-head"><div class="arch-icon">📱</div><div><div class="arch-card-meta">EXTERNAL</div><div class="arch-card-title">X 公式アプリ／Web</div></div></div>
+                <div class="arch-card-spec">投稿フォームに pre-fill<br>ユーザが「投稿」を確定</div>
+              </div>
+              <div class="arch-card external">
+                <div class="arch-card-head"><div class="arch-icon">📱</div><div><div class="arch-card-meta">EXTERNAL</div><div class="arch-card-title">Threads 公式アプリ／Web</div></div></div>
+                <div class="arch-card-spec">投稿フォームに pre-fill<br>ユーザが「投稿」を確定</div>
+              </div>
+            </div>
+
+            <div class="arch-flow"><div class="arch-flow-line"><div class="arch-flow-label">click → record</div></div></div>
+
+            <div class="arch-row">
+              <div class="arch-card browser">
+                <span class="arch-card-badge client">CLIENT</span>
+                <div class="arch-card-head"><div class="arch-icon">💾</div><div><div class="arch-card-meta">WRITE</div><div class="arch-card-title">LocalStorage に履歴追記</div></div></div>
+                <div class="arch-card-spec">{draftId, postedAt, channel} を unshift<br>max 100 件 / 30日ローテーション</div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="arch-side-aside">
+            <div class="arch-layer-label" style="text-align:left">Background</div>
+            <div class="arch-card worker">
+              <div class="arch-card-head">
+                <div class="arch-icon">🔔</div>
+                <div><div class="arch-card-meta">SERVICE WORKER</div><div class="arch-card-title">通知リマインダ</div></div>
+              </div>
+              <div class="arch-card-spec">朝7時 / 昼12時 / 夜21時<br>setTimeout(persisted) で発火<br>"今日の3案が届いてます"<br>click → /today.html</div>
+            </div>
+            <div class="arch-card worker" style="margin-top:14px">
+              <div class="arch-card-head">
+                <div class="arch-icon">📐</div>
+                <div><div class="arch-card-meta">FALLBACK</div><div class="arch-card-title">再訪問時 catch up</div></div>
+              </div>
+              <div class="arch-card-spec">未発火分を即発火<br>+ 次回 setTimeout を再登録<br>(SW idle 対策)</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="arch-legend">
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#5eead4"></span>CDN</div>
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#86efac"></span>静的アセット / X/Threads ボタン</div>
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#67e8f9"></span>選定ロジック</div>
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#f9a8d4"></span>Service Worker</div>
+        <div class="arch-legend-item"><span class="arch-legend-dot" style="background:#cbd5e1"></span>外部サービス</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">02</span>技術スタック</h2>
+    <p class="sec-desc">関数実行ゼロ・DB ゼロ・認証ゼロ。すべてブラウザ内完結。</p>
+
+    <h3>フロントエンド / 配信</h3>
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="stack-layer">FRAMEWORK</div>
+        <h4>Next.js 16 (App Router) / Static Export</h4>
+        <div class="stack-ver">output: "export" · App Router</div>
+        <p>SSR / Server Action 不使用。Static Generation のみ。fetch は <code>force-static</code> で build 時に JSON を埋め込み。</p>
+        <div class="why"><strong>選定理由:</strong> 関数枠を消費しない。Cloudflare Pages / GitHub Pages にも移行可能。</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">HOSTING</div>
+        <h4>Vercel Static (既存 Pro)</h4>
+        <div class="stack-ver">Edge Network 配信のみ</div>
+        <p>関数実行・cron 一切なし。Pro 既存契約内に吸収、新規費用ゼロ。</p>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">STYLE</div>
+        <h4>Tailwind CSS v4</h4>
+        <div class="stack-ver">@tailwindcss/postcss</div>
+        <p>CSS は build 時にバンドル。ランタイム JS 依存なし。</p>
+      </div>
+    </div>
+
+    <h3>下書き供給機構</h3>
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="stack-layer">TEMPLATE</div>
+        <h4>業種テンプレ JSON</h4>
+        <div class="stack-ver">/data/templates/{industry}.json</div>
+        <p>業種ごとにフレーズ・トーン・ハッシュタグ・想定シーンを構造化。Git 管理で版数追跡。</p>
+        <div class="why"><strong>運用:</strong> 業種テンプレは月次で人手レビュー、PR ベースで追加。</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">CALENDAR</div>
+        <h4>季節カレンダー JSON</h4>
+        <div class="stack-ver">/data/seasonal/{year}.json</div>
+        <p>日付ごとに該当イベント・季語・関連キーワードを保持。クライアントで <code>Date.now()</code> と照合。</p>
+        <div class="why"><strong>運用:</strong> 年初に翌年版を一括投入。祝日・記念日は内閣府データを元に整備。</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">HISTORY</div>
+        <h4>LocalStorage 履歴</h4>
+        <div class="stack-ver">key: <code>kt:posted:v1</code></div>
+        <p>押した投稿ボタンの <code>{draftId, postedAt, channel}</code> を最大100件、30日でローテーション。サーバには送らない。</p>
+        <div class="why"><strong>選定理由:</strong> サーバなしで重複防止を実現。プライバシー上もユーザ端末完結。</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">SELECTOR</div>
+        <h4>3案選定ロジック</h4>
+        <div class="stack-ver">~80 行の TypeScript</div>
+        <p>候補プールを「トーンA: 丁寧 / B: 親しみ / C: お得感」でタグ分けし、各カテゴリから1件ずつ未投稿のものを選定。</p>
+      </div>
+    </div>
+
+    <h3>通知リマインダ</h3>
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="stack-layer">NOTIFY</div>
+        <h4>Web Notifications API</h4>
+        <div class="stack-ver">Notification.requestPermission()</div>
+        <p>初回に許可を取得し、Service Worker からローカル通知を発火。Push サーバ不要。</p>
+        <div class="why"><strong>制約:</strong> iOS Safari は PWA インストール後のみ通知可（16.4+）。Android / Desktop は標準対応。</div>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">SCHEDULER</div>
+        <h4>Service Worker + setTimeout</h4>
+        <div class="stack-ver">sw.js · persisted state</div>
+        <p>ユーザ訪問時に「次回の通知時刻」を計算して setTimeout を仕掛ける。タブが閉じても SW がしばらく生存して発火を試行。</p>
+        <div class="why"><strong>注意:</strong> Periodic Background Sync は Chrome 限定。フォールバックとして再訪問時に未発火分を catch up する。</div>
+      </div>
+    </div>
+
+    <h3>SNS 連携（API キー不要）</h3>
+    <div class="stack-grid">
+      <div class="stack-card">
+        <div class="stack-layer">CHANNEL: X</div>
+        <h4>X Web Intent</h4>
+        <div class="stack-ver">twitter.com/intent/tweet</div>
+        <p>OAuth 不要・API キー不要。HTTPS リンク 1本で投稿フォームへ。</p>
+      </div>
+      <div class="stack-card">
+        <div class="stack-layer">CHANNEL: Threads</div>
+        <h4>Threads Web Intent</h4>
+        <div class="stack-ver">threads.net/intent/post</div>
+        <p>2024 公開の公式エンドポイント。Meta App 登録不要・access_token 不要。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">03</span>Web Intent URL 仕様</h2>
+    <p class="sec-desc">公式ドキュメントで定義された pre-fill エンドポイント。クエリ文字列を組み立てるだけ。</p>
+
+    <h3>X (Twitter)</h3>
+    <div class="url-block">
+<span class="scheme">https://</span><span class="host">twitter.com</span><span class="path">/intent/tweet</span>?<span class="qkey">text</span>=<span class="qval">{encoded text}</span>&<span class="qkey">hashtags</span>=<span class="qval">{comma separated}</span>&<span class="qkey">url</span>=<span class="qval">{URL}</span>&<span class="qkey">via</span>=<span class="qval">{screen_name}</span>
+    </div>
+
+    <h3>Threads</h3>
+    <div class="url-block">
+<span class="scheme">https://</span><span class="host">www.threads.net</span><span class="path">/intent/post</span>?<span class="qkey">text</span>=<span class="qval">{encoded text incl. #tags}</span>
+    </div>
+
+    <h3>LINE（モバイル限定）</h3>
+    <div class="url-block">
+<span class="scheme">https://</span><span class="host">line.me</span><span class="path">/R/share</span>?<span class="qkey">text</span>=<span class="qval">{encoded text (UTF-8 percent-encoded)}</span>
+    </div>
+    <div class="note warn">
+      <strong>LINE 制約</strong>
+      <code>line.me/R/share</code> は iOS / Android の LINE アプリにインストール済みの環境でのみ動作。<strong>デスクトップブラウザでは動作しない</strong>。PC ではボタンをグレーアウト or 非表示にする UX 制御が必要。シェア先（友だち or グループ）はユーザがダイアログで都度選択する。
+    </div>
+
+    <h3>Jimoty（Web Intent 無し → コピー＋ページ遷移）</h3>
+    <div class="url-block">
+<span class="c">// Web Intent エンドポイントは存在しない。下記の2段階で代替</span>
+<span class="qkey">await</span> <span class="host">navigator</span>.<span class="path">clipboard</span>.<span class="qval">writeText</span>(<span class="qval">draftText</span>);
+<span class="host">window</span>.<span class="path">open</span>(<span class="s">"https://jmty.jp/post"</span>, <span class="s">"_blank"</span>, <span class="s">"noopener,noreferrer"</span>);
+    </div>
+    <div class="note danger">
+      <strong>Jimoty に "ボタン1つ投稿" は不可</strong>
+      公式 URL スキーム／Web Intent は提供されていない。利用規約でも自動投稿は禁止。したがって最小実装は「クリップボードへコピー＋投稿ページを新タブで開く」のみ。ユーザは Jimoty のフォーム内で <strong>カテゴリ・地域・画像</strong>を手動で選び、テキストエリアに貼付して投稿する必要がある。<strong>X/Threads/LINE と同等の体験は構造的に提供できない</strong>ことを訴求側に明記する。
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>項目</th><th>X</th><th>Threads</th><th>LINE</th><th>Jimoty</th></tr></thead>
+        <tbody>
+          <tr><td>本文 pre-fill</td><td class="green">○ text=</td><td class="green">○ text=</td><td class="green">○ text=</td><td class="amber">× コピー経由のみ</td></tr>
+          <tr><td>ハッシュタグ専用枠</td><td class="green">○ hashtags=</td><td class="amber">text 直書き</td><td class="amber">text 直書き</td><td class="amber">—</td></tr>
+          <tr><td>URL 専用枠</td><td class="green">○ url=</td><td class="amber">text 直書き</td><td class="amber">text 直書き</td><td class="amber">—</td></tr>
+          <tr><td>画像 pre-fill</td><td class="amber">×</td><td class="amber">×</td><td class="amber">×</td><td class="amber">× フォームで手動</td></tr>
+          <tr><td>デスクトップ動作</td><td class="green">○</td><td class="green">○</td><td class="amber">× モバイルのみ</td><td class="green">○ ページ遷移</td></tr>
+          <tr><td>文字数上限</td><td>~280</td><td>~500</td><td>~1000</td><td>~10,000</td></tr>
+          <tr><td>認証</td><td class="green">不要</td><td class="green">不要</td><td class="green">不要</td><td class="green">不要</td></tr>
+          <tr><td>性質</td><td>公開投稿</td><td>公開投稿</td><td>個別シェア</td><td>掲示板</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">04</span>下書き供給機構の実装</h2>
+    <p class="sec-desc">業種テンプレ × 季節カレンダー × LocalStorage 履歴で 3案生成。すべてブラウザ内で完結。</p>
+
+    <h3>業種テンプレ JSON（例: cafe.json）</h3>
+<pre class="code">{
+  <span class="s">"industry"</span>: <span class="s">"cafe"</span>,
+  <span class="s">"version"</span>: <span class="s">"2026.05"</span>,
+  <span class="s">"defaultHashtags"</span>: [<span class="s">"カフェ"</span>, <span class="s">"喫茶店"</span>],
+  <span class="s">"drafts"</span>: [
+    {
+      <span class="s">"id"</span>: <span class="s">"cafe-newmenu-001"</span>,
+      <span class="s">"tone"</span>: <span class="s">"polite"</span>,        <span class="c">// polite | friendly | promo</span>
+      <span class="s">"seasonTags"</span>: [<span class="s">"spring"</span>, <span class="s">"new-menu"</span>],
+      <span class="s">"weight"</span>: <span class="n">1.0</span>,
+      <span class="s">"text"</span>: <span class="s">"🌸 春の新メニュー登場！\n桜あんパンケーキ、本日より販売開始です。\n数量限定なので、お早めに🌸"</span>,
+      <span class="s">"hashtags"</span>: [<span class="s">"カフェ"</span>, <span class="s">"新メニュー"</span>, <span class="s">"春"</span>]
+    },
+    {
+      <span class="s">"id"</span>: <span class="s">"cafe-rainy-002"</span>,
+      <span class="s">"tone"</span>: <span class="s">"promo"</span>,
+      <span class="s">"seasonTags"</span>: [<span class="s">"rainy-season"</span>],
+      <span class="s">"weight"</span>: <span class="n">1.2</span>,
+      <span class="s">"text"</span>: <span class="s">"🌧 雨の日限定、ホットドリンク50円引き。\nお足元の悪い中ご来店いただく皆さまへ☕"</span>,
+      <span class="s">"hashtags"</span>: [<span class="s">"カフェ"</span>, <span class="s">"雨の日サービス"</span>, <span class="s">"梅雨"</span>]
+    }
+  ]
+}
+</pre>
+
+    <h3>季節カレンダー JSON（例: 2026.json）</h3>
+<pre class="code">{
+  <span class="s">"year"</span>: <span class="n">2026</span>,
+  <span class="s">"events"</span>: [
+    { <span class="s">"date"</span>: <span class="s">"2026-05-26"</span>, <span class="s">"tags"</span>: [<span class="s">"rainy-season-prep"</span>], <span class="s">"weight"</span>: <span class="n">1.5</span> },
+    { <span class="s">"date"</span>: <span class="s">"2026-06-01"</span>, <span class="s">"tags"</span>: [<span class="s">"rainy-season"</span>], <span class="s">"weight"</span>: <span class="n">2.0</span> },
+    { <span class="s">"date"</span>: <span class="s">"2026-06-15"</span>, <span class="s">"tags"</span>: [<span class="s">"fathers-day"</span>], <span class="s">"weight"</span>: <span class="n">2.5</span> },
+    { <span class="s">"date"</span>: <span class="s">"2026-12-24"</span>, <span class="s">"tags"</span>: [<span class="s">"christmas"</span>], <span class="s">"weight"</span>: <span class="n">3.0</span> }
+  ],
+  <span class="s">"recurring"</span>: [
+    { <span class="s">"dayOfWeek"</span>: <span class="n">1</span>, <span class="s">"tags"</span>: [<span class="s">"week-start"</span>], <span class="s">"weight"</span>: <span class="n">0.8</span> }
+  ]
+}
+</pre>
+
+    <h3>3案選定ロジック</h3>
+<pre class="code"><span class="k">type</span> Draft = { id: string; tone: <span class="s">"polite"</span>|<span class="s">"friendly"</span>|<span class="s">"promo"</span>; seasonTags: string[]; weight: number; text: string; hashtags: string[] };
+<span class="k">type</span> SeasonEvent = { date?: string; dayOfWeek?: number; tags: string[]; weight: number };
+
+<span class="k">export function</span> <span class="f">pickTodaysThree</span>(
+  templates: Draft[],
+  seasonal: { events: SeasonEvent[]; recurring: SeasonEvent[] },
+  history: { draftId: string; postedAt: number }[],
+  now = <span class="k">new</span> <span class="f">Date</span>()
+): Draft[] {
+  <span class="c">// 1. 今日に該当する季節タグを集める</span>
+  <span class="k">const</span> activeTags = <span class="k">new</span> <span class="f">Set</span>&lt;string&gt;();
+  <span class="k">const</span> today = now.<span class="f">toISOString</span>().<span class="f">slice</span>(<span class="n">0</span>, <span class="n">10</span>);
+  <span class="k">const</span> dow = now.<span class="f">getDay</span>();
+  seasonal.events.<span class="f">filter</span>(e =&gt; e.date === today).<span class="f">forEach</span>(e =&gt; e.tags.<span class="f">forEach</span>(t =&gt; activeTags.<span class="f">add</span>(t)));
+  seasonal.recurring.<span class="f">filter</span>(e =&gt; e.dayOfWeek === dow).<span class="f">forEach</span>(e =&gt; e.tags.<span class="f">forEach</span>(t =&gt; activeTags.<span class="f">add</span>(t)));
+
+  <span class="c">// 2. 30日以内に投稿済みの draftId を除外</span>
+  <span class="k">const</span> THIRTY_DAYS = <span class="n">30</span> * <span class="n">86400_000</span>;
+  <span class="k">const</span> recent = <span class="k">new</span> <span class="f">Set</span>(history.<span class="f">filter</span>(h =&gt; now.<span class="f">getTime</span>() - h.postedAt &lt; THIRTY_DAYS).<span class="f">map</span>(h =&gt; h.draftId));
+  <span class="k">const</span> pool = templates.<span class="f">filter</span>(d =&gt; !recent.<span class="f">has</span>(d.id));
+
+  <span class="c">// 3. 季節マッチでスコアリング</span>
+  <span class="k">const</span> scored = pool.<span class="f">map</span>(d =&gt; {
+    <span class="k">const</span> match = d.seasonTags.<span class="f">filter</span>(t =&gt; activeTags.<span class="f">has</span>(t)).length;
+    <span class="k">return</span> { d, score: d.weight * (<span class="n">1</span> + match * <span class="n">0.7</span>) };
+  });
+
+  <span class="c">// 4. トーン別に1件ずつ Top を選ぶ</span>
+  <span class="k">const</span> pickTop = (tone: Draft[<span class="s">"tone"</span>]) =&gt;
+    scored.<span class="f">filter</span>(s =&gt; s.d.tone === tone).<span class="f">sort</span>((a, b) =&gt; b.score - a.score)[<span class="n">0</span>]?.d;
+
+  <span class="k">return</span> [<span class="f">pickTop</span>(<span class="s">"polite"</span>), <span class="f">pickTop</span>(<span class="s">"friendly"</span>), <span class="f">pickTop</span>(<span class="s">"promo"</span>)].<span class="f">filter</span>(Boolean) <span class="k">as</span> Draft[];
+}
+</pre>
+
+    <h3>LocalStorage 履歴管理</h3>
+<pre class="code"><span class="k">const</span> KEY = <span class="s">"kt:posted:v1"</span>;
+<span class="k">const</span> MAX = <span class="n">100</span>;
+
+<span class="k">export function</span> <span class="f">loadHistory</span>(): { draftId: string; postedAt: number; channel: <span class="s">"x"</span>|<span class="s">"threads"</span> }[] {
+  <span class="k">try</span> { <span class="k">return</span> <span class="f">JSON.parse</span>(localStorage.<span class="f">getItem</span>(KEY) ?? <span class="s">"[]"</span>); }
+  <span class="k">catch</span> { <span class="k">return</span> []; }
+}
+
+<span class="k">export function</span> <span class="f">recordPost</span>(draftId: string, channel: <span class="s">"x"</span>|<span class="s">"threads"</span>) {
+  <span class="k">const</span> hist = <span class="f">loadHistory</span>();
+  hist.<span class="f">unshift</span>({ draftId, postedAt: Date.<span class="f">now</span>(), channel });
+  localStorage.<span class="f">setItem</span>(KEY, <span class="f">JSON.stringify</span>(hist.<span class="f">slice</span>(<span class="n">0</span>, MAX)));
+}
+
+<span class="c">// onClick ハンドラ（4チャネル対応）</span>
+<span class="k">const</span> <span class="f">isMobile</span> = () =&gt; /iPhone|iPad|Android/.<span class="f">test</span>(navigator.userAgent);
+
+<span class="k">const</span> <span class="f">onClickX</span> = (draft: Draft) =&gt; {
+  window.<span class="f">open</span>(<span class="f">buildXIntent</span>(draft), <span class="s">"_blank"</span>, <span class="s">"noopener,noreferrer"</span>);
+  <span class="f">recordPost</span>(draft.id, <span class="s">"x"</span>);
+};
+
+<span class="k">const</span> <span class="f">onClickThreads</span> = (draft: Draft) =&gt; {
+  window.<span class="f">open</span>(<span class="f">buildThreadsIntent</span>(draft), <span class="s">"_blank"</span>, <span class="s">"noopener,noreferrer"</span>);
+  <span class="f">recordPost</span>(draft.id, <span class="s">"threads"</span>);
+};
+
+<span class="c">// Jimoty: 公式 Web Intent 無し → クリップボード + 投稿ページ</span>
+<span class="k">const</span> <span class="f">onClickJimoty</span> = <span class="k">async</span> (draft: Draft) =&gt; {
+  <span class="k">const</span> body = <span class="f">withHashtags</span>(draft);
+  <span class="k">try</span> { <span class="k">await</span> navigator.clipboard.<span class="f">writeText</span>(body); }
+  <span class="k">catch</span> { <span class="f">fallbackCopy</span>(body); } <span class="c">// permissions-policy: clipboard-write 拒否環境向け</span>
+  window.<span class="f">open</span>(<span class="s">"https://jmty.jp/post"</span>, <span class="s">"_blank"</span>, <span class="s">"noopener,noreferrer"</span>);
+  <span class="f">recordPost</span>(draft.id, <span class="s">"jimoty"</span>);
+};
+
+<span class="c">// LINE: モバイル限定 — PC では disabled に</span>
+<span class="k">const</span> <span class="f">onClickLine</span> = (draft: Draft) =&gt; {
+  <span class="k">if</span> (!<span class="f">isMobile</span>()) {
+    <span class="f">alert</span>(<span class="s">"LINE シェアはモバイル端末（iOS / Android）でのみご利用いただけます"</span>);
+    <span class="k">return</span>;
+  }
+  <span class="k">const</span> url = <span class="s">`https://line.me/R/share?text=</span>${<span class="f">encodeURIComponent</span>(<span class="f">withHashtags</span>(draft))}<span class="s">`</span>;
+  window.<span class="f">open</span>(url, <span class="s">"_blank"</span>, <span class="s">"noopener,noreferrer"</span>);
+  <span class="f">recordPost</span>(draft.id, <span class="s">"line"</span>);
+};
+
+<span class="k">function</span> <span class="f">withHashtags</span>(d: Draft) {
+  <span class="k">return</span> d.hashtags?.length
+    ? <span class="s">`</span>${d.text}<span class="s">\n\n</span>${d.hashtags.<span class="f">map</span>(h =&gt; <span class="s">`#</span>${h}<span class="s">`</span>).<span class="f">join</span>(<span class="s">" "</span>)}<span class="s">`</span>
+    : d.text;
+}
+</pre>
+
+    <div class="note info">
+      <strong>記録タイミングの注意</strong>
+      投稿の最終確定は SNS 公式アプリ内で行われるため、Web Intent 経由では「投稿成功」を確実に検知できない。LocalStorage への記録は「ボタンを押した」時点で行い、重複防止の閾値とする。確定取り消し率は経験上 5% 未満。
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">05</span>通知リマインダの実装</h2>
+    <p class="sec-desc">Web Notifications API + Service Worker で、サーバなしのローカル通知を実現。</p>
+
+    <h3>許可取得</h3>
+<pre class="code"><span class="k">export async function</span> <span class="f">enableReminders</span>(times: string[] <span class="c">/* ["07:00", "12:00", "21:00"] */</span>) {
+  <span class="k">if</span> (!(<span class="s">"Notification"</span> <span class="k">in</span> window)) <span class="k">throw new</span> <span class="f">Error</span>(<span class="s">"unsupported"</span>);
+  <span class="k">const</span> perm = <span class="k">await</span> Notification.<span class="f">requestPermission</span>();
+  <span class="k">if</span> (perm !== <span class="s">"granted"</span>) <span class="k">return false</span>;
+
+  <span class="k">const</span> reg = <span class="k">await</span> navigator.serviceWorker.<span class="f">register</span>(<span class="s">"/sw.js"</span>);
+  localStorage.<span class="f">setItem</span>(<span class="s">"kt:reminders"</span>, <span class="f">JSON.stringify</span>(times));
+  <span class="f">scheduleNext</span>(times);
+  <span class="k">return true</span>;
+}
+</pre>
+
+    <h3>Service Worker（sw.js）— 通知発火</h3>
+<pre class="code">self.<span class="f">addEventListener</span>(<span class="s">"message"</span>, (e) =&gt; {
+  <span class="k">if</span> (e.data?.type === <span class="s">"SCHEDULE_REMINDER"</span>) {
+    <span class="k">const</span> { fireAt } = e.data;
+    <span class="k">const</span> delay = fireAt - Date.<span class="f">now</span>();
+    <span class="k">if</span> (delay &gt; <span class="n">0</span>) <span class="f">setTimeout</span>(() =&gt; {
+      self.registration.<span class="f">showNotification</span>(<span class="s">"今日の3案が届いてます"</span>, {
+        body: <span class="s">"☕ 1分で投稿、はじめませんか？"</span>,
+        icon: <span class="s">"/icon-192.png"</span>,
+        badge: <span class="s">"/badge-72.png"</span>,
+        tag: <span class="s">"kantan-daily"</span>,
+        data: { url: <span class="s">"/today.html"</span> }
+      });
+    }, delay);
+  }
+});
+
+self.<span class="f">addEventListener</span>(<span class="s">"notificationclick"</span>, (e) =&gt; {
+  e.notification.<span class="f">close</span>();
+  e.<span class="f">waitUntil</span>(clients.<span class="f">openWindow</span>(e.notification.data?.url ?? <span class="s">"/"</span>));
+});
+</pre>
+
+    <h3>再訪問時の catch up</h3>
+<pre class="code"><span class="c">// app/_app.tsx などで起動時に毎回</span>
+<span class="k">export function</span> <span class="f">rescheduleOnVisit</span>() {
+  <span class="k">const</span> times = <span class="f">JSON.parse</span>(localStorage.<span class="f">getItem</span>(<span class="s">"kt:reminders"</span>) ?? <span class="s">"[]"</span>);
+  <span class="k">if</span> (!times.length) <span class="k">return</span>;
+  <span class="f">scheduleNext</span>(times); <span class="c">// 次回発火を SW に再登録</span>
+}
+</pre>
+
+    <div class="note warn">
+      <strong>iOS Safari の制約</strong>
+      iOS Safari は <code>Notification.requestPermission()</code> を Web ページから直接呼べない。PWA としてホーム画面追加された後の navigator.serviceWorker からのみ通知可能（iOS 16.4+）。Android Chrome / Desktop は標準対応。iOS 対応が必須なら PWA 化（manifest.json + apple-touch-icon）が前提。
+    </div>
+    <div class="note info">
+      <strong>setTimeout の永続性</strong>
+      Service Worker は idle で 30秒〜数分で停止する。長時間 setTimeout は信頼性が低い。実運用では「次回訪問時に未発火分を即発火 + 直近分のみ setTimeout を仕掛ける」ハイブリッドを採用。Periodic Background Sync (Chrome 限定) があれば優先利用する分岐を追加可。
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">06</span>モバイル / デスクトップ挙動（X / Threads）</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>環境</th><th>X intent</th><th>Threads intent</th></tr></thead>
+        <tbody>
+          <tr><td><strong>iOS Safari</strong>（アプリあり）</td><td>Universal Link → X app</td><td>Universal Link → Threads app</td></tr>
+          <tr><td><strong>iOS Safari</strong>（アプリなし）</td><td>ブラウザで投稿フォーム</td><td>ブラウザで投稿フォーム</td></tr>
+          <tr><td><strong>Android Chrome</strong>（アプリあり）</td><td>App Link → X app</td><td>App Link → Threads app</td></tr>
+          <tr><td><strong>Android Chrome</strong>（アプリなし）</td><td>ブラウザで投稿フォーム</td><td>ブラウザで投稿フォーム</td></tr>
+          <tr><td><strong>Desktop</strong>（全ブラウザ）</td><td>新規タブで compose ダイアログ</td><td>新規タブで compose ダイアログ</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note info">
+      <strong>UI 上の挙動</strong>
+      <strong>X / Threads</strong> とも "ボタン押下 → 公式アプリ／ブラウザの投稿フォームが下書き入りで pre-fill" で統一。モバイルは Universal Link / App Link で公式アプリ、未インストール時やデスクトップはブラウザの compose 画面が開く。本文＋ハッシュタグが上限（X=加重280／Threads=500）を超えると、その投稿ボタンは disabled になる。
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">07</span>セキュリティ考慮</h2>
+    <div class="note danger">
+      <strong>XSS / URL injection</strong>
+      下書きを動的に組み立てる場合は <code>URLSearchParams</code> または <code>encodeURIComponent</code> を必ず通す。生の文字列を <code>+</code> 連結する実装は禁止。
+    </div>
+    <div class="note warn">
+      <strong>下書きデータの取り扱い</strong>
+      テンプレ JSON に HTML / script を含めない運用ルールを保持。React の自動エスケープに任せ、<code>dangerouslySetInnerHTML</code> は禁止。
+    </div>
+    <div class="note info">
+      <strong>noopener / referrer policy</strong>
+      <code>window.open(url, "_blank", "noopener,noreferrer")</code> を統一。reverse tabnabbing 対策。
+    </div>
+    <div class="note green">
+      <strong>機密情報の不在</strong>
+      API key・OAuth token・refresh token を一切持たない。漏洩リスクの根本がない。LocalStorage 履歴もユーザ端末完結でサーバ送信なし。
+    </div>
+  </div>
+</section>
+
+<!-- 2026-05-27 claude-opus-4-7 セッションターン数：4 — §08 コスト試算は cost-estimate.html#kantan-tokoo へ集約 -->
+<section>
+  <div class="container">
+    <h2><span class="sec-num">08</span>コスト試算</h2>
+    <p class="sec-desc">3 プラン横断のコスト試算ページに統合しました。投稿数・通知数に関係なく完全固定（¥0/月）の詳細はそちらを参照。</p>
+    <div class="note green">
+      <strong>移動先</strong>
+      → <a href="../cost-estimate.html#kantan-tokoo" style="color:inherit;text-decoration:underline;font-weight:700">post-pilot コスト試算（3 プラン統合）｜ 簡単投稿プランの章</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">09</span>SNS直起動・盛り盛りMAXとの比較</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>項目</th><th>SNSアプリ直起動</th><th>簡単投稿プラン</th><th>盛り盛りMAXプラン</th></tr></thead>
+        <tbody>
+          <tr><td>下書き供給</td><td class="amber">なし（自分で考える）</td><td class="green">3案／業種×季節</td><td class="green">AI 自動生成</td></tr>
+          <tr><td>重複防止</td><td class="amber">自分で記憶</td><td class="green">LocalStorage 履歴 30日</td><td class="green">AI + DB 照合</td></tr>
+          <tr><td>季節・イベント反映</td><td class="amber">なし</td><td class="green">/data/seasonal/{year}.json</td><td class="green">プロンプトに動的注入</td></tr>
+          <tr><td>2媒体起動 (X+Threads)</td><td class="amber">2回開く</td><td class="green">2ボタン同居</td><td class="green">cron で完全自動</td></tr>
+          <tr><td>Jimoty 連携</td><td class="amber">自分でコピペ</td><td class="amber">— 非対応（提供側で廃止）</td><td class="amber">AI下書き→Chatwork通知→人手 (ToS遵守)</td></tr>
+          <tr><td>LINE 連携</td><td class="amber">アプリ起動 + 友だち選択</td><td class="amber">— 非対応（MAXプランへ）</td><td class="green">Messaging API で Push (友だち配信)</td></tr>
+          <tr><td>通知リマインド</td><td class="amber">なし</td><td class="green">Web Notifications API</td><td class="green">cron 自動配信</td></tr>
+          <tr><td>サーバ常駐</td><td>—</td><td class="green">不要</td><td>Vercel Serverless</td></tr>
+          <tr><td>認証</td><td>SNS 側ログイン済セッション</td><td class="green">不要（client only）</td><td>OAuth 2.0 / long-lived token</td></tr>
+          <tr><td>画像投稿</td><td class="green">手動添付可</td><td class="amber">不可（Intent 制約）</td><td class="green">fal.ai 生成 + media/upload</td></tr>
+          <tr><td>投稿時刻指定</td><td class="amber">手動</td><td class="amber">押した瞬間のみ</td><td class="green">cron で任意時刻</td></tr>
+          <tr><td>月額コスト</td><td class="green">¥0</td><td class="green">¥0</td><td class="amber">¥525〜（60投稿時）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2><span class="sec-num">10</span>裏取りソース</h2>
+    <p class="sec-desc">2026-05-26 時点の公式情報・実測で検証済み。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>項目</th><th>ソース</th><th>確認日</th></tr></thead>
+        <tbody>
+          <tr><td>X Web Intent 仕様</td><td class="mono">developer.x.com/.../tweet-button/guides/web-intent</td><td>2026-05-26</td></tr>
+          <tr><td>twitter.com/intent/tweet 継続稼働</td><td class="mono">2026-03 時点で動作確認</td><td>2026-05-26</td></tr>
+          <tr><td>Threads Web Intent 仕様</td><td class="mono">developers.facebook.com/docs/threads/threads-web-intents/</td><td>2026-05-26</td></tr>
+          <tr><td>Web Notifications API（iOS Safari）</td><td class="mono">webkit.org Notifications support 16.4+ (PWA only)</td><td>2026-05-26</td></tr>
+          <tr><td>Periodic Background Sync</td><td class="mono">developer.chrome.com/.../periodic-background-sync (Chrome 限定)</td><td>2026-05-26</td></tr>
+          <tr><td>Universal Link / App Link 挙動</td><td class="mono">iOS / Android 公式仕様</td><td>2026-05-26</td></tr>
+          <tr><td>LINE URL スキーム（line.me/R/share）</td><td class="mono">developers.line.biz/ja/docs/line-login/using-line-url-scheme/</td><td>2026-05-26</td></tr>
+          <tr><td>LINE スキーム デスクトップ非対応</td><td class="mono">developers.line.biz スキーマドキュメント</td><td>2026-05-26</td></tr>
+          <tr><td>Jimoty 利用規約（自動投稿禁止）</td><td class="mono">jmty.jp/about/terms · jmty.jp/about/guide</td><td>2026-05-26</td></tr>
+          <tr><td>Jimoty 公式 API 不在</td><td class="mono">jmty.co.jp (開発者向け公開なし)</td><td>2026-05-26</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    post-pilot ｜ plan: <code>kantan-tokoo</code> ｜ technical-spec ｜ 2026-05-26 verified
+  </div>
+</footer>
+
+</body>
+</html>

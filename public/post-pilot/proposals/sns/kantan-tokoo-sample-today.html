@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<!-- 2026-05-26 claude-opus-4-7 セッションターン数：17 — 簡単投稿プラン サンプル画面新規作成（業種選択→今日の3案→実Web Intent起動） -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="../auth.js"></script>
+<title>今日の3案 — 簡単投稿プラン サンプル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#06140f;
+    --bg-card:rgba(255,255,255,.04);
+    --border:rgba(255,255,255,.08);
+    --text:#e9f5ee;
+    --text-dim:#9fbcaf;
+    --text-mute:#6b8a7d;
+    --green:#10b981;
+    --teal:#14b8a6;
+    --emerald:#34d399;
+    --gold:#fbbf24;
+    --grad-hero:linear-gradient(135deg,#10b981 0%,#14b8a6 50%,#06b6d4 100%);
+    --grad-card:linear-gradient(135deg,rgba(16,185,129,.18) 0%,rgba(20,184,166,.12) 100%);
+  }
+  html,body{background:var(--bg);color:var(--text);font-family:"Noto Sans JP","Inter",-apple-system,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;min-height:100vh}
+  body::before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 15% 15%,rgba(16,185,129,.16) 0%,transparent 45%),radial-gradient(circle at 85% 60%,rgba(20,184,166,.10) 0%,transparent 50%);pointer-events:none;z-index:-1}
+  .container{max-width:880px;margin:0 auto;padding:0 24px}
+
+  /* HEADER */
+  header.top{padding:24px 0;border-bottom:1px solid var(--border);margin-bottom:32px}
+  .top-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px}
+  .brand-dot{width:28px;height:28px;border-radius:8px;background:var(--grad-hero);display:flex;align-items:center;justify-content:center;font-size:14px}
+  .brand small{display:block;font-size:11px;font-weight:500;color:var(--text-mute);letter-spacing:.1em;margin-top:2px}
+  .date-chip{padding:8px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:999px;font-size:13px;color:var(--text-dim);font-family:"Inter",monospace}
+  .date-chip strong{color:var(--emerald);font-weight:700;margin-right:4px}
+
+  /* SCREEN: industry selection */
+  .screen{padding-bottom:80px}
+  .screen-title{font-size:clamp(24px,4vw,32px);font-weight:900;letter-spacing:-.01em;margin-bottom:8px}
+  .screen-sub{color:var(--text-dim);font-size:15px;margin-bottom:32px}
+  .industry-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+  .industry-card{padding:24px 20px;background:var(--bg-card);border:1px solid var(--border);border-radius:18px;cursor:pointer;text-align:center;transition:all .2s;font-family:inherit;color:inherit}
+  .industry-card:hover{transform:translateY(-4px);border-color:rgba(16,185,129,.5);background:rgba(16,185,129,.06)}
+  .industry-icon{font-size:36px;margin-bottom:10px}
+  .industry-name{font-weight:700;font-size:16px;margin-bottom:4px}
+  .industry-desc{font-size:12px;color:var(--text-mute)}
+
+  /* SCREEN: today's 3 drafts */
+  .meta-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+  .meta-row .left{font-size:14px;color:var(--text-dim)}
+  .meta-row .left strong{color:var(--emerald);font-weight:700}
+  .meta-actions{display:flex;gap:8px}
+  .ghost-btn{padding:6px 12px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text-dim);cursor:pointer;font-family:inherit;transition:all .2s}
+  .ghost-btn:hover{border-color:rgba(16,185,129,.4);color:var(--text)}
+
+  .tabs{display:flex;gap:8px;margin-bottom:14px}
+  .tab{flex:1;padding:14px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;cursor:pointer;text-align:center;font-family:inherit;color:var(--text-dim);transition:all .2s;font-size:14px;font-weight:600}
+  .tab:hover{background:rgba(16,185,129,.06)}
+  .tab.active{background:var(--grad-hero);color:#fff;border-color:transparent;font-weight:700;box-shadow:0 8px 24px rgba(16,185,129,.3)}
+  .tab .tag{display:block;font-size:11px;font-weight:500;opacity:.8;margin-top:2px}
+
+  .draft-card{padding:28px;background:#fff;color:#1a2e2a;border-radius:20px;box-shadow:0 16px 48px rgba(0,0,0,.3);margin-bottom:16px;position:relative}
+  .draft-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:12px;color:#6b7280}
+  .draft-meta .badge{display:inline-block;padding:3px 8px;background:#dcfce7;color:#15803d;border-radius:6px;font-weight:700;letter-spacing:.05em}
+  .draft-text{font-size:16px;line-height:1.8;white-space:pre-wrap;color:#1a2e2a;margin-bottom:14px;font-weight:500;min-height:140px;padding:14px;background:#f9fafb;border-radius:12px;border:1px solid #f3f4f6}
+  .draft-text:focus{outline:2px solid var(--green);outline-offset:2px}
+  .draft-hashtags{font-size:14px;color:#0d9488;font-weight:600;margin-bottom:18px}
+  .draft-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .post-btn{padding:14px;border-radius:12px;font-weight:700;text-align:center;font-size:14px;text-decoration:none;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .15s,box-shadow .15s,opacity .15s;cursor:pointer;border:none;font-family:inherit;line-height:1.3}
+  .post-btn:hover:not(:disabled){transform:translateY(-2px)}
+  .post-btn:disabled{opacity:.45;cursor:not-allowed}
+  .post-btn .row{display:flex;align-items:center;gap:8px}
+  .post-btn small{font-size:10px;font-weight:500;opacity:.8;margin-top:2px}
+  .post-btn.x{background:#000;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .post-btn.x:hover{box-shadow:0 12px 32px rgba(0,0,0,.5)}
+  .post-btn.threads{background:linear-gradient(135deg,#1a1a1a 0%,#000 100%);border:1px solid #333;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .post-btn.threads:hover{box-shadow:0 12px 32px rgba(0,0,0,.5)}
+  .post-btn .icon{font-size:18px;font-weight:900}
+  .channel-note{font-size:11px;color:var(--text-mute);text-align:center;margin-top:10px;padding:8px 12px;background:rgba(0,0,0,.15);border-radius:8px}
+
+  .hint{padding:18px 22px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;font-size:13px;color:var(--text-dim);margin-top:24px}
+  .hint strong{color:var(--emerald);font-weight:700;display:block;margin-bottom:6px;font-size:12px;letter-spacing:.08em}
+  .hint code{font-family:"Inter",monospace;font-size:12px;background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;color:var(--emerald)}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);padding:14px 24px;background:var(--grad-hero);color:#fff;border-radius:999px;font-size:14px;font-weight:700;box-shadow:0 16px 48px rgba(16,185,129,.4);transition:transform .3s;z-index:100;pointer-events:none}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+
+  footer{padding:30px 0 60px;text-align:center;color:var(--text-mute);font-size:12px;border-top:1px solid var(--border);margin-top:60px}
+  footer a{color:var(--emerald);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="container">
+    <div class="top-row">
+      <div class="brand">
+        <div class="brand-dot">✨</div>
+        <div>簡単投稿 <small>SAMPLE · TODAY'S 3 DRAFTS</small></div>
+      </div>
+      <div class="date-chip">🗓 <strong id="dateStr"></strong><span id="dayStr"></span></div>
+    </div>
+  </div>
+</header>
+
+<main class="container screen">
+
+  <!-- STEP 1: 業種選択 -->
+  <section id="screen-industry" class="hidden">
+    <h1 class="screen-title">業種をひとつ選んでください</h1>
+    <p class="screen-sub">選んだ業種に合わせて、今日の3案がその場で生成されます。次回からはこの業種で表示されます。</p>
+    <div class="industry-grid">
+      <button class="industry-card" data-industry="cafe"><div class="industry-icon">☕</div><div class="industry-name">カフェ・飲食</div><div class="industry-desc">カフェ、レストラン、ベーカリー</div></button>
+      <button class="industry-card" data-industry="salon"><div class="industry-icon">💇</div><div class="industry-name">美容・サロン</div><div class="industry-desc">美容室、ネイル、エステ</div></button>
+      <button class="industry-card" data-industry="law"><div class="industry-icon">⚖️</div><div class="industry-name">士業・コンサル</div><div class="industry-desc">弁護士、税理士、社労士</div></button>
+      <button class="industry-card" data-industry="ec"><div class="industry-icon">🛍️</div><div class="industry-name">EC・通販</div><div class="industry-desc">ネットショップ、D2C</div></button>
+      <button class="industry-card" data-industry="medical"><div class="industry-icon">🏥</div><div class="industry-name">医療・健康</div><div class="industry-desc">クリニック、整体、薬局</div></button>
+      <button class="industry-card" data-industry="education"><div class="industry-icon">📚</div><div class="industry-name">教育・スクール</div><div class="industry-desc">塾、習い事、講座</div></button>
+    </div>
+  </section>
+
+  <!-- STEP 2: 今日の3案 -->
+  <section id="screen-today" class="hidden">
+    <div class="meta-row">
+      <div class="left">業種：<strong id="industryLabel">—</strong>　🌿 季節タグ：<strong id="seasonTagsLabel">—</strong></div>
+      <div class="meta-actions">
+        <button class="ghost-btn" onclick="changeIndustry()">業種を変更</button>
+        <button class="ghost-btn" onclick="clearHistory()">履歴クリア</button>
+      </div>
+    </div>
+
+    <div class="tabs" id="tabs"></div>
+
+    <div class="draft-card">
+      <div class="draft-meta">
+        <span>📝 下書きはタップで編集できます</span>
+        <span class="badge" id="historyBadge">✓ 過去30日と重複なし</span>
+      </div>
+      <div class="draft-text" id="draftText" contenteditable="true"></div>
+      <div class="draft-hashtags" id="draftHashtags"></div>
+      <!-- 2026-05-28 claude-opus-4-7 セッションターン数：13 — チャネルを X / Threads のみに整合（Jimoty 廃止・LINE 現状外し） -->
+      <div class="draft-buttons">
+        <button class="post-btn x" onclick="postToX()"><div class="row"><span class="icon">𝕏</span> X で投稿</div><small id="xCount"></small></button>
+        <button class="post-btn threads" onclick="postToThreads()"><div class="row"><span class="icon">@</span> Threads で投稿</div><small id="thCount"></small></button>
+      </div>
+      <div class="channel-note" id="channelNote"></div>
+    </div>
+
+    <div class="hint">
+      <strong>HOW IT WORKS</strong>
+      X / Threads は <code>/intent/...</code> URL で公式アプリ／ブラウザの投稿フォームが下書き入りで開く。本文＋ハッシュタグが各媒体の文字数上限（X は全角を2と数える加重280／Threads は500）を超えると、その投稿ボタンは無効になる。<br>
+      いずれもボタン押下時に <code>kt:posted:v1</code>（LocalStorage）に記録し、次回以降の重複表示を防ぐ。
+    </div>
+  </section>
+
+</main>
+
+<div class="toast" id="toast">記録しました ✓</div>
+
+<footer>
+  <div class="container">
+    これは <strong style="color:var(--emerald)">簡単投稿プラン</strong> の動作サンプルです ｜ <a href="kantan-tokoo-presentation.html">プラン概要に戻る</a>
+  </div>
+</footer>
+
+<script>
+/* ============ DATA ============ */
+const INDUSTRY_LABELS = {
+  cafe: "カフェ・飲食", salon: "美容・サロン", law: "士業・コンサル",
+  ec: "EC・通販", medical: "医療・健康", education: "教育・スクール"
+};
+
+const TEMPLATES = {
+  cafe: [
+    { id:"cafe-rainy-1",  tone:"polite",   seasonTags:["rainy"], text:"🌧 梅雨入り前のお知らせ\n6月1日より、雨の日限定でホットドリンク50円引きを実施します。\nお足元の悪い中ご来店いただく皆さまへ、ささやかな感謝の気持ちです☕",            hashtags:["カフェ","雨の日サービス","梅雨"] },
+    { id:"cafe-rainy-2",  tone:"friendly", seasonTags:["rainy"], text:"☔ ジメジメする日こそ、あったかいラテで一息つきませんか？\nうちの隠れた人気メニュー、ハニーカフェラテはちみつたっぷりでホッとしますよ☕💛", hashtags:["カフェ","梅雨","おすすめ"] },
+    { id:"cafe-rainy-3",  tone:"promo",    seasonTags:["rainy"], text:"【雨の日限定】\n本日の全ホットドリンク 50円OFF！\n通常550円 → 500円\n13:00〜17:00 限定です。お待ちしてます！",                                                  hashtags:["カフェ","本日限定","お得"] },
+    { id:"cafe-newmenu-1",tone:"polite",   seasonTags:["new-menu","early-summer"], text:"🍋 初夏の新メニューのお知らせ\nレモンとミントのフレッシュソーダ、本日より販売開始です。\n暑くなるこの季節にぴったりの、すっきりとした一杯をお楽しみください。",       hashtags:["カフェ","新メニュー","初夏"] },
+    { id:"cafe-newmenu-2",tone:"friendly", seasonTags:["new-menu"], text:"✨ 新メニュー出ました〜！\nレモンミントソーダ、めちゃくちゃ爽やかで店長イチオシです🍋\nぜひ飲みに来てください〜！",                                                       hashtags:["カフェ","新メニュー","おすすめ"] },
+    { id:"cafe-weekstart",tone:"friendly", seasonTags:["week-start"], text:"☀️ 月曜日の朝、コーヒーで一息いかがですか？\nテイクアウトもOK、朝7時から開けてます！\n今週も一緒に乗り切りましょう☕",                                                      hashtags:["カフェ","モーニング","月曜日"] }
+  ],
+  salon: [
+    { id:"salon-rainy-1", tone:"polite",   seasonTags:["rainy"], text:"梅雨の湿気で広がりやすい髪に、しっとりまとまるトリートメントメニューをご用意しています。\n本日もご予約承っております。",                              hashtags:["美容室","梅雨","トリートメント"] },
+    { id:"salon-rainy-2", tone:"friendly", seasonTags:["rainy"], text:"梅雨のうねり、もう諦めていませんか？💧\nクセを抑える縮毛矯正、初回20%OFFで承ってます。\n気軽にDMくださいね〜！",                                  hashtags:["美容室","縮毛矯正","梅雨対策"] },
+    { id:"salon-rainy-3", tone:"promo",    seasonTags:["rainy"], text:"【6月限定キャンペーン】\n縮毛矯正＋カット 通常16,500円 → 13,200円\n梅雨を快適に乗り切りましょう✨",                                                hashtags:["美容室","キャンペーン","6月限定"] },
+    { id:"salon-summer-1",tone:"polite",   seasonTags:["early-summer"], text:"初夏は明るめのカラーが映える季節です。\nお気軽にご相談ください、お似合いの色をご提案します。",                                                  hashtags:["美容室","ヘアカラー","初夏"] },
+    { id:"salon-newcust", tone:"friendly", seasonTags:[], text:"初めましての方、大歓迎です✂️\nカット＋ブロー 初回4,400円でお試しいただけます。\nぜひお気軽にお越しください！",                                          hashtags:["美容室","新規","初回割引"] },
+    { id:"salon-tip",     tone:"polite",   seasonTags:[], text:"湿度の高い季節は、シャンプー後にしっかり乾かすだけでも髪の広がりが落ち着きます。\n小さな習慣が、毎朝のスタイリングを楽にしてくれますよ。",         hashtags:["美容室","ヘアケア","お役立ち"] }
+  ],
+  law: [
+    { id:"law-info-1",   tone:"polite",   seasonTags:[], text:"【お知らせ】\n6月は確定申告の修正申告に関するご相談を多くいただく時期です。\n気になる点がございましたら、初回30分無料相談を承っております。",                          hashtags:["税理士","確定申告","無料相談"] },
+    { id:"law-tip-1",    tone:"polite",   seasonTags:[], text:"フリーランスの方からよくいただくご質問：\n「経費にできるもの／できないもの」の判断基準は、事業との関連性です。\n詳しくはお気軽にご相談ください。",                       hashtags:["税理士","フリーランス","お役立ち"] },
+    { id:"law-tip-2",    tone:"friendly", seasonTags:[], text:"💼 起業を考えている方へ\n個人事業主と法人、どっちがいいの？というご質問、本当に多いです。\n年商の目安や手間の違いをわかりやすく解説します✨",                       hashtags:["税理士","起業","個人事業"] },
+    { id:"law-promo-1",  tone:"promo",    seasonTags:[], text:"【新規受付中】\n月次顧問契約 月額11,000円〜\n記帳代行・税務相談・申告まで一括でお任せください。",                                                                       hashtags:["税理士","顧問契約","新規受付"] },
+    { id:"law-trust-1",  tone:"polite",   seasonTags:["rainy"], text:"梅雨の時期、書類整理のお手伝いをご希望の方が増えています。\n領収書のスキャン代行サービスもご相談ください。",                                                       hashtags:["税理士","書類整理","梅雨"] },
+    { id:"law-friendly-1",tone:"friendly", seasonTags:["week-start"], text:"月曜の朝から、お疲れさまです☕\nお仕事の合間に「これ経費になる？」など、軽いご質問もLINEで受け付けてます〜！",                                                hashtags:["税理士","気軽に相談","月曜日"] }
+  ],
+  ec: [
+    { id:"ec-rainy-1",   tone:"promo",    seasonTags:["rainy"], text:"【梅雨フェア開催中】\n撥水加工アイテム全品 15%OFF\n6/30まで、クーポンコード: RAINY15\nお家時間も雨の日も快適に☔",                                              hashtags:["ECサイト","セール","梅雨"] },
+    { id:"ec-rainy-2",   tone:"friendly", seasonTags:["rainy"], text:"☔ 梅雨の通勤、傘さしてバッグ持って…大変ですよね\nうちの撥水トート、片手で開け閉めできて雨の日めっちゃ便利ですよ〜！",                                          hashtags:["ECサイト","おすすめ","梅雨グッズ"] },
+    { id:"ec-newitem-1", tone:"polite",   seasonTags:["new-menu"], text:"【新作入荷】\n夏に向けて、リネン100%シャツが入荷しました。\n通気性抜群で、汗ばむ季節も快適にお過ごしいただけます。",                                       hashtags:["ECサイト","新作","リネン"] },
+    { id:"ec-tip-1",     tone:"friendly", seasonTags:[], text:"💡 知ってましたか？\n弊店、3,300円以上で送料無料です✨\nまとめ買いがおすすめですよ〜！",                                                                                  hashtags:["ECサイト","送料無料","お知らせ"] },
+    { id:"ec-promo-1",   tone:"promo",    seasonTags:[], text:"【週末セール】\n金土日 限定 全品10%OFF\nクーポン不要、自動適用です。お見逃しなく🛍️",                                                                                  hashtags:["ECサイト","週末セール","お得"] },
+    { id:"ec-trust-1",   tone:"polite",   seasonTags:[], text:"いつもお買い物ありがとうございます。\nレビューを投稿いただいた方には次回使える500円クーポンをプレゼントしています。",                                                  hashtags:["ECサイト","レビュー","クーポン"] }
+  ],
+  medical: [
+    { id:"med-rainy-1",  tone:"polite",   seasonTags:["rainy"], text:"梅雨の時期は、気圧の変化で頭痛・関節痛が出やすくなります。\n気になる症状がございましたら、お気軽にご相談ください。",                                          hashtags:["クリニック","梅雨","頭痛"] },
+    { id:"med-rainy-2",  tone:"friendly", seasonTags:["rainy"], text:"☔ 梅雨だる、感じてませんか？\nなんとなくだるい、寝つけない…そんな時は無理せずご相談くださいね。",                                                              hashtags:["クリニック","梅雨","健康"] },
+    { id:"med-info-1",   tone:"polite",   seasonTags:[], text:"【診療時間のご案内】\n土曜は午前のみ、9:00〜13:00の診療です。\nWeb予約も承っております。",                                                                                  hashtags:["クリニック","診療時間","予約"] },
+    { id:"med-tip-1",    tone:"polite",   seasonTags:["early-summer"], text:"これからの季節、水分補給を意識的に。\n喉が渇く前にこまめに飲むのがポイントです。",                                                                            hashtags:["健康","水分補給","熱中症予防"] },
+    { id:"med-friendly-1",tone:"friendly", seasonTags:[], text:"💉 健康診断のご予約、6月分受付中です！\n会社の補助が使える方もぜひお気軽にご相談ください✨",                                                                            hashtags:["クリニック","健康診断","予約"] },
+    { id:"med-promo-1",  tone:"promo",    seasonTags:[], text:"【新規患者さま受付中】\nオンライン診療も対応開始しました。\n通院が難しい方もお気軽にどうぞ。",                                                                          hashtags:["クリニック","オンライン診療","新規"] }
+  ],
+  education: [
+    { id:"edu-info-1",   tone:"polite",   seasonTags:[], text:"【夏期講習のご案内】\n6/20より受付開始予定です。\n小学生〜高校生まで、苦手分野を集中対策できるコースをご用意しています。",                                          hashtags:["塾","夏期講習","受付開始"] },
+    { id:"edu-friendly-1",tone:"friendly", seasonTags:[], text:"🌱 中間テストお疲れさまでした！\n結果はどうでしたか？\n次の期末に向けて、今からコツコツ準備するのが一番の近道ですよ📚",                                            hashtags:["塾","中間テスト","勉強法"] },
+    { id:"edu-promo-1",  tone:"promo",    seasonTags:[], text:"【無料体験授業 受付中】\n1コマ無料でお試しいただけます。\n講師との相性をぜひ確かめてください。",                                                                          hashtags:["塾","無料体験","受付中"] },
+    { id:"edu-tip-1",    tone:"polite",   seasonTags:["rainy"], text:"梅雨の時期、外出が減って勉強時間が確保しやすい季節です。\n苦手分野をじっくり潰す絶好のチャンスとして、ぜひご活用ください。",                                  hashtags:["塾","勉強法","梅雨"] },
+    { id:"edu-trust-1",  tone:"polite",   seasonTags:[], text:"今年度、当塾から第一志望校に合格した生徒は92%です。\n一人ひとりに合わせた指導を大切にしています。",                                                                      hashtags:["塾","合格実績","個別指導"] },
+    { id:"edu-friendly-2",tone:"friendly", seasonTags:["week-start"], text:"📚 月曜日、今週も頑張ろう！\n勉強で困ったらいつでも質問してね〜！",                                                                                          hashtags:["塾","応援","月曜日"] }
+  ]
+};
+
+const SEASONAL = {
+  events: [
+    { date:"2026-06-01", tags:["rainy"], weight:2.0 },
+    { date:"2026-06-15", tags:["fathers-day"], weight:2.5 }
+  ],
+  monthRanges: [
+    { months:[6,7], tags:["rainy"], weight:1.5 },
+    { months:[5,6], tags:["early-summer","new-menu"], weight:1.2 },
+    { months:[12], tags:["year-end"], weight:1.8 }
+  ],
+  recurring: [
+    { dayOfWeek:1, tags:["week-start"], weight:0.8 }
+  ]
+};
+
+const TONE_LABELS = { polite:"A 丁寧", friendly:"B 親しみ", promo:"C お得感" };
+
+/* ============ STATE ============ */
+const STORE = {
+  industry: "kt:industry:v1",
+  history:  "kt:posted:v1"
+};
+let currentIndustry = null;
+let currentDrafts = [];
+let activeTone = "polite";
+
+/* ============ INIT ============ */
+const isMobile = /iPhone|iPad|iPod|Android/.test(navigator.userAgent);
+
+function init(){
+  renderDate();
+  currentIndustry = localStorage.getItem(STORE.industry);
+  if(currentIndustry && INDUSTRY_LABELS[currentIndustry]){
+    showToday();
+  } else {
+    showIndustry();
+  }
+  document.querySelectorAll("[data-industry]").forEach(btn=>{
+    btn.addEventListener("click", ()=>selectIndustry(btn.dataset.industry));
+  });
+  document.getElementById("channelNote").textContent = "X / Threads の2媒体に対応。投稿の確定は各アプリ側で行います。";
+}
+
+function renderDate(){
+  const now = new Date();
+  const m = now.getMonth()+1, d = now.getDate();
+  const days = ["日","月","火","水","木","金","土"];
+  document.getElementById("dateStr").textContent = `${now.getFullYear()}/${m}/${d}`;
+  document.getElementById("dayStr").textContent = `（${days[now.getDay()]}）`;
+}
+
+function showIndustry(){
+  document.getElementById("screen-industry").classList.remove("hidden");
+  document.getElementById("screen-today").classList.add("hidden");
+}
+function showToday(){
+  document.getElementById("screen-industry").classList.add("hidden");
+  document.getElementById("screen-today").classList.remove("hidden");
+  document.getElementById("industryLabel").textContent = INDUSTRY_LABELS[currentIndustry];
+  generateToday();
+}
+
+function selectIndustry(key){
+  if(!INDUSTRY_LABELS[key]) return;
+  currentIndustry = key;
+  localStorage.setItem(STORE.industry, key);
+  showToday();
+}
+function changeIndustry(){
+  localStorage.removeItem(STORE.industry);
+  currentIndustry = null;
+  showIndustry();
+}
+
+/* ============ HISTORY ============ */
+function loadHistory(){
+  try { return JSON.parse(localStorage.getItem(STORE.history) ?? "[]"); }
+  catch { return []; }
+}
+function recordPost(draftId, channel){
+  const hist = loadHistory();
+  hist.unshift({ draftId, postedAt: Date.now(), channel });
+  localStorage.setItem(STORE.history, JSON.stringify(hist.slice(0,100)));
+}
+function clearHistory(){
+  localStorage.removeItem(STORE.history);
+  toast("履歴をクリアしました");
+  generateToday();
+}
+
+/* ============ DRAFT SELECTION ============ */
+function activeSeasonTags(now = new Date()){
+  const tags = new Set();
+  const today = now.toISOString().slice(0,10);
+  const m = now.getMonth()+1;
+  const dow = now.getDay();
+  SEASONAL.events.filter(e=>e.date===today).forEach(e=>e.tags.forEach(t=>tags.add(t)));
+  SEASONAL.monthRanges.filter(r=>r.months.includes(m)).forEach(r=>r.tags.forEach(t=>tags.add(t)));
+  SEASONAL.recurring.filter(r=>r.dayOfWeek===dow).forEach(r=>r.tags.forEach(t=>tags.add(t)));
+  return [...tags];
+}
+
+function generateToday(){
+  const pool = TEMPLATES[currentIndustry] ?? [];
+  const THIRTY = 30*86400_000;
+  const hist = loadHistory();
+  const recent = new Set(hist.filter(h=>Date.now()-h.postedAt<THIRTY).map(h=>h.draftId));
+  const seasonTags = activeSeasonTags();
+  document.getElementById("seasonTagsLabel").textContent = seasonTags.length ? seasonTags.join(", ") : "なし";
+
+  const scored = pool
+    .filter(d=>!recent.has(d.id))
+    .map(d=>{
+      const match = d.seasonTags.filter(t=>seasonTags.includes(t)).length;
+      return { d, score: 1 + match*0.8 };
+    });
+
+  const pickTop = (tone)=>{
+    const c = scored.filter(s=>s.d.tone===tone).sort((a,b)=>b.score-a.score)[0];
+    if(c) return c.d;
+    // fallback: pool 全体から（重複許容）
+    const fallback = pool.filter(d=>d.tone===tone);
+    return fallback[Math.floor(Math.random()*fallback.length)];
+  };
+  currentDrafts = ["polite","friendly","promo"].map(pickTop).filter(Boolean);
+  activeTone = currentDrafts[0]?.tone ?? "polite";
+  renderTabs();
+  renderDraft();
+}
+
+function renderTabs(){
+  const tabs = document.getElementById("tabs");
+  tabs.innerHTML = "";
+  currentDrafts.forEach(d=>{
+    const btn = document.createElement("button");
+    btn.className = "tab" + (d.tone===activeTone ? " active" : "");
+    btn.innerHTML = `${TONE_LABELS[d.tone]}<span class="tag">${d.tone}</span>`;
+    btn.onclick = ()=>{ activeTone = d.tone; renderTabs(); renderDraft(); };
+    tabs.appendChild(btn);
+  });
+}
+
+function renderDraft(){
+  const d = currentDrafts.find(x=>x.tone===activeTone);
+  if(!d) return;
+  document.getElementById("draftText").textContent = d.text;
+  document.getElementById("draftHashtags").textContent = d.hashtags.map(h=>`#${h}`).join(" ");
+  const hist = loadHistory();
+  const dup = hist.some(h=>h.draftId===d.id && Date.now()-h.postedAt<30*86400_000);
+  const badge = document.getElementById("historyBadge");
+  badge.textContent = dup ? "⚠ 30日以内に投稿済み" : "✓ 過去30日と重複なし";
+  badge.style.background = dup ? "#fef3c7" : "#dcfce7";
+  badge.style.color      = dup ? "#92400e" : "#15803d";
+}
+
+/* ============ POST ============ */
+function currentDraft(){ return currentDrafts.find(x=>x.tone===activeTone); }
+function currentText(){ return document.getElementById("draftText").innerText.trim(); }
+
+function postToX(){
+  const d = currentDraft(); if(!d) return;
+  const params = new URLSearchParams();
+  params.set("text", currentText());
+  if(d.hashtags?.length) params.set("hashtags", d.hashtags.join(","));
+  const url = `https://twitter.com/intent/tweet?${params.toString()}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+  recordPost(d.id, "x");
+  toast("X 投稿フォームを開きました ✓");
+  setTimeout(renderDraft, 100);
+}
+
+function postToThreads(){
+  const d = currentDraft(); if(!d) return;
+  const body = d.hashtags?.length
+    ? `${currentText()}\n\n${d.hashtags.map(h=>`#${h}`).join(" ")}`
+    : currentText();
+  const url = `https://www.threads.net/intent/post?text=${encodeURIComponent(body)}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+  recordPost(d.id, "threads");
+  toast("Threads 投稿フォームを開きました ✓");
+  setTimeout(renderDraft, 100);
+}
+
+
+/* ============ TOAST ============ */
+let toastTimer;
+function toast(msg){
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove("show"), 2400);
+}
+
+init();
+</script>
+
+</body>
+</html>

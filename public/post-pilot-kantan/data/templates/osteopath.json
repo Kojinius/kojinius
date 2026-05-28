@@ -1,0 +1,105 @@
+{
+  "industry": "osteopath",
+  "label": "整骨院 / 接骨院",
+  "version": "2026.05",
+  "_compliance": "柔道整復師法の広告制限に配慮。効果・効能（『治る』『改善』『○○に効く』等）や適応症の宣伝を含めない。受付時間・休診・予約・一般的な身体の労りのお知らせに限定。",
+  "defaultHashtags": ["整骨院", "接骨院"],
+  "drafts": [
+    {
+      "id": "osteopath-hours-001",
+      "tone": "polite",
+      "seasonTags": [],
+      "weight": 0.9,
+      "text": "🕐 受付時間のご案内\n\n平日 9:00〜19:30／土曜 9:00〜13:00 で受付しております。\n初めての方は受付までお声がけください。",
+      "hashtags": ["整骨院", "受付時間"]
+    },
+    {
+      "id": "osteopath-reserve-002",
+      "tone": "polite",
+      "seasonTags": [],
+      "weight": 0.9,
+      "text": "📞 ご予約のご案内\n\nお電話または受付にてご予約を承っております。\nお待ち時間を少なくするため、ご予約でのご来院がおすすめです。",
+      "hashtags": ["整骨院", "予約受付"]
+    },
+    {
+      "id": "osteopath-closed-003",
+      "tone": "promo",
+      "seasonTags": [],
+      "weight": 0.9,
+      "text": "📅 休診のお知らせ\n\n下記の期間は休診とさせていただきます。\nご不便をおかけしますが、よろしくお願いいたします。",
+      "hashtags": ["整骨院", "休診のお知らせ"]
+    },
+    {
+      "id": "osteopath-care-004",
+      "tone": "friendly",
+      "seasonTags": ["winter"],
+      "weight": 1.2,
+      "text": "❄ 寒い季節は身体がこわばりやすいですね。\n\n入浴で温める、軽く動かすなど、ご自身のペースで労ってあげてください。\n気になることはお気軽にご相談を。",
+      "hashtags": ["整骨院", "冬", "セルフケア"]
+    },
+    {
+      "id": "osteopath-weekstart-005",
+      "tone": "friendly",
+      "seasonTags": ["week-start"],
+      "weight": 1.0,
+      "text": "おはようございます☀\n\n新しい一週間、無理のないペースでいきましょう。\n身体のことで気になる点があれば、お気軽にお立ち寄りください。",
+      "hashtags": ["整骨院", "月曜日"]
+    },
+    {
+      "id": "osteopath-new-006",
+      "tone": "polite",
+      "seasonTags": [],
+      "weight": 0.8,
+      "text": "🤝 はじめての方へ\n\nお身体の状態をうかがいながら、ていねいに対応いたします。\nご不明な点は、受付までお気軽にお尋ねください。",
+      "hashtags": ["整骨院", "新規受付"]
+    },
+    {
+      "id": "osteopath-summer-007",
+      "tone": "friendly",
+      "seasonTags": ["summer"],
+      "weight": 1.1,
+      "text": "🌻 暑い日が続いていますね。\n\n水分補給と休息を大切に、無理なくお過ごしください。\n気になることがあれば、いつでもご相談ください。",
+      "hashtags": ["整骨院", "夏", "体調管理"]
+    },
+    {
+      "id": "osteopath-yearend-008",
+      "tone": "promo",
+      "seasonTags": ["year-end"],
+      "weight": 1.3,
+      "text": "🎍 年末年始の受付について\n\n下記の期間は休診とさせていただきます。\n年内のご予約はお早めにお願いいたします。",
+      "hashtags": ["整骨院", "年末年始", "お知らせ"]
+    },
+    {
+      "id": "osteopath-newyear-009",
+      "tone": "polite",
+      "seasonTags": ["new-year"],
+      "weight": 1.4,
+      "text": "🎍 本年もよろしくお願いいたします\n\n地域の皆さまのお身体に寄り添えるよう努めてまいります。\n本日より通常通り受付しております。",
+      "hashtags": ["整骨院", "新年のごあいさつ"]
+    },
+    {
+      "id": "osteopath-fridays-010",
+      "tone": "friendly",
+      "seasonTags": ["friday"],
+      "weight": 1.0,
+      "text": "今週もおつかれさまでした🍵\n\n週末は、ゆっくり身体を休める時間も大切に。\nまた来週、元気にお過ごしください。",
+      "hashtags": ["整骨院", "金曜日"]
+    },
+    {
+      "id": "osteopath-always-011",
+      "tone": "polite",
+      "seasonTags": [],
+      "weight": 0.7,
+      "text": "🏥 お身体のことで気になることはありませんか。\n\nどうぞ一人で抱え込まず、お気軽にご相談ください。\n受付でお話をうかがいます。",
+      "hashtags": ["整骨院", "相談受付"]
+    },
+    {
+      "id": "osteopath-rainy-012",
+      "tone": "friendly",
+      "seasonTags": ["rainy-season"],
+      "weight": 1.2,
+      "text": "☔ 梅雨どきは身体が重く感じやすい時期ですね。\n\n睡眠と休息を大切に、こまめに身体を動かしてみてください。\n気になることはご相談を。",
+      "hashtags": ["整骨院", "梅雨", "体調管理"]
+    }
+  ]
+}

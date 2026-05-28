@@ -1,0 +1,128 @@
+{
+  "industry": "salon",
+  "label": "美容室 / サロン",
+  "version": "2026.05",
+  "defaultHashtags": ["美容室", "ヘアサロン"],
+  "drafts": [
+    {
+      "id": "salon-spring-001",
+      "tone": "polite",
+      "seasonTags": ["spring"],
+      "weight": 1.4,
+      "text": "🌸 春のヘアカラー\n\n今シーズンは「淡いベージュ」と「やわらかピンク」が人気です。\n新生活に合わせたイメージチェンジ、ご相談ください。",
+      "hashtags": ["美容室", "春カラー", "ベージュ", "イメチェン"]
+    },
+    {
+      "id": "salon-rainy-002",
+      "tone": "friendly",
+      "seasonTags": ["rainy-season"],
+      "weight": 1.4,
+      "text": "湿気で広がる髪、お悩みじゃないですか？☂\n\n梅雨時期におすすめの「うるおいトリートメント」、今ならお試し価格でご案内中です。\n朝のお手入れ時間、グッと短くなりますよ✨",
+      "hashtags": ["美容室", "梅雨ヘア", "トリートメント", "うねり対策"]
+    },
+    {
+      "id": "salon-summer-003",
+      "tone": "promo",
+      "seasonTags": ["summer"],
+      "weight": 1.5,
+      "text": "☀ 夏のダメージケアキャンペーン\n\n8月末まで、紫外線ケアトリートメントを通常価格の20%OFFでご提供しています。\n海・プール後の髪を、サラサラに戻しましょう🏖",
+      "hashtags": ["美容室", "夏ヘアケア", "UVケア", "キャンペーン"]
+    },
+    {
+      "id": "salon-autumn-004",
+      "tone": "polite",
+      "seasonTags": ["autumn"],
+      "weight": 1.2,
+      "text": "🍂 季節の変わり目に\n\n秋は髪が乾燥しやすい時期。週1回のホームケアトリートメントで、艶のある冬髪に。\nおすすめ商品もご案内しております。",
+      "hashtags": ["美容室", "秋ヘアケア", "乾燥対策"]
+    },
+    {
+      "id": "salon-winter-005",
+      "tone": "friendly",
+      "seasonTags": ["winter"],
+      "weight": 1.1,
+      "text": "冬の静電気、地味につらいですよね⚡\n\nヘアオイルを少量、毛先になじませるだけでかなり軽減できます。\nお店でも数種類お試しいただけますので、ご相談くださいね。",
+      "hashtags": ["美容室", "冬ヘアケア", "静電気対策"]
+    },
+    {
+      "id": "salon-christmas-006",
+      "tone": "promo",
+      "seasonTags": ["christmas"],
+      "weight": 1.7,
+      "text": "🎄 クリスマス前ご予約承り中\n\nパーティーやイベント前の特別なヘアセット、ご予約はお早めに。\n12/20〜25 は混み合いますので、今のうちに🎁",
+      "hashtags": ["美容室", "クリスマス", "ヘアセット", "予約"]
+    },
+    {
+      "id": "salon-newyear-007",
+      "tone": "polite",
+      "seasonTags": ["new-year"],
+      "weight": 1.6,
+      "text": "🎍 新年のごあいさつ\n\n旧年中はたくさんのご来店、誠にありがとうございました。\n本年も、皆さまの「なりたい」に寄り添うお店でありたいと思います。",
+      "hashtags": ["美容室", "新年", "ごあいさつ"]
+    },
+    {
+      "id": "salon-weekstart-008",
+      "tone": "friendly",
+      "seasonTags": ["week-start"],
+      "weight": 1.0,
+      "text": "おはようございます☀\n\n月曜日、髪型ひとつで気分も少し変わります。\n今週も気持ちよくスタートできますように。",
+      "hashtags": ["美容室", "月曜日"]
+    },
+    {
+      "id": "salon-monthend-009",
+      "tone": "promo",
+      "seasonTags": [],
+      "weight": 0.9,
+      "text": "💇 月末予約まだ間に合います\n\n今月のお手入れがまだの方、平日午前なら比較的お取りしやすいです。\nDMでお気軽にどうぞ。",
+      "hashtags": ["美容室", "予約", "平日割"]
+    },
+    {
+      "id": "salon-always-010",
+      "tone": "polite",
+      "seasonTags": [],
+      "weight": 0.9,
+      "text": "📸 ヘアカタログ更新しました\n\n最新のスタイル写真をお店のアルバムにアップしています。\nご来店時、お気に入りのスタイルをぜひ参考にしてください。",
+      "hashtags": ["美容室", "ヘアカタログ", "ヘアスタイル"]
+    },
+    {
+      "id": "salon-always-011",
+      "tone": "friendly",
+      "seasonTags": [],
+      "weight": 0.8,
+      "text": "✂ お気に入りの 1 枚は、お客様のもの。\n\n似合うを引き出すお手伝い、今日も丁寧にやらせていただきます。",
+      "hashtags": ["美容室", "ヘアサロン"]
+    },
+    {
+      "id": "salon-promo-012",
+      "tone": "promo",
+      "seasonTags": [],
+      "weight": 0.8,
+      "text": "👯 ご紹介キャンペーン\n\nご家族・お友達をご紹介いただくと、紹介された方は初回20%OFF、ご紹介者様にも次回500円OFFクーポンをプレゼント🎁",
+      "hashtags": ["美容室", "紹介キャンペーン", "クーポン"]
+    },
+    {
+      "id": "salon-fridays-013",
+      "tone": "friendly",
+      "seasonTags": ["friday"],
+      "weight": 1.0,
+      "text": "今週もお疲れさまでした🌙\n\n金曜の夜は20時まで受付しています。\n週末前にスッキリと、いかがですか？",
+      "hashtags": ["美容室", "金曜日", "夜営業"]
+    },
+    {
+      "id": "salon-fathers-014",
+      "tone": "polite",
+      "seasonTags": ["fathers-day"],
+      "weight": 1.3,
+      "text": "👔 父の日ギフト\n\nお父さまへの贈り物として、メンズシェービング+ヘッドスパのギフトチケットご用意しています。\nペーパーラッピングも承ります。",
+      "hashtags": ["美容室", "父の日", "ギフトチケット"]
+    },
+    {
+      "id": "salon-mothers-015",
+      "tone": "polite",
+      "seasonTags": ["mothers-day"],
+      "weight": 1.4,
+      "text": "💐 母の日メニュー\n\n5月は親子ペアでご来店いただくと、トリートメントを 1 ドリンク + ¥500 OFF でご提供いたします。\nお母さまと、ゆったり美容時間を。",
+      "hashtags": ["美容室", "母の日", "親子ペア"]
+    }
+  ]
+}
