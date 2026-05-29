@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "project-3040e21e-879f-4c66-a7d"
+  },
+  "targets": {
+    "project-3040e21e-879f-4c66-a7d": {
+      "hosting": {
+        "portfolio": [
+          "project-3040e21e-879f-4c66-a7d"
+        ]
+      }
+    }
+  }
+}

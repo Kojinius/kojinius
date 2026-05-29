@@ -1,0 +1,14 @@
+{
+  "name": "Markdown Editor",
+  "short_name": "MD Editor",
+  "description": "ローカルで動くMarkdownエディタ",
+  "start_url": "/md-editor",
+  "display": "standalone",
+  "background_color": "#1e1e2e",
+  "theme_color": "#1e1e2e",
+  "orientation": "any",
+  "icons": [
+    { "src": "/md-editor-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/md-editor-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
