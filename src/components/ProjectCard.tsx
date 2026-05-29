@@ -3,6 +3,30 @@ import type { Project } from '@/data/projects';
 import { Link } from 'react-router-dom';
 import { cn } from '@/utils/cn';
 
+// 2026-04-22 claude-sonnet-4-6 セッションターン数：8
+// 2026-04-22 claude-sonnet-4-6 セッションターン数：1
+function formatPeriod(period: { start: string; end?: string }) {
+  const fmt = (s: string) => {
+    const [y, m, d] = s.split('-');
+    return `${y}年${m}月${d}日`;
+  };
+  if (!period.end) {
+    return `${fmt(period.start)} 〜 開発中`;
+  }
+  const [sy, sm, sd] = period.start.split('-').map(Number);
+  const [ey, em, ed] = period.end.split('-').map(Number);
+  const s = new Date(sy, sm - 1, sd);
+  const e = new Date(ey, em - 1, ed);
+  let months = (e.getFullYear() - s.getFullYear()) * 12 + (e.getMonth() - s.getMonth());
+  let days = e.getDate() - s.getDate();
+  if (days < 0) {
+    months--;
+    days += new Date(ey, em - 1, 0).getDate();
+  }
+  const duration = months > 0 ? (days > 0 ? `${months}ヶ月 ${days}日` : `${months}ヶ月`) : `${days}日`;
+  return `${fmt(period.start)} 〜 ${fmt(period.end)}　開発期間：${duration}`;
+}
+
 interface ProjectCardProps {
   project: Project;
   index: number;
@@ -44,6 +68,11 @@ export function ProjectCard({ project, index, className, style }: ProjectCardPro
               →
             </span>
           </div>
+          {project.period && (
+            <p className="mt-0.5 text-[11px] font-mono text-brown-400 dark:text-brown-500">
+              {formatPeriod(project.period)}
+            </p>
+          )}
           <p className="mt-1.5 text-sm text-brown-500 dark:text-brown-400 leading-relaxed">
             {project.description}
           </p>
@@ -62,7 +91,7 @@ export function ProjectCard({ project, index, className, style }: ProjectCardPro
     </>
   );
 
-  if (project.external) {
+  if (project.external || project.newTab) {
     return (
       <a href={project.url} target="_blank" rel="noopener noreferrer" className={cardClasses(className)} style={style}>
         {content}

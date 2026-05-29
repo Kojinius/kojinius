@@ -1,0 +1,156 @@
+/* 2026-05-20 claude-opus-4-7[1m] セッションターン数：1
+   Craftica デモ用テーマ — 本体 globals.css の warm cream パレットを data-theme スコープに移植。 */
+
+[data-theme="craftica"] {
+  --paper:       #FBF8F3;
+  --paper-2:     #F4EFE6;
+  --paper-3:     #ECE5D8;
+  --ink:         #2A2520;
+  --ink-2:       #5C544A;
+  --ink-3:       #8C8275;
+  --ink-4:       #B5AC9E;
+  --line:        #E5DECF;
+  --line-2:      #D6CDB8;
+  --card:        #FFFFFF;
+  --clay:        #C66B3D;
+  --clay-soft:   #F5DDD0;
+  --clay-deep:   #8E4825;
+  --leaf:        #5B8C5A;
+  --leaf-soft:   #DCEAD2;
+  --sun:         #E8B547;
+  --sun-soft:    #F8EBC8;
+  --berry:       #B8456A;
+  --berry-soft:  #F5D9E1;
+  --sky:         #5388B5;
+  --sky-soft:    #D7E5F0;
+  --shadow-sm:   0 1px 2px rgba(60,45,25,0.04);
+  --shadow:      0 2px 6px rgba(60,45,25,0.06), 0 1px 2px rgba(60,45,25,0.04);
+  --shadow-lg:   0 8px 24px rgba(60,45,25,0.08), 0 2px 6px rgba(60,45,25,0.05);
+
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Zen Kaku Gothic New', 'Hiragino Sans', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "palt";
+  line-height: 1.7;
+  min-height: 100vh;
+  padding-bottom: 70px; /* DemoBanner 用 */
+}
+
+[data-theme="craftica"] *,
+[data-theme="craftica"] *::before,
+[data-theme="craftica"] *::after {
+  box-sizing: border-box;
+}
+
+[data-theme="craftica"] button:focus-visible,
+[data-theme="craftica"] a:focus-visible,
+[data-theme="craftica"] [role="button"]:focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: 2px;
+  border-radius: inherit;
+}
+
+[data-theme="craftica"] .ck-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  transition: transform 120ms, box-shadow 120ms;
+}
+
+[data-theme="craftica"] .ck-card-interactive {
+  cursor: pointer;
+}
+
+[data-theme="craftica"] .ck-card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(60,45,25,0.12);
+}
+
+[data-theme="craftica"] .ck-pill {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  color: var(--ink-2);
+}
+
+[data-theme="craftica"] .ck-pill-active {
+  background: var(--clay);
+  color: #fff;
+  border-color: var(--clay);
+}
+
+[data-theme="craftica"] .ck-btn-primary {
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: var(--clay);
+  color: #fff;
+  border: 1px solid var(--clay);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+[data-theme="craftica"] .ck-btn-primary:hover { background: var(--clay-deep); border-color: var(--clay-deep); }
+
+[data-theme="craftica"] .ck-btn-ghost {
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--ink-2);
+  border: 1px solid var(--line);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+[data-theme="craftica"] .ck-btn-ghost:hover { background: var(--paper-2); }
+
+[data-theme="craftica"] input,
+[data-theme="craftica"] textarea {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  font-family: inherit;
+}
+
+[data-theme="craftica"] input:focus,
+[data-theme="craftica"] textarea:focus {
+  border-color: var(--clay);
+  box-shadow: 0 0 0 3px rgba(198, 107, 61, 0.15);
+}
+
+@keyframes ck-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+[data-theme="craftica"] .ck-fade-in {
+  animation: ck-fade-in 200ms ease;
+}
+
+@keyframes ck-celebrate-pop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+[data-theme="craftica"] .ck-celebrate {
+  animation: ck-celebrate-pop 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}

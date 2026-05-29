@@ -44,3 +44,167 @@
     50% { background-position: 100% 50%; }
   }
 }
+
+/* 2026-04-22 claude-sonnet-4-6 セッションターン数：- Hiraké demo styles */
+
+/* ── CSS variables (dark default) ─── */
+.hirake-demo {
+  --bg:        #0d0b07;
+  --surface:   #161310;
+  --surface-2: #201d16;
+  --border:    #2c2820;
+  --text-1:    #f0e8d8;
+  --text-2:    #c0ae90;
+  --text-3:    #7a6c54;
+  --amber:     #d4961f;
+  --amber-lt:  #f5b840;
+  font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', serif;
+  color: var(--text-1);
+  background-color: var(--bg);
+}
+
+/* ── Light mode overrides ─── */
+.hirake-demo.light {
+  --bg:        #f5f0e8;
+  --surface:   #ffffff;
+  --surface-2: #ede8de;
+  --border:    #d8d0c0;
+  --text-1:    #1a1510;
+  --text-2:    #5a4e38;
+  --text-3:    #9a8c74;
+  --amber:     #b07010;
+  --amber-lt:  #d4961f;
+}
+
+/* ── Font class overrides (Hiraké fonts > kojinius fonts) ─── */
+.hirake-demo .font-display {
+  font-family: 'Playfair Display', 'Noto Serif JP', Georgia, serif !important;
+}
+.hirake-demo .font-mono {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* ── Scroll reveal ─── */
+.hirake-demo [data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.hirake-demo [data-reveal="line"] {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.hirake-demo [data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Hover effects ─── */
+.hirake-demo .hover-line {
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: opacity 0.25s, transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.hirake-demo .group:hover .hover-line {
+  opacity: 1;
+  transform: scaleX(1);
+}
+.hirake-demo .hover-overlay {
+  opacity: 0.55;
+  transition: opacity 0.3s ease;
+}
+.hirake-demo .group:hover .hover-overlay {
+  opacity: 0.9;
+}
+.hirake-demo .hover-zoom {
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.hirake-demo .group:hover .hover-zoom {
+  transform: scale(1.06);
+}
+
+/* ── Member grid (TopPage) ─── */
+.hirake-demo .member-grid {
+  grid-auto-rows: minmax(110px, auto);
+}
+
+/* ── Audio bar animation ─── */
+@keyframes bar {
+  0%, 100% { transform: scaleY(0.4); }
+  50%       { transform: scaleY(1); }
+}
+
+/* 2026-04-22 claude-sonnet-4-6 セッションターン数：- OAS demo styles */
+.oas-demo {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background-color: #FAF8F3;
+  color: #1C2E45;
+  min-height: 100dvh;
+}
+
+.oas-demo .oas-heading {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+/* Card */
+.oas-demo .oas-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #E4DDD2;
+  box-shadow: 0 1px 3px rgba(27, 54, 100, 0.06), 0 4px 12px rgba(27, 54, 100, 0.04);
+}
+
+/* Status badges */
+.oas-demo .oas-badge-pending   { background: #FEF3C7; color: #92400E; }
+.oas-demo .oas-badge-confirmed { background: #DBEAFE; color: #1E40AF; }
+.oas-demo .oas-badge-completed { background: #D1FAE5; color: #065F46; }
+.oas-demo .oas-badge-cancelled { background: #F3F4F6; color: #6B7280; }
+
+/* Animations */
+@keyframes oasFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.oas-demo .oas-fade-in   { animation: oasFadeIn 0.35s ease-out forwards; }
+.oas-demo .oas-fade-in-1 { animation: oasFadeIn 0.35s ease-out 0.05s both; }
+.oas-demo .oas-fade-in-2 { animation: oasFadeIn 0.35s ease-out 0.10s both; }
+.oas-demo .oas-fade-in-3 { animation: oasFadeIn 0.35s ease-out 0.15s both; }
+.oas-demo .oas-fade-in-4 { animation: oasFadeIn 0.35s ease-out 0.20s both; }
+
+/* 2026-04-22 claude-sonnet-4-6 セッションターン数：1 AMS demo styles */
+.ams-demo {
+  font-family: 'Outfit', 'Hiragino Kaku Gothic ProN', system-ui, sans-serif;
+  background-color: #F5F5F0;
+  color: #111111;
+  min-height: 100dvh;
+}
+
+/* 2026-04-22 claude-sonnet-4-6 セッションターン数：1 Typolish demo styles */
+.typolish-demo {
+  --tp-bg:      #FDF8F0;
+  --tp-surface: #FFFFFF;
+  --tp-border:  #EAD9C0;
+  --tp-text:    #1A1210;
+  --tp-subtle:  #8B7355;
+  --tp-accent:  #F79321;
+  font-family: 'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', system-ui, sans-serif;
+  background-color: var(--tp-bg);
+  color: var(--tp-text);
+  min-height: 100dvh;
+}
+.typolish-demo[data-theme="dark"] {
+  --tp-bg:      #1A1210;
+  --tp-surface: #231815;
+  --tp-border:  #3D2E28;
+  --tp-text:    #F5E8D0;
+  --tp-subtle:  #A89080;
+}
+.typolish-demo[data-theme="wire"] {
+  --tp-bg:      #000000;
+  --tp-surface: #0A0A0A;
+  --tp-border:  rgba(255,255,255,0.18);
+  --tp-text:    #FFFFFF;
+  --tp-subtle:  rgba(255,255,255,0.55);
+}
+.typolish-demo[data-theme="wire"] * { border-radius: 0 !important; }

@@ -2,10 +2,12 @@ import { Link, useLocation } from 'react-router-dom';
 import { ThemeToggle } from './ThemeToggle';
 import { cn } from '@/utils/cn';
 
+// 2026-05-04 claude-sonnet-4-6 セッションターン数：2
 const navLinks = [
   { to: '/', label: 'Portfolio' },
   { to: '/resume', label: '履歴書' },
   { to: '/cv', label: '職務経歴書' },
+  { to: '/md-editor', label: 'MD Editor' },
 ] as const;
 
 export function Header() {
