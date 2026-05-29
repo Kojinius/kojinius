@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!-- 2026-05-29 claude-opus-4-8[1m] セッションターン数：8 — 次回MT用 確認シート 新規作成。①サービス軸 ②優先SNS ③パッケージ草案 の「決めどころ(選択肢)」を1枚に。素材=service-map+automation-map+議題案。たたき台はチーム決定を覆さない"素材"として併記(前ターン教訓)。上層部向け平易・doc.css準拠・提案中/構想で統一 -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="auth.js"></script>
+<meta name="robots" content="noindex,nofollow">
+<title>次回MT 確認シート｜リアン・ラポール デザイン部</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/doc.css">
+<style>
+  /* ページ固有: 決めどころの選択肢カード */
+  .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:8px 0 14px}
+  .opt{padding:18px 20px;background:var(--paper);border:1px solid var(--border);border-top:3px solid var(--text-mute);border-radius:12px;position:relative}
+  .opt.pick{border-top-color:var(--accent);background:var(--accent-soft)}
+  .opt .opt-key{font-size:11px;font-weight:900;letter-spacing:.1em;color:var(--text-mute);margin-bottom:6px}
+  .opt.pick .opt-key{color:var(--accent)}
+  .opt h4{font-size:15px;font-weight:900;margin-bottom:6px;color:var(--text)}
+  .opt p{font-size:13px;color:var(--text-dim);line-height:1.7}
+  .opt .rec{display:inline-block;margin-top:8px;padding:2px 9px;background:var(--accent);color:#fff;border-radius:999px;font-size:10px;font-weight:700}
+  .decide{display:flex;align-items:center;gap:10px;margin:14px 0 4px;padding:12px 16px;border:1px dashed var(--border-strong);border-radius:10px;background:var(--paper-dim);font-size:13px;color:var(--text-dim)}
+  .decide strong{color:var(--text)}
+  .qbox{padding:16px 20px;background:var(--info-soft);border:1px solid #bfdbfe;border-left:5px solid var(--info);border-radius:10px;margin:6px 0 14px;font-size:15px;line-height:1.75;color:#1e40af}
+  .qbox strong{display:block;font-weight:900;margin-bottom:4px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container wide">
+    <div class="topbar-inner">
+      <a class="topbar-back" href="index.html">← 一覧に戻る</a>
+      <span class="topbar-tag map">次回MT 確認シート</span>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="container wide">
+    <div class="hero-eyebrow">次回MT ｜ 確認シート</div>
+    <h1 class="hero-title">この1枚で、3つを決める</h1>
+    <p class="hero-sub"><strong>① サービス軸</strong>・<strong>② 優先SNS</strong>・<strong>③ パッケージ草案</strong> の"決めどころ"を選択肢にしました。各項目で1つ選べば前に進めます。詳しい中身は <a href="service-map.html" style="color:var(--info);font-weight:700">料金早見表</a> と <a href="automation-map.html" style="color:var(--info);font-weight:700">自動化マップ</a> へ。</p>
+    <div class="note"><strong>「たたき台」について</strong>：緑のカード（推奨）はデザイン部からの素案です。たたき台にすぎないので、MT で自由に選び直してください。各サービスはすべて<strong>提案中（提供準備中）</strong>です。</div>
+  </div>
+</header>
+
+<div class="container wide">
+
+  <!-- ① サービス軸 -->
+  <section>
+    <h2 class="sec-title">① サービス軸を決める</h2>
+    <div class="qbox">
+      <strong>決めどころ</strong>
+      動画・SNS・MEO・LINE のうち、お客さんと出会う<strong>"入口"を何にするか</strong>？（小規模事業者の集客で最初に効かせる軸）
+    </div>
+    <div class="opts">
+      <div class="opt pick">
+        <div class="opt-key">案 A</div>
+        <h4>MEO（Google マップ）主軸</h4>
+        <p>「近くの〇〇」で<strong>探されて見つかる</strong>入口。地域客に直接届く。meoscope で分析・提案まで自動。</p>
+        <span class="rec">たたき台</span>
+      </div>
+      <div class="opt">
+        <div class="opt-key">案 B</div>
+        <h4>動画 主軸</h4>
+        <p>デザイン部の<strong>既存の強み</strong>。マップ動画・SNS動画として他の軸にも効く。</p>
+      </div>
+      <div class="opt">
+        <div class="opt-key">案 C</div>
+        <h4>SNS投稿 主軸</h4>
+        <p>簡単投稿／盛り盛りMAX で<strong>日々の発信</strong>を継続。信頼づくり中心。</p>
+      </div>
+    </div>
+    <div class="decide">📝 <span><strong>MTで決める</strong>：入口の主軸 ＝ A ／ B ／ C（複数の組み合わせも可）</span></div>
+    <div class="note">たたき台の理由：小規模事業者は SNS で「拡散を待つ」より、<strong>探された時に見つかる（MEO）</strong>方が直接効きます。導線は <strong>MEO で見つかる → 動画で魅力 → SNS で信頼 → LINE で再来店</strong>。</div>
+    <a class="detail-link" href="service-map.html">サービスと価格の詳細 →</a>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ② 優先SNS -->
+  <section>
+    <h2 class="sec-title">② 優先SNS を決める</h2>
+    <div class="qbox">
+      <strong>決めどころ</strong>
+      どの媒体に力を入れるか？（<strong>X／Threads は「埋もれやすいので後回し」が承認済み</strong>。それ以外で優先を決める）
+    </div>
+    <div class="opts">
+      <div class="opt pick">
+        <div class="opt-key">案 A</div>
+        <h4>Instagram ＋ MEO</h4>
+        <p>Instagram で地域タグ・写真・リール（※自動投稿は不可＝手動運用）。MEO で探される。両輪で地域に効く。</p>
+        <span class="rec">たたき台</span>
+      </div>
+      <div class="opt">
+        <div class="opt-key">案 B</div>
+        <h4>MEO 単独で先行</h4>
+        <p>まず「探される土台」を作り、SNS は後から足す。一番シンプル。</p>
+      </div>
+      <div class="opt">
+        <div class="opt-key">案 C</div>
+        <h4>LINE を優先</h4>
+        <p>既存客の<strong>再来店・リピート</strong>に効く。新規より固定客重視なら。</p>
+      </div>
+    </div>
+    <div class="decide">📝 <span><strong>MTで決める</strong>：優先媒体 ＝ A ／ B ／ C。X・Threads は土台ができてから下書き流用で後付け</span></div>
+    <div class="note">補足：<strong>Instagram は外から自動投稿できません</strong>（手動運用）。自動でできるのは X・Threads・LINE 配信と、MEO の分析です（詳細＝自動化マップ）。</div>
+    <a class="detail-link" href="automation-map.html">自動化マップ（何が自動か） →</a>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ③ パッケージ草案 -->
+  <section>
+    <h2 class="sec-title">③ パッケージ草案を決める</h2>
+    <div class="qbox">
+      <strong>決めどころ</strong>
+      <strong>単体で売る</strong>か、<strong>まとめてパッケージ</strong>で売るか？ 価格帯をどうするか？
+    </div>
+    <div class="opts">
+      <div class="opt">
+        <div class="opt-key">案 A</div>
+        <h4>単体中心</h4>
+        <p>動画 ¥9,800〜／MEOパッケージ ¥29,800 などを個別販売。<strong>始めやすい</strong>。</p>
+      </div>
+      <div class="opt">
+        <div class="opt-key">案 B</div>
+        <h4>統合パッケージ中心</h4>
+        <p>ライト 月¥29,800〜／スタンダード ¥59,800〜／プレミアム ¥120,000〜（いずれも構想・要確定）。</p>
+      </div>
+      <div class="opt pick">
+        <div class="opt-key">案 C</div>
+        <h4>両建て</h4>
+        <p>MEOパッケージ ¥29,800 を<strong>入口</strong>に、続けたい人へ統合をアップセル。</p>
+        <span class="rec">たたき台</span>
+      </div>
+    </div>
+    <div class="decide">📝 <span><strong>MTで決める</strong>：売り方 ＝ A ／ B ／ C ＋ 統合プランの価格を1点に絞る</span></div>
+    <div class="note">価格はすべて<strong>構想のたたき台</strong>です（料金早見表の数字）。次回MTで内容と価格を1点に確定します。動画は人の制作物なので「型化」で効率を上げます（自動化マップ③）。</div>
+    <a class="detail-link" href="service-map.html">料金早見表（単体・統合の全価格） →</a>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- まとめ -->
+  <section>
+    <h2 class="sec-title">このシートの使い方</h2>
+    <div class="sec-body">
+      <p>MT では ①→②→③ の順に「決めどころ」を見て、各項目で案を1つ選んでください。決まったら、それに合わせて単体・統合の中身と価格を詰めます。判断材料が要るときは各資料（料金早見表・自動化マップ）を開いてください。</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="container wide">
+    次回MT 確認シート ｜ リアン・ラポール デザイン部 ｜ 2026-05-29<br>
+    社内・関係者向け資料です ｜ <a href="index.html">提案資料一覧へ戻る</a> ／ <a href="service-map.html">料金早見表</a> ／ <a href="automation-map.html">自動化マップ</a>
+  </div>
+</footer>
+
+</body>
+</html>

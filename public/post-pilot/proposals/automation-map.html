@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<!-- 2026-05-29 claude-opus-4-8[1m] セッションターン数：3 — 自動化・効率化マップ 新規作成。service-map.html(料金早見表)の対として「何が自動で/どこを人がやり/今後どう効率化するか」を1枚に。一次ソース=各 internal/technical + design/main.md（実数のみ断定・推定は明示）。土台=実態と構想を層分け（ボス指示） -->
+<!-- 2026-05-29 claude-opus-4-8[1m] セッションターン数：4 — 上層部(ITリテラシー低)向け平易化: 固有名詞(Notion/Claude/fal.ai/cron/API/UI/Meta/GBP)を「AI・自動」へ言い換え -->
+<!-- 2026-05-29 claude-opus-4-8[1m] セッションターン数：6 — ボス指摘「全て提案中／提供中は語弊」を反映: 全ステータスを「提案中」に(提供中バッジ廃止)。議題②マッピング表を『済』断定→『こう実現できます』提案トーンへ(緑セル廃止)。「いま動いている/効率が上がっている」も「すぐ実現できる」へ -->
+<!-- 2026-05-29 claude-opus-4-8[1m] セッションターン数：7 — 議題②表 Threads/X 行を修正: 前回「後回しではない(逆転)」とチーム承認済みの決定を否定したのを撤回。後回しを尊重し「後から低コストで追加可・小規模はX/Threadsで埋もれるため初期はMEO(探される)を主役・X/Threadsは下書き流用で後付け」へ。導入に「優先順位はチーム方針どおり」追記 -->
+<!-- 2026-05-29 claude-opus-4-8[1m] セッションターン数：8 — 議題④「画像・動画の品質対策(型・テンプレ・チェックリスト)」が欠落していた指摘を受け §3「制作の品質を型でそろえる(効率化)」を新設。以降の節を④⑤へ繰り下げ。動画axisリンクを#qualityへ -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="auth.js"></script>
+<meta name="robots" content="noindex,nofollow">
+<title>自動化・効率化マップ｜リアン・ラポール デザイン部</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/doc.css">
+<style>
+  /* ページ固有: 自動化レベルの凡例チップ */
+  .lv{font-weight:700}
+  .lv-auto{color:var(--ok)}
+  .lv-semi{color:var(--warn)}
+  .lv-manual{color:var(--text-mute)}
+  /* スコープ表のセル内ラベル */
+  td .lvl{font-weight:700;white-space:nowrap}
+  td .lvl small{display:block;font-weight:400;font-size:12px;color:var(--text-dim);margin-top:2px;white-space:normal}
+  /* ビフォーアフター */
+  .ba{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;margin:6px 0 0}
+  @media(max-width:540px){.ba{grid-template-columns:1fr;text-align:center}}
+  .ba-box{padding:16px 18px;border-radius:12px;border:1px solid var(--border);background:var(--paper)}
+  .ba-box.before{border-style:dashed;color:var(--text-dim)}
+  .ba-box.after{border-color:var(--accent);background:var(--accent-soft)}
+  .ba-box .ba-lab{font-size:11px;font-weight:900;letter-spacing:.08em;margin-bottom:6px}
+  .ba-box.before .ba-lab{color:var(--text-mute)}
+  .ba-box.after .ba-lab{color:var(--accent)}
+  .ba-box .ba-v{font-size:16px;font-weight:700;line-height:1.6}
+  .ba-arrow{font-size:22px;font-weight:900;color:var(--text-mute);text-align:center}
+  @media(max-width:540px){.ba-arrow{transform:rotate(90deg)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container wide">
+    <div class="topbar-inner">
+      <a class="topbar-back" href="index.html">← 一覧に戻る</a>
+      <span class="topbar-tag map">自動化マップ</span>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="container wide">
+    <div class="hero-eyebrow">集客サービス ｜ 自動化・効率化マップ</div>
+    <h1 class="hero-title">何が自動で、どこを人がやる？</h1>
+    <p class="hero-sub">動画・SNS投稿・MEO の各サービスで、<strong>AI が自動でやる部分</strong>・<strong>人が判断する部分</strong>・<strong>今後どこを効率化できるか</strong>を 1 枚にまとめました。各サービスは<strong>すべて提案中（提供準備中）</strong>です。「どれがいくら？」は <a href="service-map.html" style="color:var(--info);font-weight:700">料金早見表</a> へ。</p>
+
+    <div class="legend">
+      <span class="lg"><span class="lv lv-auto">🤖 自動</span>＝AI がやる</span>
+      <span class="lg"><span class="lv lv-semi">🙋 半自動</span>＝人の承認・選択だけ</span>
+      <span class="lg"><span class="lv lv-manual">✋ 手動</span>＝人がやる</span>
+      <span class="lg"><span class="dot live"></span>提案中（資料あり）</span>
+      <span class="lg"><span class="dot idea"></span>構想（次回MTで議論）</span>
+    </div>
+
+    <!-- 4軸サマリー: 効率化の見込み -->
+    <div class="axes">
+      <a class="axis sns" href="#scope">
+        <span class="ico">📝</span>
+        <div class="nm">簡単投稿</div>
+        <div class="pr">3案 自動</div>
+        <div class="un">ネタ出しがゼロに</div>
+      </a>
+      <a class="axis line" href="#gain">
+        <span class="ico">🤖</span>
+        <div class="nm">盛り盛りMAX</div>
+        <div class="pr">30分 → 5分</div>
+        <div class="un">承認1回だけ</div>
+      </a>
+      <a class="axis meo" href="#scope-meo">
+        <span class="ico">📍</span>
+        <div class="nm">meoscope</div>
+        <div class="pr">分析 1〜3分</div>
+        <div class="un">診断→PDFまで自動</div>
+      </a>
+      <a class="axis video" href="#quality">
+        <span class="ico">🎬</span>
+        <div class="nm">動画制作</div>
+        <div class="pr">型化で効率化</div>
+        <div class="un">※自動化はしない</div>
+      </a>
+    </div>
+  </div>
+</header>
+
+<div class="container wide">
+
+  <!-- §1 自動化スコープ早見表 -->
+  <section id="scope">
+    <h2 class="sec-title">① ひと目でわかる自動化スコープ</h2>
+    <div class="sec-body">
+      <p>「投稿を作って出す」までの流れを、<strong>AI が自動でやる</strong>か、<strong>人が手を動かす</strong>かで色分けしました。<span class="lv lv-auto">緑＝自動</span>、<span class="lv lv-semi">黄＝人の承認・選択</span>、<span class="lv lv-manual">グレー＝手動</span>です。</p>
+    </div>
+
+    <h3 style="font-size:16px;font-weight:700;margin:18px 0 8px">SNS 投稿（簡単投稿プラン ／ 盛り盛りMAXプラン）</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:200px">工程</th>
+            <th>簡単投稿プラン</th>
+            <th>盛り盛りMAXプラン</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ネタ・テーマ決め</td>
+            <td class="ok-cell"><span class="lvl">🤖 自動<small>業種と季節に合わせて候補を自動で用意</small></span></td>
+            <td class="ok-cell"><span class="lvl">🤖 自動<small>AI がその日のテーマを選ぶ</small></span></td>
+          </tr>
+          <tr>
+            <td>文章（本文）作成</td>
+            <td class="ok-cell"><span class="lvl">🤖 自動<small>言い回しの違う3案を自動で作成</small></span></td>
+            <td class="ok-cell"><span class="lvl">🤖 自動<small>AI が本文とハッシュタグを作成</small></span></td>
+          </tr>
+          <tr>
+            <td>画像の用意</td>
+            <td><span class="lvl">✋ 手動<small>その日の活動写真を撮って添える</small></span></td>
+            <td class="ok-cell"><span class="lvl">🤖 自動<small>AI が投稿用の画像を生成</small></span></td>
+          </tr>
+          <tr>
+            <td>内容チェック</td>
+            <td class="warn-cell"><span class="lvl">🙋 半自動<small>3案から選んで、必要なら手直し</small></span></td>
+            <td class="warn-cell"><span class="lvl">🙋 半自動<small>AI が安全チェック＋朝の承認1回</small></span></td>
+          </tr>
+          <tr>
+            <td>投稿・配信</td>
+            <td class="warn-cell"><span class="lvl">🙋 半自動<small>ボタンで X/Threads へ。最後は人が確定</small></span></td>
+            <td class="ok-cell"><span class="lvl">🤖 自動<small>承認したら X/Threads/LINE へ自動で配信</small></span></td>
+          </tr>
+          <tr>
+            <td>効果の記録</td>
+            <td><span class="lvl">✋ 手動<small>必要なら職員が確認</small></span></td>
+            <td class="ok-cell"><span class="lvl">🤖 自動<small>反応を記録し月次レポートを自動作成</small></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <strong>媒体の前提</strong>：自動投稿の対象は <strong>X・Threads</strong>（盛り盛りMAXは加えて <strong>LINE 公式の友だち配信</strong>）。<strong>Instagram は外から自動で投稿する仕組みが用意されていない</strong>ため、現状はどのプランも手作業でのコピー投稿です。ジモティは営業ツールとして手で運用します。
+    </div>
+
+    <h3 id="scope-meo" style="font-size:16px;font-weight:700;margin:28px 0 8px">MEO（meoscope ＝ Google マップ営業ツール）</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:240px">営業の流れ</th>
+            <th>自動／手動</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>営業先の発掘（エリア×業種で一覧）</td><td class="ok-cell"><span class="lvl">🤖 自動<small>近隣の同業を一覧化し「狙い目」を抽出</small></span></td></tr>
+          <tr><td>競合・クチコミ・評判の収集</td><td class="ok-cell"><span class="lvl">🤖 自動<small>Google マップなどから自動で取得</small></span></td></tr>
+          <tr><td>強み・弱みと改善提案</td><td class="ok-cell"><span class="lvl">🤖 自動<small>AI が分析し「次の一手」を提示</small></span></td></tr>
+          <tr><td>提案書（PDF）の作成</td><td class="ok-cell"><span class="lvl">🤖 自動<small>分析結果をそのまま PDF で出力</small></span></td></tr>
+          <tr><td>対象店舗の指定</td><td class="warn-cell"><span class="lvl">🙋 半自動<small>店舗名を入れる／候補が複数なら選ぶ</small></span></td></tr>
+          <tr><td>お客様への送付</td><td><span class="lvl">✋ 手動<small>DM・メールで担当が返信</small></span></td></tr>
+          <tr><td>90 日後の効果の再測定</td><td><span class="lvl">✋ 手動<small>今は手作業。<b>→ 自動お知らせは構想</b></small></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- §2 効率が上がる見込み -->
+  <section id="gain">
+    <h2 class="sec-title">② 効率が上がる見込み（ビフォー → アフター）</h2>
+    <div class="sec-body">
+      <p>各サービスを導入すると、人の手間がどれだけ減るか。資料に数字があるものは数字で、無いものは作業の中身で示します。</p>
+    </div>
+
+    <!-- 盛り盛りMAX -->
+    <div class="svc sns" style="margin-top:24px">
+      <div class="svc-head">
+        <span class="svc-pill">🤖</span>
+        <span class="svc-title">盛り盛りMAXプラン</span>
+        <span class="svc-status live">提案中</span>
+      </div>
+      <p class="svc-desc">毎日の SNS 投稿を、職員の手作業から AI の自動運転へ。</p>
+      <div class="ba">
+        <div class="ba-box before">
+          <div class="ba-lab">ビフォー（手作業）</div>
+          <div class="ba-v">SNS 担当の作業<br><strong>1日 約30分</strong></div>
+        </div>
+        <div class="ba-arrow">→</div>
+        <div class="ba-box after">
+          <div class="ba-lab">アフター（自動運転）</div>
+          <div class="ba-v">朝の承認 1 回<br><strong>約 5 分</strong></div>
+        </div>
+      </div>
+      <div class="note ok">浮いた時間を支援業務へ回せます。さらに「承認も省く」全自動も選べます（内容チェックとのトレードオフ）。</div>
+    </div>
+
+    <!-- meoscope -->
+    <div class="svc meo" style="margin-top:36px">
+      <div class="svc-head">
+        <span class="svc-pill">📍</span>
+        <span class="svc-title">meoscope（MEO 営業）</span>
+        <span class="svc-status live">提案中</span>
+      </div>
+      <p class="svc-desc">営業先のリサーチと提案書づくりを、手作業から自動の分析へ。</p>
+      <div class="ba">
+        <div class="ba-box before">
+          <div class="ba-lab">ビフォー（手作業）</div>
+          <div class="ba-v">マップ確認・競合調べ・<br>資料づくりを手作業</div>
+        </div>
+        <div class="ba-arrow">→</div>
+        <div class="ba-box after">
+          <div class="ba-lab">アフター（自動分析）</div>
+          <div class="ba-v">店舗名を入れて<br><strong>分析 1〜3 分＋PDF</strong></div>
+        </div>
+      </div>
+      <div class="note ok">商談前のリサーチ・提案書・90日後の効果くらべまで、同じツールで完結します。</div>
+    </div>
+
+    <!-- 簡単投稿 -->
+    <div class="svc sns" style="margin-top:36px">
+      <div class="svc-head">
+        <span class="svc-pill">📝</span>
+        <span class="svc-title">簡単投稿プラン</span>
+        <span class="svc-status live">提案中</span>
+      </div>
+      <p class="svc-desc">無料で始められる、毎日の投稿サポート。</p>
+      <div class="ba">
+        <div class="ba-box before">
+          <div class="ba-lab">ビフォー（手作業）</div>
+          <div class="ba-v">毎日「何を書こう」を<br>ゼロから考える</div>
+        </div>
+        <div class="ba-arrow">→</div>
+        <div class="ba-box after">
+          <div class="ba-lab">アフター（下書き自動）</div>
+          <div class="ba-v">出てくる 3 案から<br><strong>選んで投稿</strong></div>
+        </div>
+      </div>
+      <div class="note">ネタ切れの不安が消え、続けやすくなります（短縮した分数は提供開始後に計測。ここでは数字を断定しません）。</div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- §3 制作の品質を型でそろえる（効率化）-->
+  <!-- 2026-05-29 claude-opus-4-8[1m] セッションターン数：9 — ボス指示「テンプレを2分類で明文化」を反映: §3 を【A 成果物テンプレ】【B 作業フローテンプレ】に再構成。B は一次資料『課題整理と私の考えるテンプレ化箇所.pdf』(候補10・最初2・完全テンプレ化不可の前提)を反映 -->
+  <section id="quality">
+    <h2 class="sec-title">③ 制作の品質を&quot;型&quot;でそろえる（効率化）</h2>
+    <div class="sec-body">
+      <p>「テンプレート（型）」には<strong>2種類</strong>あります。言葉が混ざりやすいので、分けて整理します。</p>
+    </div>
+    <div class="pattern-grid">
+      <div class="pattern-card">
+        <div class="pat-label">種類 A</div>
+        <h4>成果物テンプレート</h4>
+        <p>お客様に渡す<strong>制作物（画像・動画・資料）の型</strong>。レイアウト・トンマナ・尺の構成など。品質が安定し、<strong>編集 約1週間→1日／校正 3〜4回→ほぼ0回</strong>に。</p>
+      </div>
+      <div class="pattern-card">
+        <div class="pat-label">種類 B</div>
+        <h4>作業フローテンプレート</h4>
+        <p>制作を<strong>進める段取り・考える手順の型</strong>（ヒアリング・指示・確認のシート）。企画の中身は固定せず、<strong>入力項目・手順・整理の枠</strong>をそろえる。属人化を解消し、校正を減らす。</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:16px;font-weight:700;margin:26px 0 10px">A. 成果物テンプレート（画像・動画・資料）</h3>
+    <div class="pattern-grid">
+      <div>
+        <div style="font-weight:700;margin:0 0 8px">🖼 画像（SNS・チラシ・バナー）</div>
+        <ul class="checklist">
+          <li>SNS 投稿用テンプレートを作る</li>
+          <li>チラシ・バナーの色・雰囲気（トンマナ）を統一する</li>
+          <li>フォント・色・余白・見出しのルールを決める</li>
+          <li>業種別のテンプレートを作る</li>
+          <li>AI 生成画像はそのまま使わず、最終調整を行う</li>
+          <li>投稿前チェックリストを用意する</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-weight:700;margin:0 0 8px">🎬 動画（ショート）</div>
+        <ul class="checklist">
+          <li>15秒／30秒／60秒の基本構成を作る</li>
+          <li>冒頭3秒の見せ方をテンプレート化する</li>
+          <li>字幕のルールを決める</li>
+          <li>BGM・音量・テロップの基準を作る</li>
+          <li>店舗紹介・商品紹介・スタッフ紹介・FAQ などの型を作る</li>
+          <li>投稿先ごとのサイズ・尺を整理する</li>
+          <li>納品前チェックリストを作る</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="font-size:16px;font-weight:700;margin:28px 0 10px">B. 作業フローテンプレート（動画ディレクションの進め方）</h3>
+    <div class="sec-body">
+      <p>企画の中身は毎回変わるので固定できません。<strong>"考えるための枠"（入力項目・手順・整理シート）</strong>をそろえます。候補は多いので、<strong>まず2つ</strong>から始めます。</p>
+    </div>
+    <div class="pattern-grid">
+      <div>
+        <div style="font-weight:700;margin:0 0 8px">✅ まず作る2つ</div>
+        <ul class="checklist">
+          <li>初期ヒアリング・定期MTG 兼用シート（目的・ターゲット・NG・改善点）</li>
+          <li>撮影編集担当向け 簡易指示シート（校正回数の削減に直結）</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-weight:700;margin:0 0 8px">🔜 今後の候補</div>
+        <ul class="checklist">
+          <li>動画構成案テンプレート（セリフ・テロップ・尺）</li>
+          <li>初稿確認チェックリスト</li>
+          <li>修正指示 変換シート（客の要望→編集指示）</li>
+          <li>企画案たたき台シート（AI入力用）</li>
+          <li>参考動画 分析シート ほか</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note">いずれも<strong>これから整えます</strong>（次回MTの着手対象）。AI は「最終判断」ではなく、たたき台づくり・整理の補助に使います（決めるのは人）。簡易指示シートは、先に撮影編集担当と振り返りをしてから作ります。</div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- §4 次の一手 + 議題案マッピング -->
+  <section id="next">
+    <h2 class="sec-title">④ 効率を上げる「次の一手」</h2>
+    <div class="sec-body">
+      <p>仕組みの準備が進んでいて<strong>すぐ実現できる部分</strong>と、着手すればさらに伸ばせる<strong>今後の部分</strong>を分けて整理します。</p>
+    </div>
+
+    <div class="roadmap">
+      <div class="roadmap-col now">
+        <div class="rc-label">✓ すぐ実現できる（仕組みは準備中）</div>
+        <ul>
+          <li>SNS 投稿文の自動作成（簡単投稿・盛り盛りMAX）</li>
+          <li>SNS の作成〜配信〜効果記録まで自動（盛り盛りMAX）</li>
+          <li>MEO の分析・強み弱み・改善提案・PDF（meoscope）</li>
+          <li>相談ヒアリングのフォーム化（盛り盛りMAX 相談フォーム）</li>
+          <li>月次レポート／90日後くらべの定型化</li>
+        </ul>
+      </div>
+      <div class="roadmap-col next">
+        <div class="rc-label">→ 着手すればさらに上がる（今後）</div>
+        <ul>
+          <li>90日後の再診断を「自動でお知らせ」</li>
+          <li>かんたん1枚の無料診断（PDF）でDMに添えやすく</li>
+          <li>店舗名を入れるだけの「かんたん操作画面」</li>
+          <li>反応の良かった投稿を AI に自動で学習させる</li>
+          <li>対応できる業種テンプレを増やす（簡単投稿）</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="font-size:16px;font-weight:700;margin:28px 0 8px">チームMT議題②「自動化の優先順位」は、こう実現できます</h3>
+    <div class="sec-body">
+      <p>議題で挙がった項目は、いま準備しているサービスの仕組みで<strong>実現できます</strong>（優先順位はチームの方針どおり）。項目ごとに「どう実現するか」を示します。</p>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th style="width:90px">議題の優先</th><th style="width:200px">項目</th><th>こう実現できます</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>高</td><td>投稿文の AI 下書き化</td><td>AI が毎日の下書きを自動で作る仕組み（簡単投稿・盛り盛りMAX）で実現できます。</td></tr>
+          <tr><td>高</td><td>ヒアリング整理（フォーム）</td><td>盛り盛りMAX の相談フォームを使えば、聞く項目を決めて入力式にできます。</td></tr>
+          <tr><td>高</td><td>タスク管理（投稿の予約リスト）</td><td>盛り盛りMAX の投稿予約リストで、担当・順番・予定を見える化できます。</td></tr>
+          <tr><td>中</td><td>レポート定型化</td><td>月次レポートと meoscope の「90日くらべ」で、決まった形のレポートを自動で出せます。</td></tr>
+          <tr><td>中</td><td>SNS 投稿予約・半自動</td><td>盛り盛りMAX の時間指定配信で、決めた時刻に自動で投稿できます。</td></tr>
+          <tr><td>低<br>(後回し)</td><td>Threads／X 自動投稿</td><td>盛り盛りMAX の仕組みに<strong>後からいつでも足せます</strong>。ただ小規模だと X／Threads は埋もれやすいので、初期は&quot;検索で見つけてもらえる&quot;<strong>Google マップ（MEO）を主役</strong>に。X／Threads は土台ができてから、作った下書きをそのまま流すだけ（追加の手間ほぼゼロ）で足せます。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- §5 提案中 vs 構想 層分け -->
+  <section id="layers">
+    <h2 class="sec-title">⑤ 提案中 ／ 今後の構想（区別）</h2>
+    <div class="sec-body">
+      <p>議題で挙がった「動画・Instagram・LINE・MEO の4本柱」は、<strong>いま準備しているもの（提案中）</strong>と<strong>これから商品にする構想</strong>が混ざっています。混同を避けるため層を分けます。</p>
+    </div>
+
+    <div class="pattern-grid">
+      <div class="pattern-card">
+        <div class="pat-label">層1 ── 提案中（資料あり）</div>
+        <h4>すぐ出せる自動化（仕組みは準備中）</h4>
+        <p>簡単投稿／盛り盛りMAX／meoscope。媒体は <strong>X・Threads・LINE 配信・Google マップ分析</strong>。提案できる資料が揃っています。</p>
+      </div>
+      <div class="pattern-card">
+        <div class="pat-label">層2 ── 今後の構想（次回MTで確定）</div>
+        <h4>これから商品にする構想</h4>
+        <p>Instagram 運用／LINE 運用単体／統合パッケージ／動画の月次運用。価格は<a href="service-map.html" style="color:var(--info);font-weight:700">料金早見表</a>の「構想」を参照。</p>
+      </div>
+    </div>
+
+    <div class="note idea-note">
+      <strong>構想を進める前のメモ（話を大きくしすぎないために）</strong>
+      ・<b>Instagram の自動投稿</b>は外から自動でできません（運営の Meta 社の審査やビジネス利用の条件あり）。当面は手作業でのコピー投稿。自動化には新たな開発と検証が必要です。<br>
+      ・<b>LINE 配信</b>はすでに盛り盛りMAXの設計に入っています。「LINE 運用単体」は商品の組み直しで、仕組みは流用できます。<br>
+      ・<b>動画制作</b>は人の技術が価値の中心。自動化はせず、型を作ること（テンプレ化）で効率を上げます。
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="container wide">
+    集客サービス 自動化・効率化マップ ｜ リアン・ラポール デザイン部 ｜ 2026-05-29<br>
+    社内・関係者向け資料です ｜ <a href="index.html">提案資料一覧へ戻る</a> ／ <a href="service-map.html">料金早見表へ</a>
+  </div>
+</footer>
+
+</body>
+</html>
