@@ -731,6 +731,12 @@ cat key.json | tr -d '\n'   # 1 行化して Vercel env に貼り付け</pre>
           <tr><td><code>STRIPE_WEBHOOK_SECRET</code></td><td><span class="tag tag-secret">secret</span></td><td>Stripe Webhook Signing Secret（Vercel endpoint 用）</td></tr>
           <tr><td><code>STRIPE_PRICE_PRO</code></td><td><span class="tag tag-plain">plain</span></td><td>Pro プラン Stripe Price ID（Vercel env を参照）</td></tr>
           <tr><td><code>STRIPE_PRICE_BUSINESS</code></td><td><span class="tag tag-plain">plain</span></td><td>Business プラン Stripe Price ID（Vercel env を参照）</td></tr>
+          <!-- 2026-05-30 [claude-opus-4-8] セッションターン数：2 — Slack 連携 Phase 1（PR #450）の env 4 つを追記 -->
+          <tr><td colspan="3" class="tbl-section-head">Slack 連携（OAuth・Phase 1）</td></tr>
+          <tr><td><code>SLACK_CLIENT_ID</code></td><td><span class="tag tag-plain">plain</span></td><td>Slack App（App ID: <code>A0B6P5VHXSB</code>）の Client ID</td></tr>
+          <tr><td><code>SLACK_CLIENT_SECRET</code></td><td><span class="tag tag-secret">secret</span></td><td>Slack OAuth Client Secret（<code>oauth.v2.access</code> の token 交換に使用）</td></tr>
+          <tr><td><code>SLACK_SIGNING_SECRET</code></td><td><span class="tag tag-secret">secret</span></td><td>Slack リクエスト署名検証用（Events / Interactivity / slash — Phase 2 で使用）</td></tr>
+          <tr><td><code>SLACK_TOKEN_ENC_KEY</code></td><td><span class="tag tag-secret">secret</span></td><td>bot token 暗号化（AES-256-GCM / 32byte）。<code>slack_installations/{uid}</code> に暗号化保存</td></tr>
           <tr><td colspan="3" class="tbl-section-head">暗号化キー</td></tr>
           <tr><td><code>CHATWORK_ENCRYPTION_KEY</code></td><td><span class="tag tag-secret">secret</span></td><td>Chatwork トークン暗号化（AES-256-GCM / 64hex）</td></tr>
           <tr><td><code>IFRAME_TOKEN_SECRET</code></td><td><span class="tag tag-secret">secret</span></td><td>HTML プルーフ iframe トークン HMAC 鍵（base64 32byte）</td></tr>
@@ -849,6 +855,22 @@ cat key.json | tr -d '\n'   # 1 行化して Vercel env に貼り付け</pre>
       <li>コールバック: <code>/api/extension/render-callback</code> へ POST</li>
       <li>Chrome Web Store Item オーナーも譲渡対象です（Publisher Group に橋本晃治を追加することで保守継続も可能です）</li>
     </ul>
+
+    <!-- 2026-05-30 [claude-opus-4-8] セッションターン数：2 — Slack 連携 Phase 1（PR #450）を追記 -->
+    <h3 style="font-size:15px;font-weight:600;margin:22px 0 10px;color:#fff">④ Slack 連携（ネイティブ OAuth・Phase 1）</h3>
+    <p>各ユーザーが自分の Slack ワークスペースを連携し、自分が関わる proof のイベント（作成 / 承認 / 差し戻し / コメント / 締切）を Slack へ個人通知で受け取る機能です（ユーザー単位・チーム共有チャンネルへの自動公開はしません）。全プラン無料（プランゲートなし）。</p>
+    <ul style="margin-top:8px">
+      <li>Slack App 管理: <code>api.slack.com/apps</code> の App ID <code>A0B6P5VHXSB</code>（<strong>Public Distribution 有効＝"Add to Slack" 配布</strong>。Marketplace 公開ではない）</li>
+      <li>OAuth v2 リダイレクト URI: <code>https://typolish.com/api/slack/oauth/callback</code></li>
+      <li>bot scope（Phase 1 最小）: <code>chat:write</code> / <code>channels:read</code> / <code>chat:write.public</code></li>
+      <li>bot token は <code>slack_installations/{uid}</code> に AES-256-GCM で暗号化保存（鍵 <code>SLACK_TOKEN_ENC_KEY</code>・Firestore Rules で client 全拒否・Admin SDK 専用）</li>
+      <li>実装: <code>src/lib/slack-client.ts</code> / <code>src/lib/slack-installation.ts</code> / <code>src/lib/slack-notification.ts</code> / <code>src/app/api/slack/*</code></li>
+      <li>設計書: <code>documents/design/slack-integration.md</code></li>
+    </ul>
+    <div class="callout callout-info" style="margin-top:12px">
+      <div class="callout-title">Marketplace 審査について</div>
+      <p>Phase 1（通知のみ）は <strong>unlisted 配布で動作し、Slack Marketplace 審査は不要</strong>です。2025-05-29 以降、非 Marketplace App は <code>conversations.history</code> 等の履歴取得が 1req/min に制限されますが、Phase 1 は履歴取得を使わない（投稿 <code>chat.postMessage</code> のみ）ため影響を受けません。将来 Slack 内メッセージ閲覧パネル（設計書 A-1・未実装）を出荷する場合のみ Marketplace 審査が前提になります。</p>
+    </div>
   </section>
 
   <!-- §9 デプロイフロー -->
@@ -935,6 +957,9 @@ cat key.json | tr -d '\n'   # 1 行化して Vercel env に貼り付け</pre>
           <tr><td><code>FIREBASE_SERVICE_ACCOUNT</code></td><td>GCP Console で Firebase Admin SA key rotate</td><td>中</td></tr>
           <tr><td><code>CRON_SECRET</code></td><td>新規生成 → Vercel env 更新（Cron 認証が即時切替）</td><td>中</td></tr>
           <tr><td><code>CHATWORK_ENCRYPTION_KEY</code></td><td>新規 64hex 生成 → Vercel env 更新（既存暗号化データの再暗号化が必要になる場合があります）</td><td>低</td></tr>
+          <!-- 2026-05-30 [claude-opus-4-8] セッションターン数：2 — Slack 連携 Phase 1（PR #450）の secret rotate を追記 -->
+          <tr><td><code>SLACK_CLIENT_SECRET</code> / <code>SLACK_SIGNING_SECRET</code></td><td>Slack App 管理画面（<code>api.slack.com/apps</code> &gt; App &gt; Basic Information &gt; App Credentials）で Regenerate → Vercel env 更新</td><td>中</td></tr>
+          <tr><td><code>SLACK_TOKEN_ENC_KEY</code></td><td>新規 32byte 生成 → Vercel env 更新（既存の <code>slack_installations</code> bot token は再暗号化が必要。最小影響なら全ユーザー再連携でも可）</td><td>低</td></tr>
           <tr><td>Integration API <code>clientSecret</code></td><td>Firestore <code>integrations/{clientId}.clientSecret</code> を更新 → 連携先 env も更新</td><td>中</td></tr>
         </tbody>
       </table>
