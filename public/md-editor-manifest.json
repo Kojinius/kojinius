@@ -1,7 +1,7 @@
 {
-  "name": "Markdown Editor",
-  "short_name": "MD Editor",
-  "description": "ローカルで動くMarkdownエディタ",
+  "name": "Craftica Editor",
+  "short_name": "Craftica Editor",
+  "description": "ブラウザで動く多言語コードエディタ。Markdownプレビュー・Python/Ruby/SQL実行・HTML/JSライブプレビュー・日英オンデバイス翻訳。",
   "start_url": "/md-editor",
   "display": "standalone",
   "background_color": "#1e1e2e",

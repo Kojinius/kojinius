@@ -8,7 +8,8 @@ const Home          = lazy(() => import('@/pages/Home'));
 const ResumeCreator = lazy(() => import('@/pages/ResumeCreator'));
 const CVCreator     = lazy(() => import('@/pages/CVCreator'));
 // 2026-05-04 claude-sonnet-4-6 セッションターン数：2
-const MdEditor      = lazy(() => import('@/pages/MdEditor'));
+// 2026-06-01 claude-opus-4-8[1m] セッションターン数：3 — MD Editor を Craftica Editor に置換
+const CrafticaEditorPage = lazy(() => import('@/pages/CrafticaEditorPage'));
 const HirakeDemo    = lazy(() =>
   import('./demos/hirake/HirakeDemo').then(m => ({ default: m.HirakeDemo }))
 );
@@ -70,10 +71,10 @@ export default function App() {
             <CrafticaDemo />
           </Suspense>
         } />
-        {/* MD Editor — full-screen, no site header */}
+        {/* Craftica Editor（旧 MD Editor）— full-screen, no site header。パスは /md-editor を維持 */}
         <Route path="/md-editor" element={
           <Suspense fallback={<Spinner />}>
-            <MdEditor />
+            <CrafticaEditorPage />
           </Suspense>
         } />
         {/* kojinius portfolio */}
