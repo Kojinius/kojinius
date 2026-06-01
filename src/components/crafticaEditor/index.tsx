@@ -114,6 +114,8 @@ export default function CrafticaEditor({
     try { return localStorage.getItem('md-editor-autotranslate') !== 'false'; } catch { return true; }
   });
   const translatorRef = useRef<OnDeviceTranslator | null>(null);
+  // 2026-06-02 claude-opus-4-8[1m] セッションターン数：5 — review fix: アンマウント時に translator を破棄
+  useEffect(() => () => { translatorRef.current?.destroy?.(); translatorRef.current = null; }, []);
   useEffect(() => {
     try { localStorage.setItem('md-editor-autotranslate', String(autoTranslate)); } catch { /* ignore */ }
   }, [autoTranslate]);
@@ -1282,13 +1284,7 @@ h2 { font-size: 14px; margin: 16px 0 6px; color: #444; }
         .md-shortcut-kbd-subtle { color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.1); }
         .md-shortcut-kbd-onbtn { color:rgba(30,30,46,0.75); background:rgba(30,30,46,0.12); border-color:rgba(30,30,46,0.22); }
         /* 2026-05-11 00:10:00 claude-opus-4-7[1m] セッションターン数：38 — Phase E3 提出ボタン + モーダル */
-        .md-tb-group-submit { margin-left:auto; }
-        .md-tb-submit-btn { background:linear-gradient(135deg,#a6e3a1 0%,#94e2d5 100%); color:#1e1e2e; border:none; padding:6px 14px; border-radius:8px; font-weight:700; font-size:13px; cursor:pointer; box-shadow:0 2px 6px rgba(166,227,161,.35); transition:transform 120ms,box-shadow 120ms; display:inline-flex; align-items:center; gap:4px; }
-        .md-tb-submit-btn:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(166,227,161,.55); }
-        .md-tb-submit-btn:active { transform:translateY(0); }
-        .md-submit-dialog { max-width:420px; text-align:center; padding:24px 28px; }
-        .md-submit-dialog h3 { margin:0 0 8px 0; font-size:16px; color:#cdd6f4; }
-        .md-submit-dialog p { color:rgba(255,255,255,0.85); margin:0 0 8px 0; }
+        /* 2026-06-02 claude-opus-4-8[1m] セッションターン数：5 — review fix: 課題提出フロー除去に伴い submit 系 CSS を削除 */
         .md-dot-ind { width:6px; height:6px; border-radius:50%; }
         /* 2026-05-05 claude-opus-4-7 セッションターン数：2 */
         /* リサイザがセパレータ役なので border-right は分割時のみ無効化 */
