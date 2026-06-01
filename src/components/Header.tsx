@@ -7,7 +7,7 @@ const navLinks = [
   { to: '/', label: 'Portfolio' },
   { to: '/resume', label: '履歴書' },
   { to: '/cv', label: '職務経歴書' },
-  { to: '/md-editor', label: 'MD Editor' },
+  { to: '/md-editor', label: 'Craftica Editor' },
 ] as const;
 
 export function Header() {

@@ -71,15 +71,16 @@ export const projects: Project[] = [
     stack: ['React', 'TypeScript', 'Tailwind CSS', 'Firebase Auth', 'Firestore', 'Cloud Functions'],
   },
   // 2026-05-04 claude-sonnet-4-6 セッションターン数：1
+  // 2026-06-01 claude-opus-4-8[1m] セッションターン数：3 — MD Editor を Craftica Editor に全面置換
   {
-    name: 'Markdown Editor — ブラウザで動くMDエディタ',
-    period: { start: '2026-05-04', end: '2026-05-04' },
+    name: 'Craftica Editor — ブラウザ完結の多言語コードエディタ',
+    period: { start: '2026-05-04', end: '2026-06-01' },
     description:
-      'インストール不要のブラウザ完結型Markdownエディタ。リアルタイムプレビュー・複数タブ・ファイル保存（File System Access API）・自動保存（localStorage）・チェックボックスリスト・コードブロック・テーブルなどを搭載。PWAとして端末にインストール可能。',
-    emoji: '✏️',
+      'インストール不要のブラウザ完結型エディタ。Markdownのリアルタイムプレビューに加え、Python / Ruby / SQL をブラウザ内で実行（WebAssembly）、HTML/JS/JSX のライブプレビュー、Prism シンタックスハイライト、日本語→英語のオンデバイス翻訳（Chrome 内蔵 AI・外部送信なし）、複数タブ・ファイル保存・自動保存を搭載。PWA として端末にインストール可能。',
+    emoji: '🛠️',
     url: '/md-editor',
     newTab: true,
-    stack: ['Vanilla JS', 'HTML/CSS', 'marked.js', 'PWA', 'File System Access API'],
+    stack: ['React', 'TypeScript', 'WebAssembly', 'Web Workers', 'Prism', 'PWA'],
   },
   {
     name: '職務経歴書作成ツール',

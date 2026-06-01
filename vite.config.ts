@@ -48,6 +48,11 @@ export default defineConfig({
     alias: { '@': resolve(__dirname, 'src') },
   },
   build: {
+    // 2026-06-01 claude-opus-4-8[1m] セッションターン数：4 — kojinius 移植:
+    //   crafticaEditor の Web Worker は `new URL('./x.worker.js', import.meta.url)` 経由で
+    //   アセット扱いになる。4KB 未満（sql.worker.js=4045B）だと data URL にインライン化され、
+    //   module worker として起動できず SQL 実行が壊れる。*.worker.js は常にファイル出力させる。
+    assetsInlineLimit: (filePath: string) => (filePath.endsWith('.worker.js') ? false : undefined),
     rollupOptions: {
       output: {
         manualChunks(id) {
