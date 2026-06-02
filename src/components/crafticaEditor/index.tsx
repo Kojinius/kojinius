@@ -109,6 +109,11 @@ export default function CrafticaEditor({
   const [translatedText, setTranslatedText] = useState('');
   const [translatorStatus, setTranslatorStatus] = useState<TranslatorStatus>('idle');
   const [downloadPct, setDownloadPct] = useState(0);
+  // 2026-06-02 claude-opus-4-8[1m] セッションターン数：3 — クロスオリジン iframe 埋め込み検出。
+  //   Chrome 内蔵 Translator API は「トップレベル窓＋同一オリジン iframe」のみに露出するため、
+  //   Kalenex 等への埋め込み時は誤って「未対応」と出さず、トップレベルで開く導線を出す。
+  const [inIframe, setInIframe] = useState(false);
+  useEffect(() => { try { setInIframe(window.self !== window.top); } catch { setInIframe(true); } }, []);
   // 自動翻訳 ON/OFF トグル（ボス要望）。localStorage 永続・既定 ON。
   const [autoTranslate, setAutoTranslate] = useState<boolean>(() => {
     try { return localStorage.getItem('md-editor-autotranslate') !== 'false'; } catch { return true; }
@@ -1874,15 +1879,41 @@ h2 { font-size: 14px; margin: 16px 0 6px; color: #444; }
                 )}
               </div>
               <div className="md-translate-body">
+                {/* 2026-06-02 claude-opus-4-8[1m] セッションターン数：3 — iframe 埋め込み時は「ブラウザ未対応」ではなく
+                    「埋め込みでは使えない／新しいタブで開く」導線を出す（Translator はクロスオリジン iframe に露出しないため誤誘導を避ける）。 */}
                 {translatorStatus === 'unsupported' ? (
-                  <div className="md-no-preview" style={{ padding: 24, textAlign: 'center' }}>
-                    <p style={{ fontSize: 28, marginBottom: 8 }}>🌐</p>
-                    <p>このブラウザはオンデバイス翻訳に未対応です。</p>
-                    <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 12 }}>
-                      Chrome / Edge 138 以降（デスクトップ）でご利用ください。<br />
-                      翻訳は端末内で完結し、入力内容は外部に送信されません。
-                    </p>
-                  </div>
+                  inIframe ? (
+                    <div className="md-no-preview" style={{ padding: 24, textAlign: 'center' }}>
+                      <p style={{ fontSize: 28, marginBottom: 8 }}>🌐</p>
+                      <p>埋め込み表示では翻訳を使えません。</p>
+                      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 12 }}>
+                        お使いのブラウザは翻訳に対応していますが、埋め込み（iframe）表示では利用できません。<br />
+                        下のボタンから新しいタブで開くと、そのまま翻訳をご利用いただけます。
+                      </p>
+                      <a
+                        href="https://kojinius.jp/md-editor"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 16,
+                          padding: '8px 18px', borderRadius: 8, textDecoration: 'none',
+                          fontSize: 13, fontWeight: 700, color: '#fff',
+                          background: 'linear-gradient(90deg,#a78bfa,#60a5fa)',
+                        }}
+                      >
+                        新しいタブで開く
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="md-no-preview" style={{ padding: 24, textAlign: 'center' }}>
+                      <p style={{ fontSize: 28, marginBottom: 8 }}>🌐</p>
+                      <p>このブラウザはオンデバイス翻訳に未対応です。</p>
+                      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 12 }}>
+                        Chrome / Edge 138 以降（デスクトップ）でご利用ください。<br />
+                        翻訳は端末内で完結し、入力内容は外部に送信されません。
+                      </p>
+                    </div>
+                  )
                 ) : translatorStatus === 'downloading' ? (
                   <div style={{ padding: 24, textAlign: 'center' }}>
                     <p style={{ fontSize: 28, marginBottom: 8 }}>⬇️</p>
