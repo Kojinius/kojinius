@@ -521,7 +521,7 @@
     <a href="#sec-arch"      class="nav-item"><svg class="nav-icon"><use href="#ico-arch"/></svg>3. アーキテクチャ</a>
     <a href="#sec-scope"     class="nav-item"><svg class="nav-icon"><use href="#ico-scope"/></svg>4. 譲渡スコープ</a>
     <a href="#sec-env"       class="nav-item"><svg class="nav-icon"><use href="#ico-env"/></svg>5. 環境変数</a>
-    <a href="#sec-cron"      class="nav-item"><svg class="nav-icon"><use href="#ico-cron"/></svg>6. Cron Jobs（5本）</a>
+    <a href="#sec-cron"      class="nav-item"><svg class="nav-icon"><use href="#ico-cron"/></svg>6. Cron Jobs（6本）</a>
     <a href="#sec-dur"       class="nav-item"><svg class="nav-icon"><use href="#ico-dur"/></svg>7. maxDuration</a>
     <a href="#sec-int"       class="nav-item"><svg class="nav-icon"><use href="#ico-int"/></svg>8. 外部連携</a>
     <a href="#sec-deploy"    class="nav-item"><svg class="nav-icon"><use href="#ico-deploy"/></svg>9. デプロイフロー</a>
@@ -531,7 +531,8 @@
     <a href="#sec-perm"      class="nav-item"><svg class="nav-icon"><use href="#ico-perm"/></svg>13. 権限マトリクス</a>
     <a href="#sec-roles"     class="nav-item"><svg class="nav-icon"><use href="#ico-roles"/></svg>14. 役割分担</a>
     <a href="#sec-checklist" class="nav-item"><svg class="nav-icon"><use href="#ico-check"/></svg>15. 譲渡前チェックリスト</a>
-    <a href="#sec-docs"      class="nav-item"><svg class="nav-icon"><use href="#ico-docs"/></svg>16. 参照ドキュメント</a>
+    <a href="#sec-e2e"       class="nav-item"><svg class="nav-icon"><use href="#ico-secret"/></svg>16. E2E 暗号化プロジェクト</a>
+    <a href="#sec-docs"      class="nav-item"><svg class="nav-icon"><use href="#ico-docs"/></svg>17. 参照ドキュメント</a>
   </div>
 </nav>
 
@@ -754,9 +755,9 @@ cat key.json | tr -d '\n'   # 1 行化して Vercel env に貼り付け</pre>
   <section id="sec-cron">
     <div class="section-header">
       <svg class="section-icon"><use href="#ico-cron"/></svg>
-      <h2 class="section-title">6. Cron Jobs（5本）</h2>
+      <h2 class="section-title">6. Cron Jobs（6本）</h2>
     </div>
-    <p><code>vercel.ts</code> の <code>crons</code> に定義された 5 本です。<strong>Production 環境のみ</strong>実行され、Preview 環境では実行されません。</p>
+    <p><code>vercel.ts</code> の <code>crons</code> に定義された 6 本です。<strong>Production 環境のみ</strong>実行され、Preview 環境では実行されません。</p>
     <p style="margin-top:8px">Vercel が自動で <code>Authorization: Bearer &lt;CRON_SECRET&gt;</code> ヘッダーを付与するため、各エンドポイントはこのヘッダーで認証を行います。</p>
     <div class="tbl-wrap" style="margin-top:14px">
       <table>
@@ -791,6 +792,12 @@ cat key.json | tr -d '\n'   # 1 行化して Vercel env に貼り付け</pre>
             <td><code>0 18 * * *</code></td>
             <td>毎日 3:00</td>
             <td>PAT（Personal Access Token）の期限 7 日前・1 日前に通知メール送信。期限切れ PAT を自動失効（<code>disabledAt</code> セット）</td>
+          </tr>
+          <tr>
+            <td><code>/api/cron/delete-trial-e2e-projects</code></td>
+            <td><code>0 18 * * *</code></td>
+            <td>毎日 3:00</td>
+            <td>トライアル終了後の暗号化プロジェクト（E2E・§16）の自動削除。安全のため既定は dry-run（対象をログ出力のみ）で、環境変数 <code>ENFORCE_TRIAL_E2E_DELETE=true</code> を設定したときに実削除を行います</td>
           </tr>
         </tbody>
       </table>
@@ -1119,11 +1126,50 @@ stripe events resend evt_xxxx --webhook-endpoint we_xxxx --api-key "$STRIPE_LIVE
     </div>
   </section>
 
-  <!-- §16 参照ドキュメント -->
+  <!-- §16 E2E 暗号化プロジェクト -->
+  <section id="sec-e2e">
+    <div class="section-header">
+      <svg class="section-icon"><use href="#ico-secret"/></svg>
+      <h2 class="section-title">16. E2E 暗号化プロジェクト</h2>
+    </div>
+    <p>「暗号化プロジェクト（E2E）」は、画像・PDF をクライアント（ブラウザ）側で暗号化し、サーバー・ストレージには暗号文のみを保存する機能です。Business プラン限定で、プロジェクト作成時に「暗号化」モードを選択することで有効になります。鍵は利用者のパスフレーズから各端末内で生成・管理され、<strong>サーバー側には平文・パスフレーズ・データ暗号鍵のいずれも保持されません</strong>。</p>
+    <div class="callout callout-info" style="margin-top:14px">
+      <div class="callout-title">復旧不能であることの運用上の注意</div>
+      <p>真のエンドツーエンド暗号化のため、運営者を含め、パスフレーズなしにはどなたもデータを復号できません。パスフレーズを持つメンバーが全員失われた場合、データの復元手段は存在せず、サポート窓口での復旧にも応じられません。この旨は利用者向けプライバシーポリシー（<code>/legal/privacy</code> 第 8 章）に明記しています。</p>
+    </div>
+    <p style="margin-top:18px;font-weight:600">暗号化プロジェクトでの機能の扱い</p>
+    <p>暗号文を外部の処理に渡さないため、暗号化プロジェクトでは一部の機能を意図的に無効化しています。通常のプロジェクトには一切影響しません。</p>
+    <div class="tbl-wrap" style="margin-top:14px">
+      <table>
+        <thead><tr><th>機能</th><th>暗号化プロジェクトでの扱い</th></tr></thead>
+        <tbody>
+          <tr><td>アップロード</td><td>画像・PDF のみ受け付け（変換が必要な形式は受け付けません）</td></tr>
+          <tr><td>アノテーション・コメント・承認</td><td>従来どおり利用可能（メタデータのみで、ファイル本体の復号は不要なため）</td></tr>
+          <tr><td>AI 校正・ファイル変換・サムネイル生成</td><td>無効（サーバーが暗号文を復号できないため）</td></tr>
+          <tr><td>ゲスト共有・外部連携（API / Zapier）・MCP</td><td>無効（外部に鍵を渡せないため。隔離されたプロジェクトとして扱います）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:18px;font-weight:600">メンバー間の鍵共有と運用</p>
+    <div class="tbl-wrap" style="margin-top:14px">
+      <table>
+        <thead><tr><th>項目</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><td>鍵の付与</td><td>メンバー招待後、既存の鍵保持メンバーが「鍵を付与」操作で招待者へ鍵を渡します。付与までは招待者は暗号化データを開けません</td></tr>
+          <tr><td>離脱ガード</td><td>最後の鍵保持者の削除はブロックされます（鍵の喪失＝データ喪失を防ぐためです）</td></tr>
+          <tr><td>トライアル終了時</td><td>トライアル中に作成された暗号化プロジェクトは、トライアル終了時に自動削除されます（§6 Cron <code>delete-trial-e2e-projects</code>）</td></tr>
+          <tr><td>Firestore Rules</td><td>秘密鍵の暗号文は <code>users/{uid}/e2e_private/self</code> に本人限定で隔離し、暗号化プロジェクトの version は <code>encrypted</code> フラグを必須としています</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:14px;font-size:12.5px;color:var(--sub)">技術詳細は <code>typolish</code> リポジトリ内の設計書 <code>documents/design/e2e-common-spec.md</code> をご参照ください。</p>
+  </section>
+
+  <!-- §17 参照ドキュメント -->
   <section id="sec-docs">
     <div class="section-header">
       <svg class="section-icon"><use href="#ico-docs"/></svg>
-      <h2 class="section-title">16. 参照ドキュメント</h2>
+      <h2 class="section-title">17. 参照ドキュメント</h2>
     </div>
     <p>詳細な設計書はリポジトリ内の <code>documents/design/</code> ディレクトリに Markdown ファイルとして収録されています。本引き継ぎ資料は主要情報の概要版ですので、技術詳細については設計書をご参照ください。</p>
     <div class="tbl-wrap" style="margin-top:14px">
