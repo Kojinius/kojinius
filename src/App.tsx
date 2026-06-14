@@ -29,6 +29,14 @@ const TypolishDemo  = lazy(() =>
 const CrafticaDemo  = lazy(() =>
   import('./demos/craftica/CrafticaDemo').then(m => ({ default: m.CrafticaDemo }))
 );
+// 2026-06-15 claude-opus-4-8[1m] セッションターン数：16
+// Hiraké Dev LP（lienrapport.jp/SystemDev）の開発実績カードからリンクするデモ。
+const MeoscopeDemo  = lazy(() =>
+  import('./demos/meoscope/MeoscopeDemo').then(m => ({ default: m.MeoscopeDemo }))
+);
+const KnitDemo      = lazy(() =>
+  import('./demos/knit/KnitDemo').then(m => ({ default: m.KnitDemo }))
+);
 
 const Spinner = () => (
   <div className="flex items-center justify-center h-32">
@@ -69,6 +77,17 @@ export default function App() {
         <Route path="/demo/craftica/*" element={
           <Suspense fallback={<Spinner />}>
             <CrafticaDemo />
+          </Suspense>
+        } />
+        {/* 2026-06-15 claude-opus-4-8[1m] セッションターン数：16 — meoscope / knit デモ（full-screen, own layout） */}
+        <Route path="/demo/meoscope/*" element={
+          <Suspense fallback={<Spinner />}>
+            <MeoscopeDemo />
+          </Suspense>
+        } />
+        <Route path="/demo/knit/*" element={
+          <Suspense fallback={<Spinner />}>
+            <KnitDemo />
           </Suspense>
         } />
         {/* Craftica Editor（旧 MD Editor）— full-screen, no site header。パスは /md-editor を維持 */}
