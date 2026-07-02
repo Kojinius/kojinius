@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!-- 2026-07-02 claude-fable-5 セッションターン数：22 — 用語辞典の合言葉ゲート（ボス指示・pwd 09211009）。
+     静的 Firebase Hosting のためサーバ認証は不可＝client-side の合言葉ゲート（ソフトな門番）。
+     通過で sessionStorage.term_gate='ok' → Terminology.html 側の先頭ガードが通す。 -->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>開発用語辞典 — 合言葉</title>
+<style>
+  :root{ --ai:#1E3A5F; --kami:#FAF9F5; --sumi:#26241E; --shu:#B23A32; --usuzumi:#D9D5CC;
+    --mincho:"Hiragino Mincho ProN","Yu Mincho","游明朝",serif;
+    --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",sans-serif; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; min-height:100vh; display:grid; place-items:center;
+    background:var(--kami); color:var(--sumi); font-family:var(--gothic); }
+  .card{ width:min(420px, 92vw); border:1px solid var(--usuzumi); background:#fff;
+    padding:36px 32px 30px; box-shadow:0 18px 44px -28px rgba(30,58,95,.4); }
+  h1{ font-family:var(--mincho); font-weight:600; font-size:22px; letter-spacing:.14em;
+    color:var(--ai); margin:0 0 4px; }
+  h1 .han{ font-size:11px; letter-spacing:.3em; vertical-align:middle; margin-left:10px;
+    border:1px solid var(--usuzumi); padding:2px 6px 2px 8px; color:var(--sumi); }
+  p.lead{ margin:0 0 22px; font-size:13px; color:#6E6960; letter-spacing:.04em; }
+  label{ display:block; font-size:12.5px; letter-spacing:.1em; color:var(--ai); margin-bottom:6px; font-weight:700; }
+  input{ width:100%; font:inherit; font-size:16px; letter-spacing:.2em; padding:10px 14px;
+    border:1.5px solid var(--usuzumi); border-radius:4px; background:var(--kami); color:var(--sumi); }
+  input:focus{ outline:2px solid var(--ai); outline-offset:1px; border-color:var(--ai); }
+  button{ margin-top:14px; width:100%; font:inherit; font-size:14.5px; font-weight:700; letter-spacing:.2em;
+    padding:11px 0; border:none; border-radius:4px; background:var(--ai); color:#F2EFE7; cursor:pointer; }
+  button:hover{ background:#16305a; }
+  .err{ margin:10px 0 0; font-size:12.5px; color:var(--shu); min-height:1.4em; }
+  .shake{ animation:sh .3s; }
+  @keyframes sh{ 25%{ transform:translateX(-6px);} 75%{ transform:translateX(6px);} }
+</style>
+</head>
+<body>
+  <form class="card" id="f">
+    <h1>開発用語辞典<span class="han">実例主義</span></h1>
+    <p class="lead">合言葉を入れてください。</p>
+    <label for="pw">合言葉</label>
+    <input id="pw" type="password" inputmode="numeric" autocomplete="off" autofocus>
+    <button type="submit">開く</button>
+    <p class="err" id="err"></p>
+  </form>
+<script>
+(function(){
+  'use strict';
+  var PW = '09211009';
+  try { if (sessionStorage.getItem('term_gate') === 'ok') { location.replace('Terminology.html'); return; } } catch(e){}
+  var f = document.getElementById('f'), pw = document.getElementById('pw'), err = document.getElementById('err');
+  f.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    if (pw.value.trim() === PW) {
+      try { sessionStorage.setItem('term_gate', 'ok'); } catch(e){}
+      location.replace('Terminology.html');
+    } else {
+      err.textContent = '合言葉が違います。';
+      f.classList.remove('shake'); void f.offsetWidth; f.classList.add('shake');
+      pw.select();
+    }
+  });
+})();
+</script>
+</body>
+</html>
