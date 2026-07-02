@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<!-- 2026-07-02 claude-fable-5 セッションターン数：1 — 初版。/用語集 カスコマ（~/.claude/commands/用語集.md）とセット運用。 -->
+<!--
+  ■ このファイルの育て方（機械可読仕様は 用語集.md 側が正）
+  - エントリは必ず <!== TERMS:START ==> と <!== TERMS:END ==> の間に置く（実際のマーカーは下記コメント）
+  - 挿入位置は TERMS:END 直前で良い（表示順は JS が起動時にソート：英数→A-Z、日本語→五十音）
+  - 既存エントリの削除・<style>/<script> の変更はボス指示があるときのみ
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>開発用語辞典</title>
+<meta name="robots" content="noindex, nofollow">
+<!-- 2026-07-02 claude-fable-5 セッションターン数：22 — 合言葉ゲート（ボス指示）: Web 配信時（kojinius.jp/terminology/）のみ、
+     ゲート通過フラグ（sessionStorage.term_gate）が無ければ入口（./）へ戻す。file:// のローカル閲覧は無条件で表示（従来どおり）。 -->
+<script>
+(function(){
+  try {
+    if (location.protocol !== 'file:' && sessionStorage.getItem('term_gate') !== 'ok') location.replace('./');
+  } catch (e) {}
+})();
+</script>
+<style>
+  :root{
+    --ai:   #1E3A5F; /* 藍 — 表紙・見出し */
+    --kami: #FAF9F5; /* 紙 — 地 */
+    --sumi: #26241E; /* 墨 — 本文 */
+    --shu:  #B23A32; /* 朱 — 読み・用例マーク */
+    --nezu: #6E6960; /* 鼠 — 補足・日付 */
+    --usuzumi: #D9D5CC; /* 罫線 */
+    --code-bg: #EEF2F6;
+    --mincho: "Hiragino Mincho ProN", "Yu Mincho", "游明朝", serif;
+    --gothic: "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", sans-serif;
+    --mono: "Cascadia Code", Consolas, "Courier New", monospace;
+  }
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce){ html{ scroll-behavior: auto; } }
+  body{
+    margin: 0;
+    background: var(--kami);
+    color: var(--sumi);
+    font-family: var(--gothic);
+    font-size: 16px;
+    line-height: 1.85;
+  }
+
+  /* ---- 表紙帯 ---- */
+  .cover{
+    background: var(--ai);
+    color: #F2EFE7;
+    padding: 40px 24px 34px;
+  }
+  .cover-inner{ max-width: 860px; margin: 0 auto; }
+  .cover h1{
+    font-family: var(--mincho);
+    font-weight: 600;
+    font-size: 34px;
+    letter-spacing: .14em;
+    margin: 0 0 6px;
+  }
+  .cover h1 .han{ /* 判 — 辞典の「版」表記風 */
+    font-size: 13px;
+    letter-spacing: .3em;
+    vertical-align: middle;
+    margin-left: 14px;
+    border: 1px solid rgba(242,239,231,.45);
+    padding: 2px 8px 2px 10px;
+  }
+  .cover p{
+    margin: 0;
+    font-size: 13.5px;
+    letter-spacing: .06em;
+    color: #C9D2DE;
+  }
+  .cover .stat{ color: #F2EFE7; font-family: var(--mincho); }
+
+  /* ---- 検索帯（粘着） ---- */
+  .toolbar{
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--kami) 92%, transparent);
+    backdrop-filter: blur(4px);
+    border-bottom: 1px solid var(--usuzumi);
+    padding: 12px 24px;
+  }
+  .toolbar-inner{ max-width: 860px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .search{
+    flex: 1 1 260px;
+    font: inherit;
+    font-size: 15px;
+    padding: 8px 14px;
+    border: 1.5px solid var(--usuzumi);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--sumi);
+  }
+  .search:focus{ outline: 2px solid var(--ai); outline-offset: 1px; border-color: var(--ai); }
+  .chips{ display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip{
+    font: inherit; font-size: 12.5px;
+    padding: 4px 12px;
+    border: 1px solid var(--usuzumi);
+    border-radius: 999px;
+    background: #fff; color: var(--nezu);
+    cursor: pointer;
+  }
+  .chip[aria-pressed="true"]{ background: var(--ai); border-color: var(--ai); color: #F2EFE7; }
+  .chip:focus-visible{ outline: 2px solid var(--shu); outline-offset: 2px; }
+  .hitcount{ font-size: 12.5px; color: var(--nezu); margin-left: auto; }
+
+  /* ---- 辞書本文 ---- */
+  main{ max-width: 860px; margin: 0 auto; padding: 8px 24px 64px; }
+  .entry{
+    padding: 30px 0 26px;
+    border-bottom: 1px solid var(--usuzumi);
+  }
+  .entry-head{ margin-bottom: 4px; }
+  .headword{
+    font-family: var(--mincho);
+    font-weight: 700;
+    font-size: 27px;
+    letter-spacing: .04em;
+    margin: 0;
+    display: inline;
+  }
+  .headword::before{ content: "【"; color: #9A958A; font-weight: 500; }
+  .headword::after{ content: "】"; color: #9A958A; font-weight: 500; }
+  .fullform{
+    display: inline;
+    font-family: var(--mincho);
+    font-size: 16px;
+    color: var(--sumi);
+    margin: 0 0 0 10px;
+    letter-spacing: .02em;
+  }
+  .yomi{
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: var(--shu);
+    letter-spacing: .08em;
+  }
+  .meta{ margin: 6px 0 10px; font-size: 12px; color: var(--nezu); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .tag{
+    border: 1px solid var(--usuzumi);
+    padding: 1px 9px;
+    border-radius: 3px;
+    letter-spacing: .1em;
+  }
+  .gloss p{ margin: 0 0 10px; }
+
+  /* ---- 用例（この辞典の看板） ---- */
+  .example{
+    margin: 14px 0 0;
+    padding: 12px 16px 14px;
+    border-left: 3px solid var(--shu);
+    background: color-mix(in srgb, var(--shu) 4%, var(--kami));
+  }
+  .example-head{ margin: 0 0 6px; font-size: 12.5px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .example-head .mark{
+    font-family: var(--mincho);
+    color: var(--shu);
+    font-weight: 700;
+    letter-spacing: .35em;
+  }
+  .example-head .pj{
+    background: var(--ai); color: #F2EFE7;
+    padding: 1px 10px; border-radius: 3px;
+    font-size: 11.5px; letter-spacing: .08em;
+  }
+  .example-head .date{ color: var(--nezu); }
+  .example p{ margin: 0 0 8px; font-size: 15px; }
+  .example .src{ margin: 6px 0 0; font-family: var(--mono); font-size: 12px; color: var(--nezu); }
+  pre{
+    margin: 8px 0 0;
+    padding: 12px 14px;
+    background: var(--code-bg);
+    border: 1px solid #DDE4EC;
+    border-radius: 4px;
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+  /* 2026-07-02 claude-fable-5 セッションターン数：1 — リガチャ無効化（>= が ≥ に合字され初学者が誤読するため） */
+  code{ font-family: var(--mono); font-size: 13px; color: #1F2E42; font-variant-ligatures: none; }
+
+  /* 2026-07-02 claude-fable-5 セッションターン数：16 — 用語相互リンク（.term-ref）: 本文中の既出用語へ飛ぶ */
+  a.term-ref{ color: var(--ai); text-decoration: none; border-bottom: 1px dashed color-mix(in srgb, var(--ai) 45%, transparent); }
+  a.term-ref:hover{ color: var(--shu); border-bottom-color: var(--shu); }
+
+  /* ---- 未収録 ---- */
+  .empty{ padding: 56px 0; text-align: center; color: var(--nezu); }
+  .empty .word{ font-family: var(--mincho); font-weight: 700; color: var(--sumi); }
+
+  footer{
+    border-top: 1px solid var(--usuzumi);
+    padding: 20px 24px 40px;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--nezu);
+    letter-spacing: .04em;
+  }
+
+  @media (max-width: 560px){
+    .cover h1{ font-size: 26px; }
+    .headword{ font-size: 23px; }
+    .fullform{ display: block; margin: 2px 0 0; }
+  }
+  @media print{
+    .toolbar{ display: none; }
+    .cover{ background: none; color: var(--sumi); border-bottom: 3px double var(--sumi); }
+    .cover p{ color: var(--nezu); }
+    .entry{ break-inside: avoid; }
+    body{ display: block; }
+    #sidebar, .nav-toggle{ display: none !important; }
+  }
+
+  /* ======== サイドパネル（目次ツリー）— 2026-07-02 claude-opus-4-8[1m] 追加 ======== */
+  body{ display: flex; align-items: stretch; min-height: 100vh; }
+  #app{ flex: 1 1 auto; min-width: 0; }
+  #sidebar{
+    flex: 0 0 auto; width: 300px; align-self: stretch;
+    position: sticky; top: 0; height: 100vh;
+    background: color-mix(in srgb, var(--ai) 5%, var(--kami));
+    border-right: 1px solid var(--usuzumi);
+    display: flex; flex-direction: column;
+  }
+  body:not(.nav-open) #sidebar{ display: none; }
+  .side-head{ padding: 14px 14px 10px; border-bottom: 1px solid var(--usuzumi); }
+  .side-title{ font-family: var(--mincho); font-size: 14px; letter-spacing: .14em; color: var(--ai); margin: 0 0 8px; }
+  .side-search{ width: 100%; font: inherit; font-size: 14px; padding: 7px 12px; border: 1.5px solid var(--usuzumi); border-radius: 4px; background: #fff; color: var(--sumi); }
+  .side-search:focus{ outline: 2px solid var(--ai); outline-offset: 1px; border-color: var(--ai); }
+  .tree{ flex: 1 1 auto; overflow-y: auto; padding: 8px 6px 24px; font-size: 14px; }
+  .tree summary{ list-style: none; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 4px; user-select: none; }
+  .tree summary::-webkit-details-marker{ display: none; }
+  .tree summary::before{ content: "\25B8"; color: var(--nezu); font-size: 11px; transition: transform .15s; flex: none; }
+  .tree details[open] > summary::before{ transform: rotate(90deg); }
+  .tree summary:hover{ background: color-mix(in srgb, var(--ai) 8%, transparent); }
+  .tree .big > summary{ font-family: var(--mincho); font-weight: 700; color: var(--ai); letter-spacing: .06em; }
+  .tree .mid{ margin-left: 14px; }
+  .tree .mid > summary{ color: var(--sumi); }
+  .tree .mid > summary .cnt{ margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--nezu); flex: none; }
+  .tree .mid.empty > summary{ color: var(--nezu); }
+  .tree .terms{ margin: 0 0 4px 26px; padding: 0; list-style: none; }
+  .tree .term-link{ display: block; width: 100%; text-align: left; font: inherit; font-size: 13.5px; color: var(--sumi); background: none; border: 0; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
+  .tree .term-link:hover{ background: color-mix(in srgb, var(--shu) 8%, transparent); color: var(--shu); }
+  .tree .term-link:focus-visible{ outline: 2px solid var(--shu); outline-offset: 1px; }
+  .tree .none{ margin: 2px 0 4px 26px; font-size: 12px; color: var(--nezu); font-style: italic; }
+  .tree .hidden{ display: none !important; }
+  .side-resize{ position: absolute; top: 0; right: -3px; width: 7px; height: 100%; cursor: col-resize; z-index: 5; }
+  .side-resize:hover, .side-resize.active{ background: color-mix(in srgb, var(--ai) 25%, transparent); }
+  .nav-toggle{ font: inherit; font-size: 13px; font-weight: 700; color: var(--ai); background: #fff; border: 1.5px solid var(--usuzumi); border-radius: 4px; padding: 7px 12px; cursor: pointer; white-space: nowrap; letter-spacing: .06em; }
+  .nav-toggle:hover{ border-color: var(--ai); }
+  .nav-toggle:focus-visible{ outline: 2px solid var(--shu); outline-offset: 2px; }
+  @keyframes term-flash{ 0%{ background: color-mix(in srgb, var(--shu) 22%, transparent); } 100%{ background: transparent; } }
+  .entry.flash{ animation: term-flash 1.6s ease-out; }
+  @media (max-width: 900px){
+    #sidebar{ position: fixed; top: 0; left: 0; z-index: 60; width: 82vw !important; max-width: 340px; box-shadow: 0 0 40px rgba(0,0,0,.25); }
+    body.nav-open::after{ content: ""; position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 55; }
+  }
+</style>
+</head>
+<body>
+
+<aside id="sidebar" aria-label="目次サイドパネル">
+  <div class="side-head">
+    <p class="side-title">もくじ</p>
+    <input class="search side-search" id="sideq" type="search" placeholder="ツリーを絞り込む" aria-label="サイドパネル内で検索">
+  </div>
+  <nav class="tree" id="tree" aria-label="カテゴリツリー"></nav>
+  <div class="side-resize" id="sideResize" role="separator" aria-orientation="vertical" aria-label="サイドパネルの幅を変える"></div>
+</aside>
+
+<div id="app">
+
+<header class="cover">
+  <div class="cover-inner">
+    <h1>開発用語辞典<span class="han">実例主義</span></h1>
+    <p>現場のコードから採った用例つき ── 収録 <span class="stat" id="total">0</span> 語</p>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <button class="nav-toggle" id="navToggle" type="button" aria-expanded="true" aria-controls="sidebar">≡ もくじ</button>
+    <input class="search" id="q" type="search" placeholder="用語・読み・本文から探す" aria-label="用語を検索">
+    <div class="chips" id="chips" role="group" aria-label="プロジェクトで絞り込み"></div>
+    <span class="hitcount"><span id="hits">0</span> 語表示中</span>
+  </div>
+</div>
+
+<main id="dict">
+<!-- ===== TERMS:START ＝ エントリは必ずこの下に置く（この行を削除・変更しない） ===== -->
+<!--
+  ▼ エントリ雛形（コピーして使う。詳細仕様は ~/.claude/commands/用語集.md）
+  <article class="entry" id="term-xxx" data-term="XXX" data-yomi="よみ（ひらがな）" data-aliases="別名 正式名称" data-pj="PJ名">
+    <header class="entry-head">
+      <h2 class="headword">XXX</h2>
+      <p class="fullform">正式名称（略語の場合）</p>
+      <p class="yomi">読み</p>
+    </header>
+    <p class="meta"><span class="tag">分類</span><span class="date">yyyy-mm-dd 追加</span></p>
+    <div class="gloss"><p>後輩向けの平易な説明。</p></div>
+    <div class="example" data-pj="PJ名">
+      <p class="example-head"><span class="mark">用例</span><span class="pj">PJ名</span><span class="date">yyyy-mm-dd</span></p>
+      <p>そのPJで実際にどう使われたか（事実のみ）。</p>
+      <pre><code>エスケープ済みコード片（任意・10行以内）</code></pre>
+      <p class="src">出典 file:line</p>
+    </div>
+  </article>
+-->
+
+<article class="entry" id="term-rbac" data-term="RBAC" data-yomi="あーるばっく" data-aliases="Role-Based Access Control ロールベースアクセス制御" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">RBAC</h2>
+    <p class="fullform">Role-Based Access Control</p>
+    <p class="yomi">アールバック／ロールベースアクセス制御</p>
+  </header>
+  <p class="meta"><span class="tag">セキュリティ</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>ユーザー一人ひとりに権限を直接くっつけるのではなく、まず「ロール（役割）」に権限をまとめておき、ユーザーにはロールだけを割り当てる方式のアクセス制御。「この人は編集できる？」ではなく「この操作は manager 以上」と役割で考えるのがポイント。</p>
+    <p>人が増えたり異動したりしてもロールを付け替えるだけで済み、権限の付け忘れ・消し忘れが起きにくい。逆にユーザー個別に権限を配ると、退職・異動のたびに全機能を棚卸しするはめになる。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>4段階のロール（admin / manager / staff / viewer）を数値の階層にして、<code>hasMinRole(userRole, minRole)</code> ひとつで「manager 以上か？」を判定している。同じロール階層をファイル読み取り<a class="term-ref" href="#term-api">API</a>の認可（authorize-file-read.ts）や Firestore セキュリティルール（per-task RBAC / per-node RBAC）でも使い、判定基準がクライアント・サーバ・ルールでズレないようにしている。</p>
+    <pre><code>export type Role = 'admin' | 'manager' | 'staff' | 'viewer';
+
+export const ROLE_HIERARCHY: Record&lt;Role, number&gt; = {
+  admin: 4, manager: 3, staff: 2, viewer: 1,
+};
+
+export function hasMinRole(userRole: Role | null, minRole: Role): boolean {
+  if (!userRole) return false;
+  return ROLE_HIERARCHY[userRole] &gt;= ROLE_HIERARCHY[minRole];
+}</code></pre>
+    <p class="src">kalenex/src/lib/rbac.ts:1-13（ほか firestore.rules・src/lib/files/authorize-file-read.ts）</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-opus-4-8[1m] セッションターン数：11 -->
+<article class="entry" id="term-frontend" data-term="フロントエンド" data-yomi="ふろんとえんど" data-aliases="front-end フロント クライアントサイド" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">フロントエンド</h2>
+    <p class="fullform">front-end</p>
+    <p class="yomi">ふろんとえんど／フロント</p>
+  </header>
+  <p class="meta"><span class="tag">Web開発</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>ユーザーが直接見て触る「画面側」を作る領域。ブラウザに表示される見た目・ボタン・入力フォームなどで、<a class="term-ref" href="#term-html">HTML</a> / <a class="term-ref" href="#term-css">CSS</a> / <a class="term-ref" href="#term-javascript">JavaScript</a> や <a class="term-ref" href="#term-react">React</a> などで作る。</p>
+    <p>対になるのが「バックエンド（サーバ側）」＝裏でデータを保存したり計算したりする部分。フロントは見えるぶん分かりやすいが、見た目で隠しただけでは守りにならない（本当のチェックはサーバ側で要る）点に注意。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>テナント認可の設計で「フロント（画面側の <code>TemplateSelector</code>）で出し分けしていただけ＝他テナントのデータも実は見えていた」穴を指摘し、DB / API 側で塞ぐと決めた。フロントだけの制御はセキュリティにならない実例。</p>
+    <p class="src">出典 knit/documents/design/cms/23-tenant-auth-scope.md:206（全カタカナ「フロントエンド」の例は craftica / paypay_dashboard に別途あり）</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-opus-4-8[1m] セッションターン数：11 -->
+<article class="entry" id="term-deploy" data-term="デプロイ" data-yomi="でぷろい" data-aliases="deploy 配備 本番反映" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">デプロイ</h2>
+    <p class="fullform">deploy</p>
+    <p class="yomi">でぷろい</p>
+  </header>
+  <p class="meta"><span class="tag">インフラ</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>書いたコードを、実際に動くサーバ（本番環境）へ配置して、お客さんが使える状態にすること。ひとことで言えば「世に出す」。</p>
+    <p>knit では <a class="term-ref" href="#term-main">main</a> ブランチに<a class="term-ref" href="#term-merge">マージ</a>すると <a class="term-ref" href="#term-vercel">Vercel</a> が自動でデプロイするので、手作業は基本いらない。「デプロイ済み＝もう本番に反映されている」の意味で使う。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>作業記録で「全て main マージ済 → Vercel 自動デプロイ。残: デプロイ後に実機再確認」と、マージ＝自動デプロイの流れを前提に書いている。</p>
+    <p class="src">出典 knit/documents/WORKLOG_ARCHIVE_20260622.md:109</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-opus-4-8[1m] セッションターン数：11 -->
+<article class="entry" id="term-firebase" data-term="Firebase" data-yomi="ふぁいあべーす" data-aliases="Google Firebase Firebase-Auth Firestore" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">Firebase</h2>
+    <p class="yomi">ふぁいあべーす</p>
+  </header>
+  <p class="meta"><span class="tag">インフラ</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>Google が提供するアプリ開発プラットフォーム。ログイン認証（Firebase Auth）、データベース（Firestore）、ファイル保管などを、自前でサーバを立てずにまとめて借りられる。</p>
+    <p>必要な部品だけ選んで使えるのが利点。knit は「ログイン」だけ Firebase を使い、データ本体は別（Neon という DB）に置く、という組み合わせ方をしている。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>認証方式の設計判断として「Firebase Auth（Google Sign-In）＋ allowlist（許可リスト）」を採用。メールアドレスを許可リストに足すだけで人を増やせる運用にしている。</p>
+    <p class="src">出典 knit/documents/DESIGN_DECISIONS.md:18</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-opus-4-8[1m] セッションターン数：11 -->
+<article class="entry" id="term-vercel" data-term="Vercel" data-yomi="ばーせる" data-aliases="Vercel ホスティング" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">Vercel</h2>
+    <p class="yomi">ばーせる（ヴァーセル）</p>
+  </header>
+  <p class="meta"><span class="tag">インフラ</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>Web サイト（特に <a class="term-ref" href="#term-nextjs">Next.js</a> 製）を置いて公開するためのホスティング基盤。GitHub とつながっていて、<a class="term-ref" href="#term-main">main</a> に <a class="term-ref" href="#term-push">push</a> すると自動でビルド＆<a class="term-ref" href="#term-deploy">デプロイ</a>される。</p>
+    <p><a class="term-ref" href="#term-pr">PR</a> を出すたびに「確認用の<a class="term-ref" href="#term-preview">プレビュー</a>環境」も自動で立つので、本番に出す前に実物を見られる。knit の本番も Vercel で動いている。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>開発運用として「PR ごとに Vercel auto preview ＋ Neon preview branch（Free 枠は 10 個上限、PR マージ後すぐ削除）」と定めている。</p>
+    <p class="src">出典 knit/documents/design/main.md:244</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-opus-4-8[1m] セッションターン数：11 -->
+<article class="entry" id="term-merge" data-term="merge" data-yomi="まーじ" data-aliases="マージ 統合" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">merge</h2>
+    <p class="fullform">マージ</p>
+    <p class="yomi">まーじ</p>
+  </header>
+  <p class="meta"><span class="tag">Git</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>Git で、枝分かれさせた作業（<a class="term-ref" href="#term-branch">ブランチ</a>）の変更を、別のブランチ（ふつうは <a class="term-ref" href="#term-main">main</a>）に合流させること。</p>
+    <p>knit では <a class="term-ref" href="#term-pr">PR</a> がレビューを通ったら main に merge して、変更を本流に取り込む。merge した瞬間に自動<a class="term-ref" href="#term-deploy">デプロイ</a>のスイッチが入る。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>PR フローの定義に「/コミット で PR → review → squash merge → auto deploy」とあり、レビュー後に merge して自動デプロイへ進む流れを規定している。</p>
+    <p class="src">出典 knit/documents/design/main.md:245</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-opus-4-8[1m] セッションターン数：11 -->
+<article class="entry" id="term-commit" data-term="commit" data-yomi="こみっと" data-aliases="コミット" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">commit</h2>
+    <p class="fullform">コミット</p>
+    <p class="yomi">こみっと</p>
+  </header>
+  <p class="meta"><span class="tag">Git</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>Git で、変更に「ここまでの区切り」として記録を作る操作。1コミット＝1つの意味あるまとまり。</p>
+    <p>短いメッセージを添えて記録するので、後から「いつ・何を・なぜ」変えたかを履歴でたどれる。まとめすぎず、意味ごとに分けるのがコツ。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>持込サイト2件を <code>git init</code> → 初期コミット → GitHub の private リポへ <a class="term-ref" href="#term-push">push</a> した、と作業記録に残している（コミット＝履歴の最初の1点を作る操作）。</p>
+    <p class="src">出典 knit/documents/WORKLOG_ARCHIVE_20260614.md:403</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-opus-4-8[1m] セッションターン数：11 -->
+<article class="entry" id="term-pull" data-term="pull" data-yomi="ぷる" data-aliases="プル 取得" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">pull</h2>
+    <p class="fullform">プル</p>
+    <p class="yomi">ぷる</p>
+  </header>
+  <p class="meta"><span class="tag">Git</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>大きく2つの意味で使う。①Git ではリモート（GitHub）の最新の変更を手元に取り込む操作（<code>git pull</code>）。②一般には「引っぱってくる＝取得する」方向を指す。</p>
+    <p>対になるのは <a class="term-ref" href="#term-push">push</a>（送り出す）。「どちらが取りにいく側か」を意識すると読み解きやすい。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>カレンダー即時反映のしくみを「WP が knit を pull するライブ埋め込み」と説明。WP 側が knit のデータを取りにくる方向（push とは逆向き）を pull と呼んでいる。</p>
+    <p class="src">出典 knit/documents/BACKLOG.md:52</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-opus-4-8[1m] セッションターン数：11 -->
+<article class="entry" id="term-push" data-term="push" data-yomi="ぷっしゅ" data-aliases="プッシュ 送信" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">push</h2>
+    <p class="fullform">プッシュ</p>
+    <p class="yomi">ぷっしゅ</p>
+  </header>
+  <p class="meta"><span class="tag">Git</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>大きく2つの意味。①Git では手元のコミットをリモート（GitHub）へ送り出す操作（<code>git push</code>）。②一般には「押し出す＝送る」方向。</p>
+    <p>push が <a class="term-ref" href="#term-pr">PR</a> づくりや自動<a class="term-ref" href="#term-deploy">デプロイ</a>のきっかけになることが多い。取りにいく <a class="term-ref" href="#term-pull">pull</a> の逆向き。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>初期コミットのあと private GitHub リポへ push した記録（＝手元の履歴を GitHub 側へ送り出す操作）。</p>
+    <p class="src">出典 knit/documents/WORKLOG_ARCHIVE_20260614.md:403</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-opus-4-8[1m] セッションターン数：11 -->
+<article class="entry" id="term-issue" data-term="issue" data-yomi="いっしゅー" data-aliases="イシュー 課題" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">issue</h2>
+    <p class="fullform">イシュー（課題）</p>
+    <p class="yomi">いっしゅー</p>
+  </header>
+  <p class="meta"><span class="tag">開発フロー</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>GitHub などで、バグ報告・要望・やることを1件ずつ登録して管理する「課題票」。番号が付き、対応した <a class="term-ref" href="#term-pr">PR</a> と紐づけられる。</p>
+    <p>「issue を立てる＝直すこと／やることを記録する」。※コードレビューで出る「No issues」は文脈が別で、「（バグなどの）問題なし」の意味。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>デプロイ後に出た不具合を「issue1 / 2 / 3」として直しマージ済、と git 実態を記録している。</p>
+    <p class="src">出典 knit/documents/design/main.md:14</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-opus-4-8[1m] セッションターン数：11 -->
+<article class="entry" id="term-pr" data-term="PR" data-yomi="ぴーあーる" data-aliases="Pull Request プルリク プルリクエスト" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">PR</h2>
+    <p class="fullform">Pull Request</p>
+    <p class="yomi">ピーアール／プルリクエスト</p>
+  </header>
+  <p class="meta"><span class="tag">開発フロー</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>「この変更を <a class="term-ref" href="#term-main">main</a> に取り込んでください」とレビューを依頼する仕組み（プルリクエスト）。<a class="term-ref" href="#term-branch">ブランチ</a>の差分・説明・レビューコメントが1つの画面に集まり、承認されたら <a class="term-ref" href="#term-merge">merge</a> する。</p>
+    <p>GitHub 開発の中心。「PR を出す＝レビューに回す」。knit は <code>/コミット</code> で PR → review → merge → 自動<a class="term-ref" href="#term-deploy">デプロイ</a>の一連を回している。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>作業記録に実際の PR を URL 付きで参照（例: レビュー中の open な PR #10）。番号でやりとりを追える。</p>
+    <p class="src">出典 knit/documents/WORKLOG_ARCHIVE_20260614.md:271</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-opus-4-8[1m] セッションターン数：11 -->
+<article class="entry" id="term-playwright" data-term="Playwright" data-yomi="ぷれいらいと" data-aliases="Playwright E2E ブラウザ自動テスト" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">Playwright</h2>
+    <p class="yomi">ぷれいらいと</p>
+  </header>
+  <p class="meta"><span class="tag">テスト</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>ブラウザ（Chrome など）をプログラムで自動操作して、本物の画面でテストするツール。人の代わりにページを開き・クリックし・表示を確認する。</p>
+    <p><a class="term-ref" href="#term-api">API</a> だけのテストと違い「実際のブラウザで起きること」（<a class="term-ref" href="#term-javascript">JavaScript</a> 実行後の画面など）を検証できるのが強み。knit では公開ページや編集画面の動作確認に使う。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>プレビュー UX の dev E2E テストで Playwright（chromium）を起動し、未認証でアクセスできる経路を実 URL で踏んで画面（DOM）を検証している。</p>
+    <pre><code>import { chromium } from "…/playwright/index.mjs";
+// 未認証経路を実ブラウザで踏み、hydration 後の DOM を検証
+const browser = await chromium.launch();</code></pre>
+    <p class="src">出典 knit/tests/e2e/knit-preview-002.browser.spec.mjs:2（import 22 行 / chromium.launch 57 行）</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：15 -->
+<article class="entry" id="term-cf" data-term="CF" data-yomi="しーえふ" data-aliases="Cloud Functions クラウドファンクションズ サーバーレス関数" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">CF</h2>
+    <p class="fullform">Cloud Functions</p>
+    <p class="yomi">しーえふ／クラウドファンクションズ</p>
+  </header>
+  <p class="meta"><span class="tag">インフラ</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>Firebase / Google Cloud のサーバーレス関数。サーバーを常時立てておかず、「イベント（DB への書き込みなど）が起きたときだけ」自動で実行される小さなプログラム。会話やドキュメントでは Cloud Functions の略として「CF」と書く。</p>
+    <p>Kalenex では Firestore の書き込みをトリガに、通知の送信やデータの同期を CF が裏で行っている。壊すと全機能に波及するため、<a class="term-ref" href="#term-deploy">デプロイ</a>は承認制。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>ノード（ページ）が書き込まれるたびに発火し、アクセス権情報（nodeAccess）を自動で再計算する CF。人が手で直さなくても、プロジェクトのメンバー変更が配下のページやファイルに追従する。</p>
+    <pre><code>export const syncNodeAccessOnNodeWrite = onDocumentWritten(
+  { document: 'workspaces/{wsId}/nodes/{nodeId}', region: 'asia-northeast1' },
+  async (event) =&gt; { /* nodes 書込のたびに nodeAccess を再計算 */ },
+);</code></pre>
+    <p class="src">出典 kalenex/functions/src/node-access-cf.ts:159</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：15 -->
+<article class="entry" id="term-backfill" data-term="backfill" data-yomi="ばっくふぃる" data-aliases="バックフィル 一括埋め戻し" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">backfill</h2>
+    <p class="fullform">バックフィル（埋め戻し）</p>
+    <p class="yomi">ばっくふぃる</p>
+  </header>
+  <p class="meta"><span class="tag">データベース</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>新しいフィールドや仕組みを導入したとき、<strong>既存のデータ</strong>にも同じ値を一括で書き込んで「追いつかせる」作業。新規データはコードが自動で正しく作るが、過去のデータは自分で埋めない限り古いまま──この差を埋めるのが backfill。</p>
+    <p>本番データを書き換えるので事故ると重い。だから「<a class="term-ref" href="#term-dry-run">dry-run</a>（お試し）→ 件数を確認して承認 → <a class="term-ref" href="#term-apply">apply</a>（本書き込み）→ backup を残す」という段取りで行うのが鉄則。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>ファイルの「場所ベース <a class="term-ref" href="#term-acl">ACL</a>」を導入した日、既存の共有ファイルにはアクセス権情報（nodeAccess）が無かったため、backfill スクリプトで本番の対象ファイル（20＋28件）へ一括付与した。スクリプト冒頭に目的と実行方法を書き残すのが流儀。</p>
+    <pre><code>// 場所ベース ACL backfill（file-node-location-acl-20260702.md §1-g）。
+// 冪等。private/暗号/confidential/ゴミ箱は skip。
+// dry-run 既定・--apply で書込・--backup で旧値 JSON。
+// 本番: node scripts/backfill-file-node-acl.cjs [--apply] [--backup]</code></pre>
+    <p class="src">出典 kalenex/scripts/backfill-file-node-acl.cjs:1-9</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：15 -->
+<article class="entry" id="term-authorize" data-term="authorize" data-yomi="おーそらいず" data-aliases="authrize authorization 認可 オーソライズ" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">authorize</h2>
+    <p class="fullform">オーソライズ（認可する）</p>
+    <p class="yomi">おーそらいず</p>
+  </header>
+  <p class="meta"><span class="tag">認証・権限</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>「この操作をしてよいか？」を判定すること＝<strong>認可</strong>。よく似た authenticate（認証）とは別物で、認証＝「あなたは誰？」の本人確認、認可＝「あなたにその権限はある？」の権限確認。順番も必ず 認証 → 認可。</p>
+    <p>ログインさえ通れば何でもできる作りは認可の欠落。<a class="term-ref" href="#term-api">API</a> では毎回「この uid はこの資源に触れてよいか」を authorize する。（つづりは autho<strong>r</strong>ize。authrize と書き間違えやすいので注意）</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>ファイルをダウンロードさせる前に、そのユーザーがそのファイルを読んでよいかをファイル1件ごとに判定する共通関数 <code>authorizeFileRead</code>。ダウンロード本体・変換 API など複数の入口がこの1つを共用し、判定のズレ（＝穴）を防いでいる。</p>
+    <pre><code>export async function authorizeFileRead(
+  uid: string,
+  data: FirebaseFirestore.DocumentData,
+): Promise&lt;FileReadAuth&gt; {</code></pre>
+    <p class="src">出典 kalenex/src/lib/files/authorize-file-read.ts:23</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：15 -->
+<article class="entry" id="term-fallthrough" data-term="fallthrough" data-yomi="ふぉーるするー" data-aliases="fall-through フォールスルー 落ち先" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">fallthrough</h2>
+    <p class="fullform">フォールスルー（分岐の落ち先）</p>
+    <p class="yomi">ふぉーるするー</p>
+  </header>
+  <p class="meta"><span class="tag">セキュリティ</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>if や switch の分岐で、どの条件にも当てはまらず「下まで落ちてくる」こと。またその先で実行される既定の処理（落ち先）。</p>
+    <p>セキュリティでは fallthrough の既定が「許可」だと致命的：分岐を1つ書き漏らした瞬間、その漏れがそのまま公開になる（fail-open）。だから権限判定の落ち先は「拒否（fail-closed）」にするのが原則。「この関数の fallthrough はどっちに倒れる？」と常に疑うこと。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>ファイル DL <a class="term-ref" href="#term-authorize">認可</a>で、どの contextType にも当てはまらないファイルの fallthrough が「チーム ID が無ければ通す」になっており、プライベートページの添付が同テナント全員に DL できてしまう穴だった。修正時のコメントにそのまま残している。</p>
+    <pre><code>// ＋contextIsPrivate（private doc の非暗号コメント添付等）は owner/uploader のみ
+//（旧 fallthrough は teamId 無し→sameTeam=true で同テナント DL 可だった）。</code></pre>
+    <p class="src">出典 kalenex/src/lib/files/authorize-file-read.ts:59</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：15 -->
+<article class="entry" id="term-acl" data-term="ACL" data-yomi="えーしーえる" data-aliases="Access Control List アクセス制御リスト" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">ACL</h2>
+    <p class="fullform">Access Control List</p>
+    <p class="yomi">えーしーえる／アクセス制御リスト</p>
+  </header>
+  <p class="meta"><span class="tag">認証・権限</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>「この資源を誰が読める／書けるか」を資源側に持たせた一覧（リスト）。役割から判定する <a class="term-ref" href="#term-rbac">RBAC</a>（→別項）に対して、ACL は「このファイルは A さんと B さんが読める」と資源ごとに名指しで持つ考え方。実際のシステムでは両方を組み合わせる。</p>
+    <p>Kalenex では「<strong>場所ベース ACL</strong>」＝ファイルは置かれた場所（プロジェクト／タスク／チーム）のメンバーリストを継承する、という原則で統一している。誰が見えるかは「どこに置いたか」で決まる。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>ファイルアップロード時に、保存先ノードのアクセス権（nodeAccess＝そこを読めるメンバーの一覧）をファイル自身へ写す実装。ファイルの ACL が「場所」から導出される。</p>
+    <pre><code>// 場所ベース ACL（file-node-location-acl-20260702.md §1-a）:
+// ファイルノードへのアップロードで、保存先ノードの nodeAccess
+//（最寄り PJ/タスク境界から導出・CF が live 同期）を file doc に写す。</code></pre>
+    <p class="src">出典 kalenex/src/lib/files/access-node.ts:34（設計 kalenex/documents/design/file-node-location-acl-20260702.md）</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：15 -->
+<article class="entry" id="term-json" data-term="JSON" data-yomi="じぇいそん" data-aliases="JavaScript Object Notation ジェイソン" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">JSON</h2>
+    <p class="fullform">JavaScript Object Notation</p>
+    <p class="yomi">じぇいそん</p>
+  </header>
+  <p class="meta"><span class="tag">Web開発</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>データを「キーと値」の入れ子で書き表すテキスト形式。人が読めてプログラムでも簡単に解析できるため、<a class="term-ref" href="#term-api">API</a> のやり取り・設定ファイル・バックアップなど、あらゆる場面の共通語になっている。</p>
+    <p>決まりごと：文字列は必ずダブルクォート、末尾カンマ禁止、コメント不可。<a class="term-ref" href="#term-javascript">JavaScript</a> では <code>JSON.stringify()</code>（データ→文字列）と <code>JSON.parse()</code>（文字列→データ）で相互変換する。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>本番データを書き換える <a class="term-ref" href="#term-backfill">backfill</a> の直前に、書き換え前の旧値を JSON ファイルとして保存（＝いつでも巻き戻せる保険）。<code>null, 2</code> は「2スペース字下げで人が読みやすい形に整形して」の指定。</p>
+    <pre><code>fs.writeFileSync(path, JSON.stringify(backup, null, 2));</code></pre>
+    <p class="src">出典 kalenex/scripts/backfill-file-node-acl.cjs:117</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：15 -->
+<article class="entry" id="term-backlog" data-term="BACKLOG" data-yomi="ばっくろぐ" data-aliases="backlog バックログ 残タスク" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">BACKLOG</h2>
+    <p class="fullform">バックログ（残タスク台帳）</p>
+    <p class="yomi">ばっくろぐ</p>
+  </header>
+  <p class="meta"><span class="tag">開発フロー</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>「やること・やりたいことの積み残しリスト」。まだ着手していないタスク・提案・気づきを1か所に集め、優先度を付けて管理する台帳。スクラム開発の「プロダクトバックログ」が語源。</p>
+    <p>頭の中やチャットに散らばせず台帳に書く──これだけで「言ったのに忘れられた」が消える。完了したら Done にして消さずに残す（履歴が次の判断材料になる）。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>リポジトリ直下の <code>documents/BACKLOG.md</code> を残タスクの「<a class="term-ref" href="#term-source">一次ソース</a>」と定め、ステータス（Todo / In Progress / Done）と優先度（High / Medium / Low）で運用している。</p>
+    <pre><code>&gt; 残タスク・未着手提案の **一次ソース（ローカル）**。`/思い出して` で読み込む。
+&gt; ステータス: `Todo` / `In Progress` / `Done`。優先度: `High` / `Medium` / `Low`。</code></pre>
+    <p class="src">出典 kalenex/documents/BACKLOG.md:3-5</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：15 -->
+<article class="entry" id="term-intact" data-term="intact" data-yomi="いんたくと" data-aliases="インタクト 無傷 そのまま" data-pj="Craftica">
+  <header class="entry-head">
+    <h2 class="headword">intact</h2>
+    <p class="fullform">インタクト（無傷のまま）</p>
+    <p class="yomi">いんたくと</p>
+  </header>
+  <p class="meta"><span class="tag">現場の英語</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>「無傷で・手つかずのまま残っている」という英語。開発の報告やレビューで「〜は intact（＝変更していない／壊れていない）」の形で頻出する。</p>
+    <p>使いどころは2つ。①修正の影響範囲の説明──「A を直したが B は intact」＝B には触れていない、という安心材料。②検証の報告──「<a class="term-ref" href="#term-backfill">backfill</a> 後もデータは intact」＝壊れていないことを確認した、の意。</p>
+  </div>
+  <div class="example" data-pj="Craftica">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Craftica</span><span class="date">2026-07-02</span></p>
+    <p>会員向け画面から威圧的な文言（「差し戻し」等の警告調）を取り除く修正の記録で、「運営側（admin/manager）の語彙と Typolish 側の文言は intact のまま」＝会員に見える面だけ直し、運営の業務用語には触れていない、と影響範囲を明示している。</p>
+    <pre><code>This work removes the intimidating framing from member-facing surfaces
+while leaving the operational (admin/manager) vocabulary
+and Typolish-side wording intact.</code></pre>
+    <p class="src">出典 craftica/documents/WORKLOG_ARCHIVE_20260517.md:540</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：15 -->
+<article class="entry" id="term-rollback" data-term="rollback" data-yomi="ろーるばっく" data-aliases="ロールバック 巻き戻し 切り戻し" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">rollback</h2>
+    <p class="fullform">ロールバック（巻き戻し）</p>
+    <p class="yomi">ろーるばっく</p>
+  </header>
+  <p class="meta"><span class="tag">インフラ</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>問題が起きたとき、直前の正常な状態（前のバージョンのアプリ・変更前のデータ）へ巻き戻すこと。<a class="term-ref" href="#term-deploy">デプロイ</a>やデータ変更とセットで語られる。</p>
+    <p>鉄則は「<strong>変更する前に、戻し方を決めておく</strong>」。rollback 手順が書けない変更は不可逆＝承認や検証を一段重くする。バックアップ・旧リビジョンの温存・git revert は、ぜんぶ rollback の備え。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>Cloud Run（変換サービス）のデプロイ記録に、旧リビジョンへ即時 100% 戻す具体コマンドを「ロールバック手順」として残している。手順が1行で書ける＝安全に変更できた証拠。</p>
+    <pre><code>gcloud run services update-traffic kalenex-convert \
+  --region=asia-east1 --project=kalenex-app \
+  --to-revisions=kalenex-convert-00012-qj9=100</code></pre>
+    <p class="src">出典 kalenex/documents/BACKLOG.md:109</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：15 -->
+<article class="entry" id="term-candidate" data-term="candidate" data-yomi="きゃんでぃでーと" data-aliases="candidates キャンディデート 候補" data-pj="Craftica">
+  <header class="entry-head">
+    <h2 class="headword">candidate</h2>
+    <p class="fullform">キャンディデート（候補）</p>
+    <p class="yomi">きゃんでぃでーと</p>
+  </header>
+  <p class="meta"><span class="tag">現場の英語</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>「候補」。複数の選択肢の中から選ぶ前の、一つひとつを指す英語。コードでは <code>candidates</code>（複数形）に候補を集めて、並べ替えて絞り込むのが定番パターン。</p>
+    <p>インフラでもよく出る：<a class="term-ref" href="#term-vercel">Vercel</a> の「<a class="term-ref" href="#term-rollback">rollback</a> candidate」＝障害時に巻き戻す先の候補デプロイ、リリース前の「release candidate（RC）」＝リリース候補版、など。「まだ確定ではない」ニュアンスが核。</p>
+  </div>
+  <div class="example" data-pj="Craftica">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Craftica</span><span class="date">2026-07-02</span></p>
+    <p>複数ヒットした文書から「どれを採用するか」を決める処理。候補を candidates に集め、優先順位で並べ替えて先頭を採用している。</p>
+    <pre><code>const candidates = snap.docs.map(...);   // 候補を集める
+if (candidates.length === 0) return null;
+candidates.sort(...);                    // 優先順位で並べ替え
+return candidates[0];                    // 先頭の候補を採用</code></pre>
+    <p class="src">出典 craftica/src/lib/publications/mutations.ts:135-145</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：15 -->
+<article class="entry" id="term-emulator" data-term="emulator" data-yomi="えみゅれーたー" data-aliases="エミュレータ Firebase Emulator 模擬環境" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">emulator</h2>
+    <p class="fullform">エミュレータ（模擬環境）</p>
+    <p class="yomi">えみゅれーたー</p>
+  </header>
+  <p class="meta"><span class="tag">テスト</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>本物そっくりに動く「模擬環境」。<a class="term-ref" href="#term-firebase">Firebase</a> Emulator は Firestore（DB）や認証を手元の PC 上で再現し、<strong>本番データに一切触れずに</strong>動作やセキュリティルールを試せる。</p>
+    <p>特にセキュリティルールの検証はエミュレータの独壇場：本番では怖くてできない「他人のアカウントで読めてしまわないか？」を、偽のユーザーと偽のデータで能動的に確かめられる（rules-unit テスト）。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>ファイル ACL のルール検証テスト。冒頭に「emulator 起動下で実行」と明記し、偽ユーザー（member／非メンバー／他チーム／admin）で「読める・読めない」の境界を 20 ケース検証している。</p>
+    <pre><code>// 実行: emulator 起動下で  node scripts/file-node-acl-rules.test.mjs</code></pre>
+    <p class="src">出典 kalenex/scripts/file-node-acl-rules.test.mjs:5</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：15 -->
+<article class="entry" id="term-apply" data-term="apply" data-yomi="あぷらい" data-aliases="--apply アプライ 適用" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">apply</h2>
+    <p class="fullform">アプライ（適用する）</p>
+    <p class="yomi">あぷらい</p>
+  </header>
+  <p class="meta"><span class="tag">データベース</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>「適用する」＝準備した変更を実際に反映すること。<a class="term-ref" href="#term-dry-run">dry-run</a>（→別項）と対になる言葉で、「dry-run で確認 → apply で本実行」という二段構えの後半を指す。</p>
+    <p>Kalenex の <a class="term-ref" href="#term-backfill">backfill</a> スクリプトは安全のため<strong>既定では何も書き込まない</strong>設計にしており、<code>--apply</code> フラグを付けたときだけ本番へ書き込む。報告の「apply 済み」＝本番に反映済み、の意味。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>コマンド引数に <code>--apply</code> が付いているかで「本実行かお試しか」を切り替える1行。この1行があるだけで、うっかり実行しても本番は無傷で済む。</p>
+    <pre><code>const APPLY = process.argv.includes('--apply');</code></pre>
+    <p class="src">出典 kalenex/scripts/backfill-file-node-acl.cjs:11</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：15 -->
+<article class="entry" id="term-dry-run" data-term="dry-run" data-yomi="どらいらん" data-aliases="dryrun ドライラン お試し実行 予行演習" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">dry-run</h2>
+    <p class="fullform">ドライラン（お試し実行）</p>
+    <p class="yomi">どらいらん</p>
+  </header>
+  <p class="meta"><span class="tag">データベース</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>実際には何も変更せず、「実行したら何が起きるか」だけを表示するお試し実行。消防の放水なし訓練（dry run）が語源とされる。</p>
+    <p>破壊的な操作（本番データの一括書き換え・大量削除など）は、まず dry-run で対象と件数を確認し、想定どおりなら <a class="term-ref" href="#term-apply">apply</a>（本実行）へ進む。<strong>事故を「実行の前」で止める</strong>ための仕組み。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p><a class="term-ref" href="#term-backfill">backfill</a> スクリプトの運用ルールをヘッダに明記：「dry-run 既定・--apply で書込・--backup で旧値 JSON」。実運用でも dry-run で件数確認 → ボス承認 → apply → 再 dry-run で 0 件（冪等確認）の順で回した。</p>
+    <pre><code>// 冪等（nodeAccess 同値＋teamId 整合は skip）。private/暗号/confidential/ゴミ箱は skip。
+// dry-run 既定・--apply で書込・--backup で旧値 JSON。</code></pre>
+    <p class="src">出典 kalenex/scripts/backfill-file-node-acl.cjs:8-9</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：15 -->
+<article class="entry" id="term-tsc" data-term="tsc" data-yomi="てぃーえすしー" data-aliases="TypeScript Compiler 型チェック noEmit" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">tsc</h2>
+    <p class="fullform">TypeScript Compiler</p>
+    <p class="yomi">てぃーえすしー</p>
+  </header>
+  <p class="meta"><span class="tag">テスト</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p><a class="term-ref" href="#term-typescript">TypeScript</a> のコンパイラコマンド。<code>tsc --noEmit</code> と打つと、ファイルを出力せずに<strong>型チェックだけ</strong>を行い、「この変数に入らない型を渡している」といった矛盾＝バグの芽を実行前に洗い出してくれる。</p>
+    <p>報告で使う「tsc 0」「tsc 緑」は「型エラー 0 件で通った」の意味。<a class="term-ref" href="#term-push">push</a> 前に tsc を通すのは必須の作法（ビルドは通っても型が壊れていることがあるため）。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>セキュリティ監査の「修正後の検証手順」に、テストと並べて型チェックを明記。直した後は必ずこれを流す、という決まりごとになっている。</p>
+    <pre><code># 型チェック
+npx tsc --noEmit</code></pre>
+    <p class="src">出典 kalenex/documents/HANDOFF_security_audit_recurring_leaks_20260702.md:165-166</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：15 -->
+<article class="entry" id="term-eslint" data-term="eslint" data-yomi="いーえすりんと" data-aliases="ESLint リンター lint 静的解析" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">eslint</h2>
+    <p class="fullform">ESLint（リンター）</p>
+    <p class="yomi">いーえすりんと</p>
+  </header>
+  <p class="meta"><span class="tag">テスト</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p><a class="term-ref" href="#term-javascript">JavaScript</a> / <a class="term-ref" href="#term-typescript">TypeScript</a> の「リンター」＝コードの<strong>書き方の問題</strong>（未使用の変数、危険なパターン、React のルール違反など）を自動で指摘するツール。糸くず（lint）を取る、が語源。</p>
+    <p><a class="term-ref" href="#term-tsc">tsc</a>（型チェック）が「型の矛盾」を見るのに対し、ESLint は「作法・お行儀」を見る。両方 0 にしてから <a class="term-ref" href="#term-push">push</a> するのが基本。指摘には error（直す）と warning（把握して計画的に返す）の2段階がある。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>React 19 世代の新ルールで既存コードがどれだけ指摘されるかを <code>npx eslint src</code> で実測し、313 件（error 45 / warning 268）を「lint 債務」として台帳に記録。放置せず、ルールごとに一括方針を決めて返す計画にしている。</p>
+    <pre><code>npx eslint src
+# → 計 313 problems（45 errors, 268 warnings）
+#    react-hooks/set-state-in-effect 135 / refs 25 / exhaustive-deps 44 …</code></pre>
+    <p class="src">出典 kalenex/documents/BACKLOG.md:67</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：16 -->
+<article class="entry" id="term-migration" data-term="マイグレーション" data-yomi="まいぐれーしょん" data-aliases="migration マイグレ 移行 データ移行" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">マイグレーション</h2>
+    <p class="fullform">migration（移行）</p>
+    <p class="yomi">まいぐれーしょん／マイグレ</p>
+  </header>
+  <p class="meta"><span class="tag">データベース</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>「移行」。データやシステムを<strong>古い形から新しい形へ移し替える</strong>こと。DB の構造（スキーマ）変更、ホスティングの引っ越し（例: Firebase App Hosting → <a class="term-ref" href="#term-vercel">Vercel</a>）、別システムからのデータ取り込みまで幅広く指す。しばしば一方通行なので、「切り替えの順序」と「戻し方（<a class="term-ref" href="#term-rollback">rollback</a>）」の計画が本体。</p>
+    <p><a class="term-ref" href="#term-backfill">backfill</a> との違い：backfill は「新しい仕組みを入れた<strong>後</strong>、既存データに欠けている値を埋めて追いつかせる」作業＝<strong>形は変えず、埋めるだけ</strong>（冪等＝何度でもやり直せる）。マイグレーションは「<strong>形そのもの・置き場所そのものを変える</strong>」＝多くは不可逆。backfill はマイグレーションの一工程として使われることも多い。迷ったら「埋めるだけ？（backfill）／作り替える・引っ越す？（マイグレーション）」で見分ける。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>Kalenex 最大級のマイグレーション＝タスクのデータモデル移行。旧 <code>tasks</code> コレクションから新しい <code>nodes</code>（すべてはページ）へデータの「置き場所と形」を移し、旧側は物理退役（＝不可逆）。ほかにホスティング移行（App Hosting → Vercel・2026-05-31 go-live）、旧システム TasNexa からの日報データ移行も実例。</p>
+    <pre><code>tasks → workspaces/{ws}/nodes/{id}（kind='task'）統合は完了。
+tasks/projects は物理退役・nodes=SoT 完走済</code></pre>
+    <p class="src">出典 kalenex/documents/BACKLOG.md:251（ほか documents/design/vercel-migration.md:3＝ホスティング移行、scripts/import-nippou.js:8＝TasNexa→Kalenex データ移行）</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：17 -->
+<article class="entry" id="term-eof" data-term="EOF" data-yomi="いーおーえふ" data-aliases="End Of File エンドオブファイル ヒアドキュメント終端 unexpected EOF" data-pj="Craftica">
+  <header class="entry-head">
+    <h2 class="headword">EOF</h2>
+    <p class="fullform">End Of File</p>
+    <p class="yomi">いーおーえふ／エンド・オブ・ファイル</p>
+  </header>
+  <p class="meta"><span class="tag">現場の英語</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>End Of File の略。「ファイル（や入力）はここで終わり」という印。プログラムはこの印を見て読み込みをやめる。画面に見える文字ではなく、「もう続きが無い」という<strong>状態</strong>を表す。</p>
+    <p>現場で出会うのは主に2場面。①エラーの「unexpected EOF」＝「閉じるのを待っていたのに入力が終わってしまった」──<strong>括弧・クォート・ブロックの閉じ忘れのサイン</strong>（コードは最後まで読まれたが、対になる閉じが見つからなかった）。②シェルのヒアドキュメント（<code>&lt;&lt;EOF 〜 EOF</code>）＝複数行テキストの終端マーカー。ここでの「EOF」はただの慣習的な目印で、別の単語でも動く。</p>
+  </div>
+  <div class="example" data-pj="Craftica">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Craftica</span><span class="date">2026-07-02</span></p>
+    <p>学習用エディタの「まちがいをレッスンに変える」機能が、学習者の Python エラーから <code>unexpected EOF while parsing</code>（＝閉じ忘れたまま末尾に到達）を正規表現で検出し、解説につなげている。「unexpected EOF＝閉じ忘れのサイン」をそのまま教材化した実例。</p>
+    <pre><code>regex: /SyntaxError:\s*(invalid syntax|unexpected EOF while parsing|EOL while scanning|invalid character)/,</code></pre>
+    <p class="src">出典 craftica/src/components/crafticaEditor/educator/mistakeToLesson.ts:44（設計 craftica/documents/design/craftica-editor-phase-10-mistake-to-lesson.md:88）</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：18 -->
+<article class="entry" id="term-bash" data-term="bash" data-yomi="ばっしゅ" data-aliases="Bash Bourne Again Shell シェル shell" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">bash</h2>
+    <p class="fullform">Bourne Again Shell</p>
+    <p class="yomi">ばっしゅ</p>
+  </header>
+  <p class="meta"><span class="tag">インフラ</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>Linux・Mac で標準的な「シェル」＝コマンドを打って OS を操作する対話環境であり、スクリプト言語でもある。名前は Bourne Again Shell の略（元祖 Bourne Shell「sh」の後継。born again〔生まれ変わり〕とのダジャレ）。</p>
+    <p>注意：Windows の標準は PowerShell で、bash とは<strong>文法も付属コマンドも別物</strong>（<code>printf</code> や <code>sha256sum</code>、ヒアドキュメント〔<a class="term-ref" href="#term-eof">EOF</a> 終端の複数行入力〕などは PowerShell に無い）。「ネットで拾った bash のコマンドを PowerShell に貼ったら動かない」は定番の事故なので、<strong>どちらのシェル向けのコマンドかを最初に確かめる</strong>こと。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>実際の事故記録：PowerShell の firebase ラッパーが <code>--only functions:A,B</code> の<strong>カンマ区切り引数を壊し</strong>デプロイできず、さらに bash 専用の <code>printf</code> をボスの PowerShell に案内して実行不能を連発。以後「firebase の複数指定デプロイと検証コマンドは bash で叩く／人に渡すコマンドは相手のシェルに合わせる」が全プロジェクト共通ルールになった。</p>
+    <pre><code>functions 5関数 再デプロイ（firebase deploy --only functions:…・Bash tool・
+カンマ引数は PowerShell 不可）
+教訓→グローバル化: … bash printf 連発で実行不能だった真因</code></pre>
+    <p class="src">出典 kalenex/documents/WORKLOG_ARCHIVE_20260615.md:16,21（ほか documents/BACKLOG.md:259「emu は Bash 起動」）</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：19 -->
+<article class="entry" id="term-typescript" data-term="TypeScript" data-yomi="たいぷすくりぷと" data-aliases="TS 型 typescript タイプスクリプト" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">TypeScript</h2>
+    <p class="yomi">たいぷすくりぷと／TS</p>
+  </header>
+  <p class="meta"><span class="tag">Web開発</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p><a class="term-ref" href="#term-javascript">JavaScript</a> に「<strong>型</strong>」を足したプログラミング言語（Microsoft 製）。変数や関数に「ここには文字列しか入らない」「この形のデータしか受け取らない」と宣言でき、間違った使い方を<strong>実行前に</strong>検出できる。書いたコードは最終的に JavaScript へ変換されて動くので、ブラウザでも Node.js でもそのまま使える。</p>
+    <p>型チェックの実行コマンドが <a class="term-ref" href="#term-tsc">tsc</a>。社内の PJ（Kalenex / knit / Craftica …）は基本すべて TypeScript で書かれている。「型を書く手間」は「バグを実行前に捕まえる保険」だと考えるとよい。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>「ユーザーはこういう形のデータ」という契約を interface で宣言した例。<code>?</code>＝無くてもよい（optional）、<code>| null</code>＝null も許す、の意味。この宣言があると、フィールド名の打ち間違いや型違いを tsc が実行前に教えてくれる。</p>
+    <pre><code>export interface UserForAccess {
+  role?: string;
+  teamId?: string | null;
+  teamIds?: string[] | null;
+  isActive?: boolean;
+}</code></pre>
+    <p class="src">出典 kalenex/src/lib/workspace/node-access.ts:123-128</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：19 -->
+<article class="entry" id="term-react" data-term="React" data-yomi="りあくと" data-aliases="React.js リアクト フック useState useEffect" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">React</h2>
+    <p class="yomi">りあくと</p>
+  </header>
+  <p class="meta"><span class="tag">フロントエンド</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>画面（UI）を「コンポーネント」という部品の組み合わせで作る <a class="term-ref" href="#term-javascript">JavaScript</a> ライブラリ（Meta 製）。データ（state）が変わると、<strong>変わった部分だけ</strong>画面を自動で描き直してくれるのが核。<a class="term-ref" href="#term-frontend">フロントエンド</a>開発の事実上の標準で、<a class="term-ref" href="#term-nextjs">Next.js</a> は React を土台にしたフレームワーク。</p>
+    <p>状態や副作用は useState / useEffect などの「フック（hook）」で扱う。「画面＝データの写像。データを変えれば画面が追従する」という考え方に頭を切り替えるのが入門の山。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>ファイル一覧を取得するフック。useState で「画面に出すデータ」を宣言し（setFiles で更新すると一覧が描き直る）、useEffect で DB 購読の開始・解除を管理している。</p>
+    <pre><code>import { useState, useEffect } from 'react';
+
+const [files, setFiles] = useState&lt;SharedFile[]&gt;([]);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState&lt;Error | null&gt;(null);</code></pre>
+    <p class="src">出典 kalenex/src/hooks/useContextFiles.ts:3,25-27</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：19 -->
+<article class="entry" id="term-vite" data-term="Vite" data-yomi="びーと" data-aliases="ヴィート vite ビルドツール 開発サーバー" data-pj="Hiraké">
+  <header class="entry-head">
+    <h2 class="headword">Vite</h2>
+    <p class="yomi">ヴィート（フランス語で「速い」）</p>
+  </header>
+  <p class="meta"><span class="tag">フロントエンド</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>フロントエンドの「開発サーバー＋ビルドツール」。保存した瞬間に画面へ反映される高速な開発体験（<a class="term-ref" href="#term-hmr">HMR</a>）が売りで、名前はフランス語の「速い」。<a class="term-ref" href="#term-react">React</a> や Vue のプロジェクトの土台としてよく使われる。</p>
+    <p><a class="term-ref" href="#term-nextjs">Next.js</a> のような「フレームワーク」ではなく、あくまで<strong>動かす・束ねる道具</strong>＝ページ遷移やサーバー処理の仕組みは持たない（必要なら別途選ぶ）。社内では Hiraké（デザイン部ポートフォリオ）が Vite + React 構成。</p>
+  </div>
+  <div class="example" data-pj="Hiraké">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Hiraké</span><span class="date">2026-07-02</span></p>
+    <p>Hiraké の実設定。プラグイン方式で React 対応と PWA（ホーム画面に入れられるアプリ化）を足している＝Vite 本体は薄く、必要な能力をプラグインで積む思想がそのまま見える。</p>
+    <pre><code>import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
+
+export default defineConfig({
+  plugins: [
+    react(),
+    VitePWA({ registerType: 'autoUpdate', ... }),</code></pre>
+    <p class="src">出典 hirake/vite.config.ts:1-9</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：20 -->
+<article class="entry" id="term-hmr" data-term="HMR" data-yomi="えいちえむあーる" data-aliases="Hot Module Replacement ホットリロード" data-pj="Craftica">
+  <header class="entry-head">
+    <h2 class="headword">HMR</h2>
+    <p class="fullform">Hot Module Replacement</p>
+    <p class="yomi">えいちえむあーる／ホットモジュールリプレースメント</p>
+  </header>
+  <p class="meta"><span class="tag">フロントエンド</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>開発中、コードを保存した瞬間に<strong>ページ全体を再読み込みせず</strong>、変わった部品（モジュール）だけを差し替えて画面へ反映する仕組み。入力途中のフォームや画面の状態を保ったまま修正結果を確認できるので、開発が速くなる。<a class="term-ref" href="#term-vite">Vite</a> や Next.js の開発サーバーに標準搭載。</p>
+    <p>落とし穴：モジュールが「差し替えのたびに再実行」されるため、接続やタイマーを張るコードは<strong>多重実行</strong>になりがち。開発中だけ二重登録される系のバグは HMR を疑う。</p>
+  </div>
+  <div class="example" data-pj="Craftica">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Craftica</span><span class="date">2026-07-02</span></p>
+    <p>まさにその落とし穴への対策コード。HMR でモジュールが再実行されてもエミュレータへ二重接続しないよう、window 上のフラグで「接続済み」を管理している。</p>
+    <pre><code>// 開発時はエミュレーターに接続（HMR重複接続防止のためwindow flagで管理）</code></pre>
+    <p class="src">出典 craftica/src/lib/firebase.ts:26</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：20 -->
+<article class="entry" id="term-pwa" data-term="PWA" data-yomi="ぴーだぶりゅーえー" data-aliases="Progressive Web App プログレッシブウェブアプリ" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">PWA</h2>
+    <p class="fullform">Progressive Web App</p>
+    <p class="yomi">ぴーだぶりゅーえー</p>
+  </header>
+  <p class="meta"><span class="tag">Web開発</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>Web サイトを「アプリのように」使えるようにする仕組みの総称。スマホのホーム画面に追加でき、プッシュ通知や（一部の）オフライン動作もできる。アプリストアの審査なしで配れるのが強み。</p>
+    <p>部品は主に3つ：manifest（アプリ名・アイコンの定義）、Service Worker（裏で動く常駐スクリプト＝通知やキャッシュの担い手）、HTTPS。「Web なのに通知が来る」のは Service Worker のおかげ。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>Kalenex は PWA 対応済み＝スマホのホーム画面から開け、<a class="term-ref" href="#term-firebase">Firebase</a>（FCM）経由のプッシュ通知を受け取れる。機能カタログに部品ごと記載されている。</p>
+    <pre><code>| PWA | FCM プッシュ通知・manifest・Service Worker |</code></pre>
+    <p class="src">出典 kalenex/documents/design/main.md:72（Hiraké も vite-plugin-pwa で PWA 化＝hirake/vite.config.ts:8）</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：20 -->
+<article class="entry" id="term-nextjs" data-term="Next.js" data-yomi="ねくすとじぇいえす" data-aliases="Next ネクスト nextjs" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">Next.js</h2>
+    <p class="yomi">ねくすとじぇいえす</p>
+  </header>
+  <p class="meta"><span class="tag">Web開発</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p><a class="term-ref" href="#term-react">React</a> を土台にした Web アプリの「フレームワーク」（<a class="term-ref" href="#term-vercel">Vercel</a> 社製）。画面（React）だけでなく、ページのルーティング・サーバー側処理（<a class="term-ref" href="#term-api">API</a>）・ビルドまで一式そろっていて、これ1つでフルスタックの Web アプリが作れる。</p>
+    <p>Kalenex / knit / Craftica など社内の主要 PJ はすべて Next.js 製。バージョンごとの変化が激しいので、「昔の Next.js の常識」で書かず、使っているバージョンのドキュメントを確かめる癖をつけること。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>リポジトリ直下の AGENTS.md（AI 向け注意書き）が、まさに「知っている Next.js だと思うな」と警告している。学習時点の知識とバージョン差があるのは人も AI も同じ、という実例。</p>
+    <pre><code># This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file
+structure may all differ from your training data.</code></pre>
+    <p class="src">出典 kalenex/AGENTS.md:1-3</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：20 -->
+<article class="entry" id="term-branch" data-term="ブランチ" data-yomi="ぶらんち" data-aliases="branch 枝 フィーチャーブランチ feature branch" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">ブランチ</h2>
+    <p class="fullform">branch（枝）</p>
+    <p class="yomi">ぶらんち</p>
+  </header>
+  <p class="meta"><span class="tag">Git</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>Git で、履歴を枝分かれさせて<strong>本流に影響を与えずに作業する</strong>ための仕組み。本流（ふつう <a class="term-ref" href="#term-main">main</a>）から枝を生やして機能追加や修正を進め、できあがったら <a class="term-ref" href="#term-pr">PR</a> を出して <a class="term-ref" href="#term-merge">merge</a> で本流へ合流させる。</p>
+    <p>「1つの作業＝1つのブランチ」が基本。名前は <code>fix/バグ内容-日付</code> のように「何をする枝か」が分かるように付ける。本流に直接コミットしない――これが共同開発の安全帯。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>作業台帳に「feature ブランチに push・PR 作成（未マージ）」と、本流に入る前の作業がどのブランチにあるかを記録している。ブランチ名だけで作業の所在が追える。</p>
+    <pre><code>⏳ feature ブランチに push・PR 作成（未マージ）</code></pre>
+    <p class="src">出典 kalenex/documents/BACKLOG.md:151</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：20 -->
+<article class="entry" id="term-main" data-term="main" data-yomi="めいん" data-aliases="mainブランチ メイン master 本流" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">main</h2>
+    <p class="fullform">main ブランチ（本流）</p>
+    <p class="yomi">めいん</p>
+  </header>
+  <p class="meta"><span class="tag">Git</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>Git リポジトリの<strong>本流ブランチ</strong>の標準名。「いま正とされるコード」が集まる場所で、各<a class="term-ref" href="#term-branch">ブランチ</a>の作業は <a class="term-ref" href="#term-merge">merge</a> を経てここへ合流する。（昔は master と呼ばれていた＝古い記事ではそちらの名前で出てくる）</p>
+    <p>社内 PJ では「main ＝ 本番」：main にマージされた瞬間、<a class="term-ref" href="#term-vercel">Vercel</a> が自動で本番へ<a class="term-ref" href="#term-deploy">デプロイ</a>する。だから main に入れる＝世に出す、の重みで扱うこと。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>作業記録の締めが「全て main マージ済 → Vercel 自動デプロイ」。main に入った＝本番反映、という運用がそのまま読み取れる。</p>
+    <pre><code>全て main マージ済 → Vercel 自動デプロイ。残: デプロイ後に実機再確認</code></pre>
+    <p class="src">出典 knit/documents/WORKLOG_ARCHIVE_20260622.md:109</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：20 -->
+<article class="entry" id="term-preview" data-term="preview" data-yomi="ぷれびゅー" data-aliases="プレビュー preview環境 プレビューデプロイ" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">preview</h2>
+    <p class="fullform">プレビュー（確認用環境）</p>
+    <p class="yomi">ぷれびゅー</p>
+  </header>
+  <p class="meta"><span class="tag">開発フロー</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>本番に出す前に、変更後の実物を確認するための<strong>仮の公開環境</strong>。<a class="term-ref" href="#term-vercel">Vercel</a> では <a class="term-ref" href="#term-pr">PR</a> を出すたびに専用 URL の preview 環境が自動で立ち、レビュアーはコードだけでなく「動く画面」で確認できる。</p>
+    <p>main へのマージ＝本番<a class="term-ref" href="#term-deploy">デプロイ</a>、PR＝preview デプロイ、という対応で覚える。preview はスクショではなく実際に触って確かめるのが流儀。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>開発運用の定義。PR ごとに Vercel の preview と、DB（Neon）側にも確認用の preview branch を立て、マージ後すぐ消す＝確認環境は使い捨て、と決めている。</p>
+    <pre><code>PR ごとに Vercel auto preview ＋ Neon preview branch
+（Free 枠は 10 個上限、PR マージ後すぐ削除）</code></pre>
+    <p class="src">出典 knit/documents/design/main.md:244</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：20 -->
+<article class="entry" id="term-html" data-term="HTML" data-yomi="えいちてぃーえむえる" data-aliases="HyperText Markup Language マークアップ" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">HTML</h2>
+    <p class="fullform">HyperText Markup Language</p>
+    <p class="yomi">えいちてぃーえむえる</p>
+  </header>
+  <p class="meta"><span class="tag">Web開発</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>Web ページの<strong>骨組み（構造と中身）</strong>を書く言語。「ここは見出し」「ここは段落」「これはボタン」とタグ（<code>&lt;h1&gt;</code> など）で意味づけする。見た目は <a class="term-ref" href="#term-css">CSS</a>、動きは <a class="term-ref" href="#term-javascript">JavaScript</a> が担当し、この3層で Web の画面ができている。</p>
+    <p>注意：HTML は「ユーザーが書いたもの」を扱う瞬間にセキュリティ問題になる（悪意あるタグ＝XSS）。他人の HTML をそのまま自分のページへ差し込んではいけない。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>まさに「他人の HTML を安全に描画する」ための共通部品。ユーザー HTML を親ページに直挿しせず、隔離された iframe（sandbox）の中でだけ描画する、と生命線をヘッダに明記している。</p>
+    <pre><code>// HTML / SVG / Markdown を「描画」するための共通サンドボックスフレーム。
+//   生命線（XSS / クロステナント）: ユーザー HTML を親 DOM に直挿しせず、
+//   必ず &lt;iframe srcDoc + sandbox&gt; を経由する。</code></pre>
+    <p class="src">出典 kalenex/src/components/common/HtmlSandboxFrame.tsx:2-6</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：20 -->
+<article class="entry" id="term-css" data-term="CSS" data-yomi="しーえすえす" data-aliases="Cascading Style Sheets スタイルシート" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">CSS</h2>
+    <p class="fullform">Cascading Style Sheets</p>
+    <p class="yomi">しーえすえす</p>
+  </header>
+  <p class="meta"><span class="tag">Web開発</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>Web ページの<strong>見た目（色・大きさ・配置・フォント）</strong>を書く言語。<a class="term-ref" href="#term-html">HTML</a> が骨組み、CSS が化粧・衣装。「Cascading（段々に重なる）」の名のとおり、複数の指定が優先順位のルールで重なり合って最終的な見た目が決まる。</p>
+    <p>便利機能に「CSS 変数（カスタムプロパティ）」がある：<code>--名前: 値</code> で一度定義し、あちこちから <code>var(--名前)</code> で参照する。1か所直せば全体に効く。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>アプリ全体のフォントを CSS 変数 <code>--font-sans</code> に集約した実例。設定画面の「フォント変更」はこの変数1つを差し替えるだけで、全画面のフォントが一斉に切り替わる。</p>
+    <pre><code>--font-sans: "Plus Jakarta Sans", "Noto Sans JP", ui-sans-serif, system-ui, sans-serif;</code></pre>
+    <p class="src">出典 kalenex/src/app/globals.css:30（参照側は :66 の font-family: var(--font-sans)）</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：20 -->
+<article class="entry" id="term-javascript" data-term="JavaScript" data-yomi="じゃばすくりぷと" data-aliases="JS ジャバスクリプト ECMAScript" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">JavaScript</h2>
+    <p class="yomi">じゃばすくりぷと／JS</p>
+  </header>
+  <p class="meta"><span class="tag">Web開発</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>Web ページに<strong>動き</strong>を付けるプログラミング言語で、ブラウザがそのまま実行できる唯一の言語。いまはブラウザの外でも Node.js で動き、サーバー処理・スクリプト・ツール類まで何でも書ける。<a class="term-ref" href="#term-json">JSON</a> の語源でもある（JavaScript Object Notation）。</p>
+    <p>名前は Java と似ているが<strong>別言語</strong>（歴史的な命名の事故）。社内では型を足した <a class="term-ref" href="#term-typescript">TypeScript</a> で書くのが基本で、素の JavaScript は運用スクリプト（.mjs / .cjs）などで使う。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>セキュリティルールの検証テストは素の JavaScript（.mjs＝ES modules）。型宣言なしで Node.js が直接実行できるので、変換の手間なくすぐ回せる。</p>
+    <pre><code>import { initializeTestEnvironment, assertSucceeds, assertFails } from '@firebase/rules-unit-testing';
+import { readFileSync } from 'node:fs';
+import { doc, setDoc, getDoc } from 'firebase/firestore';</code></pre>
+    <p class="src">出典 kalenex/scripts/board-reactions-rules.test.mjs:6-8</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：20 -->
+<article class="entry" id="term-magic-link" data-term="Magic Link" data-yomi="まじっくりんく" data-aliases="magic link マジックリンク メールリンク認証 パスワードレス" data-pj="meoscope">
+  <header class="entry-head">
+    <h2 class="headword">Magic Link</h2>
+    <p class="fullform">マジックリンク（メールリンク認証）</p>
+    <p class="yomi">まじっくりんく</p>
+  </header>
+  <p class="meta"><span class="tag">認証・権限</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>パスワードの代わりに、<strong>メールで届く1回限りのログイン用リンク</strong>をクリックして本人確認する認証方式（パスワードレス認証の一種）。パスワードを覚えさせない・漏らさない利点がある。</p>
+    <p>弱点は UX：ログインのたびにメールを開かせる往復が発生し、リンクの有効期限切れ・迷惑メール行きも起きる。「たまにしか使わないサービス」向きで、毎日使う業務アプリでは Google Sign-In などのワンタップ認証が勝ちやすい。</p>
+  </div>
+  <div class="example" data-pj="meoscope">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">meoscope</span><span class="date">2026-07-02</span></p>
+    <p>実際に Magic Link で作って<strong>捨てた</strong>設計判断の記録。初期実装は Resend（メール送信）ベースの magic link だったが、「7日で Cookie が切れるたびメール送信からやり直しは UX 最低」というボス指摘で <a class="term-ref" href="#term-firebase">Firebase</a> Auth + Google Sign-In に全切替した。方式選定は「どれくらいの頻度でログインし直すか」から考える、という教訓。</p>
+    <pre><code>## DD-011 認証は Firebase Auth + Google Sign-In（magic link 不採用）
+- 初期実装は Resend ベース magic link → ボス指摘
+「7 日 Cookie 切れたら再ログインでメール送信は UX 最低」で全切替</code></pre>
+    <p class="src">出典 meoscope/documents/DESIGN_DECISIONS.md:67-69</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：21 -->
+<article class="entry" id="term-mcp" data-term="MCP" data-yomi="えむしーぴー" data-aliases="Model Context Protocol モデルコンテキストプロトコル" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">MCP</h2>
+    <p class="fullform">Model Context Protocol</p>
+    <p class="yomi">えむしーぴー</p>
+  </header>
+  <p class="meta"><span class="tag">バックエンド・API</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>AI（Claude など）が外部のツールやデータへ「決まった作法」でつながるための共通規格（Anthropic 発）。AI 側から見ると「使える道具の一覧と呼び方」が標準化されるので、サービスごとに独自連携を作り込まなくてよくなる。</p>
+    <p>Kalenex は自前の MCP サーバを持ち、AI からタスク作成・承認申請・監査ログ照会など 50 以上のツールを叩ける。Typolish との校正連携も MCP 経由。ふつうの <a class="term-ref" href="#term-api">API</a> が「プログラム同士の窓口」なら、MCP は「AI とツールの窓口」の標準。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>MCP サーバへ「承認申請」ツールを登録するコード。ツール名・説明・入力の形（スキーマ）を宣言すると、AI がこの道具を見つけて呼べるようになる。</p>
+    <pre><code>export function registerCreateApproval(server: McpServer, ctx: McpContext) {
+  server.registerTool(
+    'create_approval',
+    {
+      title: '承認申請',
+      description: 'タスクの承認申請を行います。差し戻し後の再申請にも使用できます。',</code></pre>
+    <p class="src">出典 kalenex/src/lib/mcp/tools/create_approval.ts:63-68</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：21 -->
+<article class="entry" id="term-api" data-term="API" data-yomi="えーぴーあい" data-aliases="Application Programming Interface エンドポイント" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">API</h2>
+    <p class="fullform">Application Programming Interface</p>
+    <p class="yomi">えーぴーあい</p>
+  </header>
+  <p class="meta"><span class="tag">バックエンド・API</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>プログラム同士が会話するための「<strong>窓口と作法</strong>」。人間用の画面の代わりに、決まった URL へ決まった形式で呼びかけると、決まった形式で返ってくる。Web では HTTPS の URL に <a class="term-ref" href="#term-json">JSON</a> を出し入れする形が定番。「API を叩く」＝呼び出すこと。</p>
+    <p>使う側だけでなく提供する側にもなる：Kalenex の <code>/api/…</code> は自分たちが外へ提供している API。窓口である以上、<a class="term-ref" href="#term-authorize">認可</a>（誰に何を許すか）が常にセットで問われる。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>API エンドポイントの実体。<code>/api/notion/webhook</code> という URL に Notion が POST（送信）すると、この関数が受け取って処理する＝「URL＋HTTP メソッド＋処理」の3点セットが API の1単位。</p>
+    <pre><code>export async function POST(request: Request) {</code></pre>
+    <p class="src">出典 kalenex/src/app/api/notion/webhook/route.ts:31</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：21 -->
+<article class="entry" id="term-oauth" data-term="OAuth" data-yomi="おーおーす" data-aliases="OAuth2 オーオース Open Authorization トークン認可" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">OAuth</h2>
+    <p class="fullform">Open Authorization</p>
+    <p class="yomi">おーおーす</p>
+  </header>
+  <p class="meta"><span class="tag">認証・権限</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>「<strong>パスワードを渡さずに</strong>、他のサービスへ限定的な許可を与える」ための標準規格。「Google でログイン」「カレンダーへのアクセスを許可しますか？」画面の裏側がこれ。渡されるのはパスワードではなく<strong>トークン</strong>（合鍵）で、範囲（scope）と期限があり、あとから取り消せる。</p>
+    <p>トークンは資格情報そのもの＝盗まれたら合鍵を盗まれたのと同じ。DB に保存するときは平文にせず暗号化するのが鉄則（<a class="term-ref" href="#term-authorize">認可</a>の仕組みだからこそ、鍵の管理が命）。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>設計判断ログより：OAuth トークンを平文で保存しない、という決定。アクセストークン／リフレッシュトークンは機微な資格情報だと明記している。</p>
+    <pre><code>### Google Calendar OAuth Tokens Encrypted in Firestore
+- Decision: Store OAuth tokens in gcal_tokens/{uid} with encryption (not plain text).
+- Reason: Access tokens/refresh tokens are sensitive credentials.</code></pre>
+    <p class="src">出典 kalenex/documents/DESIGN_DECISIONS.md:69-71</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：21 -->
+<article class="entry" id="term-zapier" data-term="Zapier" data-yomi="ざぴあー" data-aliases="ザピアー Zap ノーコード連携" data-pj="Typolish">
+  <header class="entry-head">
+    <h2 class="headword">Zapier</h2>
+    <p class="yomi">ざぴあー</p>
+  </header>
+  <p class="meta"><span class="tag">バックエンド・API</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>何千もの Web サービスを「プログラムを書かずに」つなぐ自動化サービス。「A でこれが起きたら（トリガー）、B でこれをする（アクション）」という組み合わせ＝Zap を画面上で組める。</p>
+    <p>開発側から見ると逆の立場もある：自社サービスを Zapier に載せる＝トリガーやアクションを提供する「Zapier アプリ」を作り、審査に出す。裏側は自社 <a class="term-ref" href="#term-api">API</a> の呼び出しなので、Zapier 対応＝API をきれいに整備すること、でもある。</p>
+  </div>
+  <div class="example" data-pj="Typolish">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Typolish</span><span class="date">2026-07-02</span></p>
+    <p>Typolish の Zapier アプリ（審査提出用の専用リポジトリ）。「校正が完了したら」をトリガーとして配信する実装で、Zapier 規約（購読の仕組み・重複排除キー）に沿って書かれている。</p>
+    <pre><code>// Zapier 側でユーザーが Zap を保存すると performSubscribe が叩かれて
+…
+id: p.id,   // Zapier dedupe key</code></pre>
+    <p class="src">出典 typolish-zapier-app/triggers/proof_completed.js:6,59</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：21 -->
+<article class="entry" id="term-tiptap" data-term="TipTap" data-yomi="てぃっぷたっぷ" data-aliases="tiptap ProseMirror リッチテキストエディタ" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">TipTap</h2>
+    <p class="yomi">てぃっぷたっぷ</p>
+  </header>
+  <p class="meta"><span class="tag">フロントエンド</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>リッチテキストエディタ（太字・見出し・表・メンションなどが使える入力欄）を <a class="term-ref" href="#term-react">React</a> などに組み込むためのライブラリ（ProseMirror という土台の上に作られている）。機能は「拡張（Extension）」の組み合わせで足していく。</p>
+    <p>特徴は、本文データをマークアップの文字列ではなく <a class="term-ref" href="#term-json">JSON</a> のツリーで持つこと＝保存・検証・別形式への変換がやりやすい。Kalenex の日報・ページ本文・コメントのエディタはすべて TipTap 製。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>機能カタログに「日報＝TipTap リッチテキスト」と明記。ページ本文（docContent）も TipTap の JSON がそのまま保存されている。</p>
+    <pre><code>| 日報機能 | TipTap リッチテキスト・Chatwork/メール送信 |</code></pre>
+    <p class="src">出典 kalenex/documents/design/main.md:64</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：21 -->
+<article class="entry" id="term-wysiwyg" data-term="WYSIWYG" data-yomi="うぃじうぃぐ" data-aliases="WYGIWYG What You See Is What You Get ウィジウィグ 見たまま編集" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">WYSIWYG</h2>
+    <p class="fullform">What You See Is What You Get</p>
+    <p class="yomi">うぃじうぃぐ</p>
+  </header>
+  <p class="meta"><span class="tag">フロントエンド</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>「<strong>見たままが得られる</strong>」＝編集画面の見た目が、そのまま完成後（公開後）の見た目になる編集方式。コードや<a class="term-ref" href="#term-html">マークアップ</a>を書かずに、仕上がりを直接触って直せる。対義は「<a class="term-ref" href="#term-source">ソース</a>を書いて別画面でプレビュー」方式。</p>
+    <p>knit の売りは「フル WYSIWYG」＝プレビューそのものを編集面にする体験。（つづり注意：WY<strong>S</strong>IWYG。WYGIWYG と書き間違えやすい）</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>機能台帳 KNIT-WYSIWYG-001＝「preview 直接編集 UX」。プレビュー画面をそのまま contentEditable（直接編集可能）にして自動保存する、まさに見たまま編集の実装。セクションの並べ替え（DnD）追加で「フル WYSIWYG の最後の穴を解消」と記されている（:126）。</p>
+    <pre><code>| KNIT-WYSIWYG-001 | preview 直接編集 UX (inline contentEditable + 自動保存、
+  W2 以降で TipTap + 画像差替 + click-to-recolor) | W1 完了 …</code></pre>
+    <p class="src">出典 knit/documents/design/main.md:123（フル WYSIWYG の穴解消＝:126）</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：21 -->
+<article class="entry" id="term-cms" data-term="CMS" data-yomi="しーえむえす" data-aliases="Content Management System コンテンツ管理システム" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">CMS</h2>
+    <p class="fullform">Content Management System</p>
+    <p class="yomi">しーえむえす／コンテンツ管理システム</p>
+  </header>
+  <p class="meta"><span class="tag">Web開発</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>専門知識がなくても、サイトの文章・画像を<strong>自分で</strong>追加・修正・管理できる仕組み（コンテンツ管理システム）。代表例は WordPress。目的は「文言をひとつ直すのにエンジニアへ依頼」をなくし、運営者が直せる状態にすること。</p>
+    <p>knit はこの領域のプロダクトで、「難しい WordPress を、<a class="term-ref" href="#term-wysiwyg">WYSIWYG</a> で編める CMS に着せ替える」がコンセプト。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>CMS 化の動機がそのまま書かれた設計書。「文言修正のたびに開発者が <a class="term-ref" href="#term-pr">PR</a> を作る運用」を、「運営者が管理画面で全部触れる」状態に変える＝CMS 化は最優先施策、と宣言している。</p>
+    <pre><code>文言修正のたびに開発者が PR を作る運用。…
+運営者（ボス）が「管理画面で全部触れる」状態を目指す。
+… CMS 化は最優先施策。</code></pre>
+    <p class="src">出典 knit/documents/design/cms/00-overview.md:31-33</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：23 -->
+<article class="entry" id="term-dist" data-term="dist" data-yomi="でぃすと" data-aliases="distribution ビルド成果物 build出力" data-pj="kojinius">
+  <header class="entry-head">
+    <h2 class="headword">dist</h2>
+    <p class="fullform">distribution（配布物）</p>
+    <p class="yomi">でぃすと</p>
+  </header>
+  <p class="meta"><span class="tag">インフラ</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>ビルドの<strong>成果物</strong>（配布用ファイル一式）を置くディレクトリの慣習名。distribution の略。人が書く元のコード（src）を変換・圧縮・束ねて生成された「完成品」で、Web サーバはここを<strong>そのまま配信</strong>する。<a class="term-ref" href="#term-vite">Vite</a> などビルドツールの出力先の既定。</p>
+    <p>鉄則：dist は<strong>生成物なので直接編集しない</strong>（次のビルドで上書きされて消える）。直すのは常に src 側 → ビルド → dist が更新される、の一方通行。</p>
+  </div>
+  <div class="example" data-pj="kojinius">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">kojinius</span><span class="date">2026-07-02</span></p>
+    <p>ポートフォリオサイト（kojinius.jp）の <a class="term-ref" href="#term-firebase">Firebase</a> Hosting 設定。「公開ディレクトリ＝dist」＝ビルド成果物がそのまま本番として配信される実構成。この用語辞典の公開もここに載っている。</p>
+    <pre><code>"target": "portfolio",
+"public": "dist",</code></pre>
+    <p class="src">出典 kojinius/firebase.json:4-5</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：23 -->
+<article class="entry" id="term-wip" data-term="WIP" data-yomi="だぶりゅーあいぴー" data-aliases="Work In Progress 作業中 仕掛かり wip" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">WIP</h2>
+    <p class="fullform">Work In Progress</p>
+    <p class="yomi">だぶりゅーあいぴー／ウィップ</p>
+  </header>
+  <p class="meta"><span class="tag">現場の英語</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>「作業中・仕掛かり」。まだ完成していない変更のこと。<a class="term-ref" href="#term-pr">PR</a> のタイトルに「WIP:」と付けて「未完成・まだマージするな」を表す慣習もある。git stash（一時退避）の既定メッセージも「WIP on <a class="term-ref" href="#term-branch">ブランチ</a>名」。</p>
+    <p>実務の鉄則：<strong>WIP を本番に巻き込まない</strong>。<a class="term-ref" href="#term-deploy">デプロイ</a>や一括ビルドの前に、作業ツリーへ他人（や過去の自分）の WIP が混ざっていないかを必ず確認する。「動いたから出す」ではなく「WIP が乗っていないから出せる」。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>作業記録より：手元の作業ツリーに残っていた stale（古い）WIP には一切触れず、隔離した worktree で最新 main からコミットした＝WIP を巻き込まず安全に作業した実例。</p>
+    <pre><code>committed off latest origin/main via isolated worktree; the boss's local
+working tree (stale WIP from already-merged work) left untouched.</code></pre>
+    <p class="src">出典 kalenex/documents/WORKLOG_ARCHIVE_20260628.md:386</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-fable-5 セッションターン数：23 -->
+<article class="entry" id="term-source" data-term="Source" data-yomi="そーす" data-aliases="ソース source ソースコード SoT Single Source of Truth 一次ソース" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">Source</h2>
+    <p class="fullform">ソース（源）</p>
+    <p class="yomi">そーす</p>
+  </header>
+  <p class="meta"><span class="tag">現場の英語</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>「源」。現場では主に3つの意味で使う。①<strong>ソースコード</strong>＝人が書く元のコード（ビルド生成物 <a class="term-ref" href="#term-dist">dist</a> の対義。置き場の慣習名が src）。②<strong>一次ソース／SoT（Single Source of Truth）</strong>＝「正はどこか」を1か所に定めたデータの正本（例: 残タスクは <a class="term-ref" href="#term-backlog">BACKLOG</a>.md が一次ソース）。③<strong>出典</strong>＝その情報はどこから来たか。「ソースは？」と聞かれたら③。</p>
+    <p>特に②が設計の基本：同じ情報を2か所に持つと必ずズレる（drift）。だから「どっちが Source（正）で、どっちが写しか」を先に決める。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-02</span></p>
+    <p>タスクデータの「正」を旧 tasks から nodes へ移し替えた記録。<strong>read-source.ts</strong>（読み元＝ソースの定義ファイル）に「nodes=SoT 完走済」＝正本はもう nodes だけ、と刻まれている。②の意味の実例。</p>
+    <pre><code>// tasks/projects は物理退役（26-E Wave C）・nodes=SoT 完走済のため、
+//   env による切替（rollback 経路）を廃止し定数化。
+export const READ_TASKNODE_FROM_NODE = true;</code></pre>
+    <p class="src">出典 kalenex/src/lib/workspace/read-source.ts:3,8</p>
+  </div>
+</article>
+
+<!-- ===== TERMS:END ＝ 新規エントリはこの行の直前に挿入する（この行を削除・変更しない） ===== -->
+
+  <div class="empty" id="empty" hidden>
+    <p>「<span class="word" id="emptyWord"></span>」は未収録。</p>
+    <p>ボスに「用語集に登録して」と頼むと、実例つきでここに増える。</p>
+  </div>
+</main>
+
+<footer>
+  この辞典は、ボスが開発中に「これは覚えてほしい」と思った用語を <code>/用語集</code> で追記して育てている。用例はすべて実在のプロジェクトのコードから。
+</footer>
+
+</div><!-- #app -->
+
+<script>
+(function(){
+  'use strict';
+  var dict   = document.getElementById('dict');
+  var input  = document.getElementById('q');
+  var chips  = document.getElementById('chips');
+  var hits   = document.getElementById('hits');
+  var total  = document.getElementById('total');
+  var empty  = document.getElementById('empty');
+  var emptyWord = document.getElementById('emptyWord');
+  var entries = Array.prototype.slice.call(dict.querySelectorAll('article.entry'));
+  var activePj = null;
+
+  // 表示順ソート：英数 A→Z が先、日本語は読み（data-yomi）の五十音順が後
+  entries.sort(function(a, b){
+    var ta = a.dataset.term || '', tb = b.dataset.term || '';
+    var ea = /^[!-~]/.test(ta), eb = /^[!-~]/.test(tb);
+    if (ea !== eb) return ea ? -1 : 1;
+    var ka = ea ? ta.toLowerCase() : (a.dataset.yomi || ta);
+    var kb = eb ? tb.toLowerCase() : (b.dataset.yomi || tb);
+    return ka.localeCompare(kb, 'ja');
+  });
+  entries.forEach(function(e){ dict.insertBefore(e, empty); });
+
+  // 検索用正規化：NFKC → 小文字 → カタカナをひらがなへ
+  function norm(s){
+    return (s || '').normalize('NFKC').toLowerCase()
+      .replace(/[ァ-ヶ]/g, function(c){ return String.fromCharCode(c.charCodeAt(0) - 0x60); });
+  }
+
+  // PJ チップ（エントリの data-pj から自動生成）
+  var pjSet = [];
+  entries.forEach(function(e){
+    (e.dataset.pj || '').split(/\s+/).forEach(function(p){
+      if (p && pjSet.indexOf(p) === -1) pjSet.push(p);
+    });
+  });
+  pjSet.sort();
+  function makeChip(label, pj){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.textContent = label;
+    b.setAttribute('aria-pressed', pj === activePj ? 'true' : 'false');
+    b.addEventListener('click', function(){
+      activePj = (activePj === pj) ? null : pj;
+      Array.prototype.forEach.call(chips.children, function(c, i){
+        var v = i === 0 ? null : pjSet[i - 1];
+        c.setAttribute('aria-pressed', v === activePj ? 'true' : 'false');
+      });
+      apply();
+    });
+    return b;
+  }
+  chips.appendChild(makeChip('すべて', null));
+  chips.children[0].setAttribute('aria-pressed', 'true');
+  pjSet.forEach(function(p){ chips.appendChild(makeChip(p, p)); });
+
+  function apply(){
+    var q = norm(input.value.trim());
+    var shown = 0;
+    entries.forEach(function(el){
+      var hay = norm((el.dataset.term || '') + ' ' + (el.dataset.yomi || '') + ' ' +
+                     (el.dataset.aliases || '') + ' ' + el.textContent);
+      var okQ = !q || hay.indexOf(q) !== -1;
+      var okP = !activePj || (el.dataset.pj || '').split(/\s+/).indexOf(activePj) !== -1;
+      el.hidden = !(okQ && okP);
+      if (okQ && okP) shown++;
+    });
+    hits.textContent = shown;
+    emptyWord.textContent = input.value.trim() || '（該当なし）';
+    empty.hidden = shown !== 0;
+  }
+  // ======== サイドパネル：目次ツリー（大→中→用語）— 2026-07-02 claude-opus-4-8[1m] ========
+  // 大カテゴリ→中カテゴリ（＝各エントリの .tag）→用語 の3階層。中カテゴリ名は用語の tag と一致させる。
+  // 用語が0件の中カテゴリも「最初から用意」する（辞典が育つ骨格）。新語追加時はこの TAXONOMY の
+  // 中カテゴリ名から tag を選べば、ツリーへ自動的に載る（詳細は ~/.claude/commands/用語集.md）。
+  var TAXONOMY = [
+    { name: '開発の進めかた', mids: ['Git', '開発フロー', 'レビュー', '現場の英語'] },
+    { name: '基盤・インフラ', mids: ['インフラ', 'データベース', '認証・権限'] },
+    { name: 'アプリを作る',   mids: ['Web開発', 'フロントエンド', 'バックエンド・API'] },
+    { name: '品質・安全',     mids: ['テスト', 'セキュリティ', 'パフォーマンス'] }
+  ];
+
+  var tree = document.getElementById('tree');
+  var sideq = document.getElementById('sideq');
+  var sidebar = document.getElementById('sidebar');
+  var navToggle = document.getElementById('navToggle');
+  var sideResize = document.getElementById('sideResize');
+
+  function entryMid(e){ var t = e.querySelector('.meta .tag'); return t ? t.textContent.trim() : ''; }
+
+  // 中カテゴリ（tag）→ エントリ配列（既にソート済みの entries 順を継承）
+  var byMid = {};
+  entries.forEach(function(e){ var m = entryMid(e); if (!m) return; (byMid[m] = byMid[m] || []).push(e); });
+
+  // TAXONOMY に無い tag は「その他」大カテゴリへ集約（分類漏れを可視化）
+  var known = {};
+  TAXONOMY.forEach(function(c){ c.mids.forEach(function(m){ known[m] = 1; }); });
+  var extras = Object.keys(byMid).filter(function(m){ return !known[m]; });
+  var model = TAXONOMY.slice();
+  if (extras.length) model.push({ name: 'その他', mids: extras.sort() });
+
+  var termNodes = []; // { li, hay } — ツリー内検索用
+
+  model.forEach(function(cat){
+    var big = document.createElement('details');
+    big.className = 'big'; big.open = true;
+    var bs = document.createElement('summary'); bs.textContent = cat.name;
+    big.appendChild(bs);
+    cat.mids.forEach(function(mid){
+      var list = byMid[mid] || [];
+      var midD = document.createElement('details');
+      midD.className = 'mid' + (list.length ? '' : ' empty');
+      midD.open = list.length > 0;
+      var ms = document.createElement('summary');
+      var mlabel = document.createElement('span'); mlabel.textContent = mid;
+      var cnt = document.createElement('span'); cnt.className = 'cnt'; cnt.textContent = String(list.length);
+      ms.appendChild(mlabel); ms.appendChild(cnt);
+      midD.appendChild(ms);
+      if (list.length){
+        var ul = document.createElement('ul'); ul.className = 'terms';
+        list.forEach(function(e){
+          var li = document.createElement('li');
+          var b = document.createElement('button');
+          b.type = 'button'; b.className = 'term-link';
+          b.textContent = e.dataset.term || '';
+          b.addEventListener('click', function(){ jumpTo(e); });
+          li.appendChild(b); ul.appendChild(li);
+          termNodes.push({ li: li, hay: norm((e.dataset.term || '') + ' ' + (e.dataset.yomi || '') + ' ' + (e.dataset.aliases || '')) });
+        });
+        midD.appendChild(ul);
+      } else {
+        var none = document.createElement('p'); none.className = 'none'; none.textContent = 'まだ用語がありません';
+        midD.appendChild(none);
+      }
+      big.appendChild(midD);
+    });
+    tree.appendChild(big);
+  });
+
+  // 用語へジャンプ：確実に見せるためフィルタを解除 → スクロール → 一瞬ハイライト
+  function jumpTo(e){
+    input.value = ''; sideq.value = '';
+    activePj = null;
+    Array.prototype.forEach.call(chips.children, function(c, i){ c.setAttribute('aria-pressed', i === 0 ? 'true' : 'false'); });
+    apply();
+    filterTree('');
+    e.hidden = false;
+    e.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    e.classList.remove('flash'); void e.offsetWidth; e.classList.add('flash');
+    if (window.innerWidth <= 900) setNav(false);
+  }
+
+  // ツリー内フィルタ（本文検索と同期。空カテゴリは検索語がある時だけ畳む）
+  function filterTree(q){
+    termNodes.forEach(function(n){ n.li.classList.toggle('hidden', !!q && n.hay.indexOf(q) === -1); });
+    Array.prototype.forEach.call(tree.children, function(big){
+      var bigVis = false;
+      Array.prototype.forEach.call(big.querySelectorAll('.mid'), function(mid){
+        var ul = mid.querySelector('.terms');
+        var visible = ul ? ul.querySelectorAll('li:not(.hidden)').length : 0;
+        var hideMid = !!q && (ul ? visible === 0 : true);
+        mid.classList.toggle('hidden', hideMid);
+        if (!hideMid) bigVis = true;
+      });
+      big.classList.toggle('hidden', !!q && !bigVis);
+    });
+  }
+
+  // 2つの検索窓を同期：どちらに打っても本文（apply）とツリー（filterTree）両方に効く
+  function syncSearch(src){
+    var v = src.value;
+    if (input.value !== v) input.value = v;
+    if (sideq.value !== v) sideq.value = v;
+    apply();
+    filterTree(norm(v.trim()));
+  }
+  sideq.addEventListener('input', function(){ syncSearch(sideq); });
+
+  // 開閉トグル（状態を localStorage 記憶）
+  function setNav(open){
+    document.body.classList.toggle('nav-open', open);
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    try { localStorage.setItem('term_nav_open', open ? '1' : '0'); } catch (_e) {}
+  }
+  navToggle.addEventListener('click', function(){ setNav(!document.body.classList.contains('nav-open')); });
+  var savedOpen = null; try { savedOpen = localStorage.getItem('term_nav_open'); } catch (_e) {}
+  setNav(savedOpen === null ? (window.innerWidth > 900) : savedOpen === '1');
+
+  // 幅リサイズ（ドラッグハンドル・localStorage 記憶）
+  var savedW = null; try { savedW = localStorage.getItem('term_nav_w'); } catch (_e) {}
+  if (savedW) sidebar.style.width = savedW + 'px';
+  (function(){
+    var dragging = false;
+    function clampW(px){ return Math.max(200, Math.min(px, Math.min(560, window.innerWidth - 120))); }
+    function onMove(ev){
+      if (!dragging) return;
+      var w = clampW((ev.clientX || 0) - sidebar.getBoundingClientRect().left);
+      sidebar.style.width = w + 'px';
+    }
+    function onUp(){
+      if (!dragging) return;
+      dragging = false; sideResize.classList.remove('active'); document.body.style.userSelect = '';
+      try { localStorage.setItem('term_nav_w', String(parseInt(sidebar.style.width, 10) || 300)); } catch (_e) {}
+    }
+    sideResize.addEventListener('mousedown', function(ev){
+      dragging = true; sideResize.classList.add('active'); document.body.style.userSelect = 'none'; ev.preventDefault();
+    });
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  })();
+
+  // 2026-07-02 claude-fable-5 セッションターン数：16 — 用語相互リンク: .term-ref はフィルタ解除つきジャンプ（絞り込み中でも届く）
+  document.addEventListener('click', function(ev){
+    var t = ev.target;
+    while (t && t !== document && !(t.tagName === 'A' && t.classList.contains('term-ref'))) t = t.parentNode;
+    if (!t || t === document) return;
+    var id = (t.getAttribute('href') || '').slice(1);
+    var target = document.getElementById(id);
+    if (!target) return;
+    ev.preventDefault();
+    jumpTo(target);
+  });
+
+  input.addEventListener('input', function(){ syncSearch(input); });
+
+  total.textContent = entries.length;
+  apply();
+})();
+</script>
+</body>
+</html>
