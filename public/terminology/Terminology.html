@@ -384,7 +384,7 @@ export function hasMinRole(userRole: Role | null, minRole: Role): boolean {
   <p class="meta"><span class="tag">インフラ</span><span class="date">2026-07-02 追加</span></p>
   <div class="gloss">
     <p>Google が提供するアプリ開発プラットフォーム。ログイン認証（Firebase Auth）、データベース（Firestore）、ファイル保管などを、自前でサーバを立てずにまとめて借りられる。</p>
-    <p>必要な部品だけ選んで使えるのが利点。knit は「ログイン」だけ Firebase を使い、データ本体は別（Neon という DB）に置く、という組み合わせ方をしている。</p>
+    <p>必要な部品だけ選んで使えるのが利点。knit は「ログイン」だけ Firebase を使い、データ本体は別（<a class="term-ref" href="#term-neon">Neon</a> という DB）に置く、という組み合わせ方をしている。</p>
   </div>
   <div class="example" data-pj="knit">
     <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
@@ -406,7 +406,7 @@ export function hasMinRole(userRole: Role | null, minRole: Role): boolean {
   </div>
   <div class="example" data-pj="knit">
     <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
-    <p>開発運用として「PR ごとに Vercel auto preview ＋ Neon preview branch（Free 枠は 10 個上限、PR マージ後すぐ削除）」と定めている。</p>
+    <p>開発運用として「PR ごとに Vercel auto preview ＋ <a class="term-ref" href="#term-neon">Neon</a> preview branch（Free 枠は 10 個上限、PR マージ後すぐ削除）」と定めている。</p>
     <p class="src">出典 knit/documents/design/main.md:244</p>
   </div>
 </article>
@@ -879,7 +879,7 @@ npx tsc --noEmit</code></pre>
   </header>
   <p class="meta"><span class="tag">データベース</span><span class="date">2026-07-02 追加</span></p>
   <div class="gloss">
-    <p>「移行」。データやシステムを<strong>古い形から新しい形へ移し替える</strong>こと。DB の構造（スキーマ）変更、ホスティングの引っ越し（例: Firebase App Hosting → <a class="term-ref" href="#term-vercel">Vercel</a>）、別システムからのデータ取り込みまで幅広く指す。しばしば一方通行なので、「切り替えの順序」と「戻し方（<a class="term-ref" href="#term-rollback">rollback</a>）」の計画が本体。</p>
+    <p>「移行」。データやシステムを<strong>古い形から新しい形へ移し替える</strong>こと。<a class="term-ref" href="#term-db">DB</a> の構造（スキーマ）変更、ホスティングの引っ越し（例: Firebase App Hosting → <a class="term-ref" href="#term-vercel">Vercel</a>）、別システムからのデータ取り込みまで幅広く指す。しばしば一方通行なので、「切り替えの順序」と「戻し方（<a class="term-ref" href="#term-rollback">rollback</a>）」の計画が本体。</p>
     <p><a class="term-ref" href="#term-backfill">backfill</a> との違い：backfill は「新しい仕組みを入れた<strong>後</strong>、既存データに欠けている値を埋めて追いつかせる」作業＝<strong>形は変えず、埋めるだけ</strong>（冪等＝何度でもやり直せる）。マイグレーションは「<strong>形そのもの・置き場所そのものを変える</strong>」＝多くは不可逆。backfill はマイグレーションの一工程として使われることも多い。迷ったら「埋めるだけ？（backfill）／作り替える・引っ越す？（マイグレーション）」で見分ける。</p>
   </div>
   <div class="example" data-pj="Kalenex">
@@ -1122,7 +1122,7 @@ structure may all differ from your training data.</code></pre>
   </div>
   <div class="example" data-pj="knit">
     <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
-    <p>開発運用の定義。PR ごとに Vercel の preview と、DB（Neon）側にも確認用の preview branch を立て、マージ後すぐ消す＝確認環境は使い捨て、と決めている。</p>
+    <p>開発運用の定義。PR ごとに Vercel の preview と、DB（<a class="term-ref" href="#term-neon">Neon</a>）側にも確認用の preview branch を立て、マージ後すぐ消す＝確認環境は使い捨て、と決めている。</p>
     <pre><code>PR ごとに Vercel auto preview ＋ Neon preview branch
 （Free 枠は 10 個上限、PR マージ後すぐ削除）</code></pre>
     <p class="src">出典 knit/documents/design/main.md:244</p>
@@ -1428,6 +1428,419 @@ export const READ_TASKNODE_FROM_NODE = true;</code></pre>
   </div>
 </article>
 
+<!-- 2026-07-02 claude-opus-4-8[1m] セッションターン数：8 -->
+<article class="entry" id="term-blob" data-term="blob" data-yomi="ぶろぶ" data-aliases="Binary Large Object BLOB Vercel Blob バイナリラージオブジェクト オブジェクトストレージ" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">blob</h2>
+    <p class="fullform">Binary Large OBject</p>
+    <p class="yomi">ぶろぶ</p>
+  </header>
+  <p class="meta"><span class="tag">インフラ</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>Binary Large OBject（バイナリ・ラージ・オブジェクト）の略。画像・zip・動画のように、<strong>中身を1件ずつ解釈せず「ひとかたまりの生バイナリ」</strong>として扱うデータのこと。</p>
+    <p>ブラウザの <a class="term-ref" href="#term-javascript">JavaScript</a> では <code>Blob</code> オブジェクトとして登場し、「Vercel Blob」のようにファイル置き場（オブジェクトストレージ）サービスの名前にもなる。定石は<strong>「大きなファイルは DB の行に詰めず、専用の置き場へ blob として預け、その URL だけ受け取って持ち回る」</strong>こと。<a class="term-ref" href="#term-vercel">Vercel</a> Blob はその置き場のひとつ。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>テンプレートの書き出しで、その場で作った zip を Vercel Blob に <code>put</code> して保存し、返ってきた URL でユーザーにダウンロードさせている。「put で預ける → URL を受け取る」が blob ストレージの基本形。</p>
+    <p>固定キーで <code>put</code> して上書きすると、CDN のエッジが伝播前の<strong>旧 blob</strong>を返す stale 事故（KNIT-EXPORT-STALE-001）が実際に起きたため、毎回ユニークキー（時刻＋UUID）で <code>put</code> する対策を入れている。</p>
+    <pre><code>import { put, list, del } from "@vercel/blob";
+// 毎回ユニークな key（時刻＋UUID）で put → CDN の stale を避ける
+const exportKey = `theme-exports/${id}/${Date.now()}-${randomUUID()}/${filename}`;
+const blob = await put(exportKey, Buffer.from(zip), { access: "public" });
+const freshUrl = blob.url;   // この URL でユーザーに zip を配る</code></pre>
+    <p class="src">出典 knit/src/app/api/admin/template/[id]/export/route.ts:8・209-216</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-opus-4-8[1m] セッションターン数：8 -->
+<article class="entry" id="term-neon" data-term="Neon" data-yomi="ねおん" data-aliases="Neon Postgres serverless Postgres サーバーレスポストグレス @neondatabase/serverless" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">Neon</h2>
+    <p class="yomi">ねおん</p>
+  </header>
+  <p class="meta"><span class="tag">データベース</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>クラウドで動く「サーバーレス版の PostgreSQL（ポストグレス＝定番のリレーショナルデータベース）」。<a class="term-ref" href="#term-db">DB</a> サーバを常時立てておかなくても、必要なときだけ接続して<a class="term-ref" href="#term-query">クエリ</a>を投げられ、使わない間はスリープする。<a class="term-ref" href="#term-firebase">Firebase</a> の Firestore が「キーと値の入れ子」型なのに対し、Neon は表と行・列の <a class="term-ref" href="#term-sql">SQL</a> 型。</p>
+    <p>目玉は<strong><a class="term-ref" href="#term-branch">ブランチ</a>機能</strong>：Git のブランチのように DB を丸ごと分岐でき、本番データを汚さずに検証用コピーを作れる。knit は <a class="term-ref" href="#term-pr">PR</a> ごとに Neon の <a class="term-ref" href="#term-preview">preview</a> branch を立てて確認し、<a class="term-ref" href="#term-merge">マージ</a>後すぐ消す運用にしている。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-02</span></p>
+    <p>knit は認証以外の本体データを Neon に置く設計で、<code>@neondatabase/serverless</code> の HTTP モードを採用（<a class="term-ref" href="#term-vercel">Vercel</a> の実行環境との相性と、PR ごとの preview branch 運用のため）。Neon Free tier のブランチ上限 10 個を、PR マージ後の即削除で守っている。さらに同じ Neon を lien-rapport サイト側が読み取り専用で参照する（Knit＝writer / site＝reader）1DB2ロール構成。</p>
+    <pre><code>### §1.3 DB: Neon Postgres（HTTP モード）
+- 採用: @neondatabase/serverless の HTTP モード（pooler/WebSocket ではなく）
+- 制約: Neon Free tier の branch 上限 10。PR merge 後は即削除の運用。</code></pre>
+    <p class="src">出典 knit/documents/DESIGN_DECISIONS.md:27-31（README.md:9「共有 Neon: Knit=writer / site=reader」）</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-opus-4-8[1m] セッションターン数：13 -->
+<article class="entry" id="term-creds" data-term="creds" data-yomi="くれず" data-aliases="credentials 認証情報 資格情報 クレデンシャル クレデンシャルズ" data-pj="teloop">
+  <header class="entry-head">
+    <h2 class="headword">creds</h2>
+    <p class="fullform">credentials（認証情報）</p>
+    <p class="yomi">くれず／クレデンシャルズ</p>
+  </header>
+  <p class="meta"><span class="tag">認証・権限</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>credentials（クレデンシャルズ＝認証情報）の略。<a class="term-ref" href="#term-api">API</a> キー・パスワード・サービスアカウント鍵・<a class="term-ref" href="#term-oauth">OAuth</a> トークンなど、「自分が誰で・何をしてよいかを証明する秘密情報」の総称。会話やメモでは短く creds と書く。</p>
+    <p>creds は漏れたら成りすまされる最重要データ。だから<strong>①コードに直書き・Git にコミットしない（環境変数や Secret Manager に置く）②暗号化して保管③本番・プレビューなど使う環境ごとに投入</strong>──が鉄則。</p>
+  </div>
+  <div class="example" data-pj="teloop">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">teloop</span><span class="date">2026-07-02</span></p>
+    <p>teloop の認証設計で「creds を <a class="term-ref" href="#term-vercel">Vercel</a> に設定してから auth 版を<a class="term-ref" href="#term-deploy">デプロイ</a>する。未設定でデプロイすると login 失敗・全ルート 401 で本番が壊れる」と釘を刺している。creds は<strong>コードより先に環境へ入れる</strong>もの、という実例。</p>
+    <p>knit では WP 直デプロイ用の接続情報（creds）を暗号化して DB に保存し、set-creds / test / upload / activate / <a class="term-ref" href="#term-rollback">rollback</a> のアクションで扱う設計にしている。</p>
+    <pre><code>## デプロイ注意
+- creds を Vercel に設定してから auth 版をデプロイする
+  （未設定でデプロイすると login 失敗・全ルート 401 で本番が壊れる）。</code></pre>
+    <p class="src">出典 teloop/documents/design/auth.md:46-47（ほか knit/documents/design/cms/39-wp-direct-deploy.md:156-157「creds CRUD（暗号化）」）</p>
+  </div>
+</article>
+
+<!-- 2026-07-02 claude-opus-4-8[1m] セッションターン数：13 -->
+<article class="entry" id="term-poc" data-term="PoC" data-yomi="ぴーおーしー" data-aliases="Proof of Concept 概念実証 ポック PoC フラグ" data-pj="Caramel">
+  <header class="entry-head">
+    <h2 class="headword">PoC</h2>
+    <p class="fullform">Proof of Concept</p>
+    <p class="yomi">ぴーおーしー／概念実証</p>
+  </header>
+  <p class="meta"><span class="tag">開発フロー</span><span class="date">2026-07-02 追加</span></p>
+  <div class="gloss">
+    <p>Proof of Concept（プルーフ・オブ・コンセプト＝概念実証）の略。「その案が本当に実現できるか」を、作り込む前に<strong>最小限の試作</strong>で確かめること。読みは「ピーオーシー」または「ポック」。</p>
+    <p>目的は本番実装の前にリスクを潰すこと。とくに「ドキュメント上は行けそう」でも実機・実環境で動くかは別問題──なので不確実な前提は<strong>「未検証＝要 PoC」</strong>と印を付け、思い込みで設計を進めない。</p>
+  </div>
+  <div class="example" data-pj="Caramel">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Caramel</span><span class="date">2026-07-02</span></p>
+    <p>Caramel（Python の画像エディタ）の設計で、GPU 実機速度・実機アクセシビリティ・音声・実機ビルド・隔離機構など「Web やドキュメントでは裏取りしたが実機未確認」の項目に<strong>「PoC フラグ」</strong>を付け、不確実は「未検証 — PoC 必要」と明記する運用にしている。設計の生命線を思い込みで確定させないための歯止め。</p>
+    <pre><code>2. .venv の実 Python で API・dtype・プラットフォーム制約を裏取り
+   （不確実は「未検証 — PoC 必要」と明記）
+3. 生命線（それが偽なら設計全体が崩れる前提）を1点特定して実コードで裏取り</code></pre>
+    <p class="src">出典 caramel/documents/design/main.md:42-43（Phase 表 05〜08 の「PoC フラグ」列も同旨）</p>
+  </div>
+</article>
+
+<!-- 2026-07-03 claude-opus-4-8[1m] セッションターン数：6 -->
+<article class="entry" id="term-architecture" data-term="アーキテクチャ" data-yomi="あーきてくちゃ" data-aliases="architecture アーキ 構造 設計 システム構成" data-pj="Caramel">
+  <header class="entry-head">
+    <h2 class="headword">アーキテクチャ</h2>
+    <p class="fullform">architecture（構造の設計）</p>
+    <p class="yomi">あーきてくちゃ</p>
+  </header>
+  <p class="meta"><span class="tag">設計・アーキテクチャ</span><span class="date">2026-07-03 追加</span></p>
+  <div class="gloss">
+    <p>ソフト全体の<strong>構造の設計</strong>。「どんな部品に分けるか・部品同士をどうつなぐか・どこは触ってよくどこは触ってはいけないか」という大枠の決めごと。建物の設計図に当たり、あとから変えにくいので最初に決める。</p>
+    <p>よいアーキテクチャは「1か所直せば済む」「壊れやすい部分を囲い込む」を実現する。スタック（使う言語・ライブラリ）選びもこの一部で、Caramel は Python + PySide6 + <a class="term-ref" href="#term-numpy">NumPy</a>／<a class="term-ref" href="#term-pillow">Pillow</a> を土台に据えている。</p>
+  </div>
+  <div class="example" data-pj="Caramel">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Caramel</span><span class="date">2026-07-03</span></p>
+    <p>Caramel の設計書は、アプリを core（エンジン）／filters／tools／ui／imageio の層に分け、<strong>「core は触らせず、拡張は filters・tools に1ファイル足すだけ（＝貢献ゾーン）」</strong>という構造を最初に決めている。誰が何を壊せるかまで含めて決めるのがアーキテクチャ、という実例。</p>
+    <pre><code>├── tools/       道具(貢献ゾーン①): base.py に Tool 基底 + register_tool
+├── filters/     フィルタ(貢献ゾーン②): @register_filter で自動登録 + サンプル2種
+# 拡張は filters/tools に1ファイル追加+自動登録。core を触らず貢献可。</code></pre>
+    <p class="src">出典 caramel/documents/design/00-アーキテクチャ.md:34-35,56（設計判断 D-004「合成は Compositor 抽象越し」で CPU→GPU 差し替え可）</p>
+  </div>
+</article>
+
+<!-- 2026-07-03 claude-opus-4-8[1m] セッションターン数：6 -->
+<article class="entry" id="term-feature" data-term="feature" data-yomi="ふぃーちゃー" data-aliases="feature フィーチャー 機能 feature branch フィーチャーブランチ feature flag 機能フラグ" data-pj="Caramel">
+  <header class="entry-head">
+    <h2 class="headword">feature</h2>
+    <p class="fullform">フィーチャー（機能）</p>
+    <p class="yomi">ふぃーちゃー</p>
+  </header>
+  <p class="meta"><span class="tag">開発フロー</span><span class="date">2026-07-03 追加</span></p>
+  <div class="gloss">
+    <p>「機能・特徴」。開発では主に、①ソフトが持つ1つの機能そのもの、②その機能を作るための「<strong>feature ブランチ</strong>」＝<a class="term-ref" href="#term-main">main</a> から切る作業用の<a class="term-ref" href="#term-branch">ブランチ</a>を <code>feature/内容</code> と名付ける慣習、③feature flag（機能を出す／隠すを切り替えるスイッチ）で使う。</p>
+    <p>基本は「<strong>1機能＝1 feature ブランチ＝1 <a class="term-ref" href="#term-pr">PR</a></strong>」。ブランチ名を <code>feature/やること</code> にしておくと、何の作業の枝かが名前だけで分かり、<a class="term-ref" href="#term-merge">merge</a> 後に消しても迷子にならない。</p>
+  </div>
+  <div class="example" data-pj="Caramel">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Caramel</span><span class="date">2026-07-03</span></p>
+    <p>Caramel の貢献ガイドが、新しく作業を始める第一歩として「main から作業用ブランチを切る（例: <code>feature/sepia-filter</code>）」＝1機能を feature ブランチ名で表す作法を新人向けに明記している。（この辞典を更新した作業自体も <code>feature/fix-design-doc-versions</code> ブランチで行った）</p>
+    <pre><code>1. main から作業用ブランチを切る(例: feature/sepia-filter)</code></pre>
+    <p class="src">出典 caramel/CONTRIBUTING_ja.md:10</p>
+  </div>
+</article>
+
+<!-- 2026-07-03 claude-opus-4-8[1m] セッションターン数：6 -->
+<article class="entry" id="term-numpy" data-term="NumPy" data-yomi="なんぱい" data-aliases="numpy Numerical Python ナンパイ 数値計算 配列 ndarray" data-pj="Caramel">
+  <header class="entry-head">
+    <h2 class="headword">NumPy</h2>
+    <p class="fullform">Numerical Python</p>
+    <p class="yomi">なんぱい</p>
+  </header>
+  <p class="meta"><span class="tag">画像・数値処理</span><span class="date">2026-07-03 追加</span></p>
+  <div class="gloss">
+    <p>Python で<strong>数値の配列（多次元の表）をまとめて高速に計算する</strong>ための定番ライブラリ。画像は「縦×横×RGBA の数値の塊」なので、画像処理は実質 NumPy 配列の計算になる。</p>
+    <p>素の Python の for ループより桁違いに速い（内部は C で最適化された一括演算）。Caramel は画像を丸ごと NumPy 配列で持ち、フィルタも合成もこの配列を直接いじる設計にしている。相棒の <a class="term-ref" href="#term-pillow">Pillow</a>（ファイル読み書き）と橋渡しして使う。</p>
+  </div>
+  <div class="example" data-pj="Caramel">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Caramel</span><span class="date">2026-07-03</span></p>
+    <p>Caramel は内部データを「(H, W, 4)・float32・0〜1」の NumPy 配列に統一している。<a class="term-ref" href="#term-pillow">Pillow</a> で開いた画像を <code>np.asarray</code> で float32 化し 255 で割って 0..1 に<a class="term-ref" href="#term-normalization">正規化</a>する2行が、その入口。以降フィルタも合成もこの配列演算。</p>
+    <pre><code>image = Image.open(path).convert("RGBA")
+return np.asarray(image, dtype=np.float32) / 255.0</code></pre>
+    <p class="src">出典 caramel/src/caramel/imageio/image_io.py:19-20（合成も numpy＝core/compositor.py:33 の np.zeros(...,dtype=np.float32)）</p>
+  </div>
+</article>
+
+<!-- 2026-07-03 claude-opus-4-8[1m] セッションターン数：6 -->
+<article class="entry" id="term-pillow" data-term="Pillow" data-yomi="ぴろー" data-aliases="pillow PIL Python Imaging Library ぴろー 画像ライブラリ 画像処理" data-pj="Caramel">
+  <header class="entry-head">
+    <h2 class="headword">Pillow</h2>
+    <p class="fullform">Python Imaging Library（PIL 後継）</p>
+    <p class="yomi">ぴろー</p>
+  </header>
+  <p class="meta"><span class="tag">画像・数値処理</span><span class="date">2026-07-03 追加</span></p>
+  <div class="gloss">
+    <p>Python で<strong>画像ファイルを読み書き・変換する</strong>ための定番ライブラリ。元祖 PIL（Python Imaging Library）の後継なので、import は今も <code>from PIL import Image</code> と書く。PNG／JPEG などを開く・保存する・形式変換するのが役目。</p>
+    <p>Caramel では「ファイルの入口と出口」だけを Pillow が担い、開いたあとの計算は <a class="term-ref" href="#term-numpy">NumPy</a> 配列で行う（Pillow ⇔ NumPy の橋渡し）。注意：Pillow は C 実装で、巨大画像を踏むとメモリを食い潰す危険（DecompressionBomb）があるため、寸法チェックとセットで使う。</p>
+  </div>
+  <div class="example" data-pj="Caramel">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Caramel</span><span class="date">2026-07-03</span></p>
+    <p>画像を<strong>開く</strong>（<code>Image.open→RGBA</code>）と<strong>保存する</strong>（<code>Image.fromarray→save</code>）を Pillow が担当し、その間の<a class="term-ref" href="#term-normalization">正規化</a>・演算は <a class="term-ref" href="#term-numpy">NumPy</a> 側に任せる、という役割分担の実例。</p>
+    <pre><code>image = Image.open(path).convert("RGBA")        # 開く（Pillow）
+# … 途中は NumPy 配列で計算 …
+Image.fromarray(arr, mode="RGBA").save(path)    # 保存（Pillow）</code></pre>
+    <p class="src">出典 caramel/src/caramel/imageio/image_io.py:11,19,27</p>
+  </div>
+</article>
+
+<!-- 2026-07-04 claude-fable-5 セッションターン数：29 -->
+<article class="entry" id="term-registry" data-term="registry" data-yomi="れじすとり" data-aliases="レジストリ 台帳 registry.json" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">registry</h2>
+    <p class="yomi">レジストリ</p>
+  </header>
+  <p class="meta"><span class="tag">設計・アーキテクチャ</span><span class="date">2026-07-04 追加</span></p>
+  <div class="gloss"><p>「登録簿・台帳」。ソフトウェアでは「何が どこにあるか」の対応表を 1 か所に集めたものを指します。npm のパッケージ置き場（パッケージレジストリ）、Docker イメージ置き場（コンテナレジストリ）、Windows の設定データベース（Windows レジストリ）など、いろいろな場面で出てくる語です。開発の現場では「ファイル→ID の対応表 JSON」のような、探し物の一次ソースになる索引ファイルの意味でもよく使います。索引が失われると、毎回ぜんぶ探し直すはめになります。</p></div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-04</span></p>
+    <p>設計書を Kalenex に同期するときの「ローカル md ⇔ Kalenex ノード ID」対応表 <code>_knit-design-ws-registry.json</code> が失われていたため、Firestore の現存ノードから再構築した（70 ページ全件マッチ）。registry が無い間は毎回 Firestore を探索するフォールバックが必要だった＝「索引の一次ソース」が registry。</p>
+    <p class="src">出典 documents/BACKLOG.md:66（knit）</p>
+  </div>
+</article>
+
+<!-- 2026-07-04 claude-fable-5 セッションターン数：29 -->
+<article class="entry" id="term-seo" data-term="SEO" data-yomi="えすいーおー" data-aliases="Search Engine Optimization 検索エンジン最適化" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">SEO</h2>
+    <p class="fullform">Search Engine Optimization</p>
+    <p class="yomi">エスイーオー／検索エンジン最適化</p>
+  </header>
+  <p class="meta"><span class="tag">Web開発</span><span class="date">2026-07-04 追加</span></p>
+  <div class="gloss"><p>検索エンジン最適化。Google などの検索結果で、ページが見つかりやすく・正しく表示されるようにする工夫の総称です。技術面のいちばんの基本は、ページごとに <code>&lt;title&gt;</code>（検索結果の見出しになる）と meta description（見出しの下に出る説明文）を適切に設定すること。WordPress ではプラグイン（AIOSEO 等）に任せることが多いですが、プラグインは更新停止や脆弱性のリスクを抱えます。</p></div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-04</span></p>
+    <p>ページごとの title / meta description を knit のエディタで編集し、書き出す WordPress テーマの functions.php に焼き込む機能（KNIT-SEO-001）。AIOSEO 等のプラグイン依存を knit に巻き取った。</p>
+    <pre><code>export function buildSeoMeta(values: Values): string {
+  // title = document_title_parts フィルタ / description = wp_head で meta 出力
+  if (t) titles.push(`${phpSingleQuoted(slug)} =&gt; ${phpSingleQuoted(t)}`);</code></pre>
+    <p class="src">出典 src/lib/templates/build-wp-theme.ts:581（knit）</p>
+  </div>
+</article>
+
+<!-- 2026-07-10 21:01:14 claude-opus-4-8[1m] セッションターン数：1 -->
+<article class="entry" id="term-db" data-term="DB" data-yomi="でぃーびー" data-aliases="Database データベース でーたべーす DB" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">DB</h2>
+    <p class="fullform">Database（データベース）</p>
+    <p class="yomi">でぃーびー／データベース</p>
+  </header>
+  <p class="meta"><span class="tag">データベース</span><span class="date">2026-07-10 追加</span></p>
+  <div class="gloss">
+    <p>DB＝<strong>データベース</strong>の略。データを整理して貯め、あとから検索・追加・更新・削除できる「データの保管庫」。アプリの心臓部で、画面を閉じてもデータが残るのは DB に書いているから。</p>
+    <p>大きく 2 方式ある。①リレーショナル型＝<a class="term-ref" href="#term-table">テーブル</a>（表）でカッチリ持ち <a class="term-ref" href="#term-sql">SQL</a> で操作（例: <a class="term-ref" href="#term-neon">Neon</a> Postgres）。②NoSQL 型＝キーと値の入れ子で柔らかく持つ（例: <a class="term-ref" href="#term-firebase">Firestore</a>）。社内はこの両方を使い分ける。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-10</span></p>
+    <p>knit は「認証＝<a class="term-ref" href="#term-firebase">Firebase</a>／本体データ＝<a class="term-ref" href="#term-neon">Neon</a>（Postgres）」の 2 DB 構成。設計判断ログが本体 DB を明記している。DB には構造（テーブルと列）だけ持たせ、「誰が読んでよいか」の認可はアプリ層で担保する方針。</p>
+    <pre><code>### §1.3 DB: Neon Postgres（HTTP モード）</code></pre>
+    <p class="src">出典 knit/documents/DESIGN_DECISIONS.md:27（「DB は構造のみ」＝migrations/0010_init_tenants.sql:5）</p>
+  </div>
+</article>
+
+<!-- 2026-07-10 21:01:14 claude-opus-4-8[1m] セッションターン数：1 -->
+<article class="entry" id="term-sql" data-term="SQL" data-yomi="えすきゅーえる" data-aliases="Structured Query Language エスキューエル シークェル sql" data-pj="Craftica">
+  <header class="entry-head">
+    <h2 class="headword">SQL</h2>
+    <p class="fullform">Structured Query Language</p>
+    <p class="yomi">えすきゅーえる／シークェル</p>
+  </header>
+  <p class="meta"><span class="tag">データベース</span><span class="date">2026-07-10 追加</span></p>
+  <div class="gloss">
+    <p><strong>Structured Query Language</strong>（構造化問い合わせ言語）の略。リレーショナル <a class="term-ref" href="#term-db">DB</a>（表形式の DB）に「表を作れ・行を入れろ・取り出せ・消せ」と命令する専用言語。読みは「エスキューエル」または「シークェル」。</p>
+    <p>4 大命令: CREATE（<a class="term-ref" href="#term-table">テーブル</a>を作る）／INSERT（行を入れる）／SELECT（条件で取り出す＝<a class="term-ref" href="#term-query">クエリ</a>）／UPDATE・DELETE（更新・削除）。<a class="term-ref" href="#term-firebase">Firestore</a> のような NoSQL DB に SQL は使わない（専用 API で操作する）。</p>
+  </div>
+  <div class="example" data-pj="Craftica">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Craftica</span><span class="date">2026-07-10</span></p>
+    <p>Craftica（学習アプリ）は、学習者がブラウザ上で SQL を書いて実行できる SQL Runner を内蔵（sql.js）。CREATE→INSERT→SELECT の 3 文を実行すると、最後の SELECT の結果が表で返る。SQL の基本の流れをそのまま教材にした実例。</p>
+    <pre><code>CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);
+INSERT INTO users (name, age) VALUES ('Alice', 30), ('Bob', 25);
+SELECT name, age FROM users WHERE age &gt; 26 ORDER BY age DESC;</code></pre>
+    <p class="src">出典 craftica/documents/design/craftica-editor-phase-9-sql.md:35-37</p>
+  </div>
+</article>
+
+<!-- 2026-07-10 21:01:14 claude-opus-4-8[1m] セッションターン数：1 -->
+<article class="entry" id="term-query" data-term="クエリ" data-yomi="くえり" data-aliases="query クエリー 問い合わせ SELECT where" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">クエリ</h2>
+    <p class="fullform">query（問い合わせ）</p>
+    <p class="yomi">くえり</p>
+  </header>
+  <p class="meta"><span class="tag">データベース</span><span class="date">2026-07-10 追加</span></p>
+  <div class="gloss">
+    <p>query＝「問い合わせ」。<a class="term-ref" href="#term-db">DB</a> に「こういう条件のデータをちょうだい」と尋ねる要求のこと。<a class="term-ref" href="#term-sql">SQL</a> では SELECT 文がクエリ、<a class="term-ref" href="#term-firebase">Firestore</a> では where() の絞り込みがクエリに当たる。</p>
+    <p>勘所は「必要なぶんだけ・<strong>DB 側で</strong>絞る」。全件取ってからアプリ側で捨てるのは遅くて高い。条件（where）・並び（order）・件数（limit）を DB に投げて、通信も処理も軽くするのがクエリ設計。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-10</span></p>
+    <p>ツリー表示用に「タスク以外のノード」だけを Firestore の list クエリで取る例。<code>where('kind','in',...)</code> で種別を絞り、重いタスクは別クエリに分けている（＝一度に全部取らない）。</p>
+    <pre><code>// subscribeNodes の list クエリ where('kind','in',...) で task を除外して取得する</code></pre>
+    <p class="src">出典 kalenex/src/types/workspace.ts:39-40（SQL 側の同義は SELECT … WHERE＝craftica-editor-phase-9-sql.md:37／Neon への単発クエリ＝lienrapport/src/lib/db.ts:4）</p>
+  </div>
+</article>
+
+<!-- 2026-07-10 21:01:14 claude-opus-4-8[1m] セッションターン数：1 -->
+<article class="entry" id="term-table" data-term="テーブル" data-yomi="てーぶる" data-aliases="table 表 テーブル カラム 列 行 レコード コレクション" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">テーブル</h2>
+    <p class="fullform">table（表）</p>
+    <p class="yomi">てーぶる</p>
+  </header>
+  <p class="meta"><span class="tag">データベース</span><span class="date">2026-07-10 追加</span></p>
+  <div class="gloss">
+    <p>リレーショナル <a class="term-ref" href="#term-db">DB</a> でデータを収める「表」。Excel の 1 シートのイメージで、<strong>列</strong>（カラム＝項目の種類）と<strong>行</strong>（レコード＝データ 1 件）でできている。1 テーブル＝1 種類の集まり（users テーブル＝利用者、orders テーブル＝注文）。</p>
+    <p><a class="term-ref" href="#term-sql">SQL</a> では使う前に、列の型・制約（<a class="term-ref" href="#term-primary-key">主キー</a>・<a class="term-ref" href="#term-foreign-key">参照キー</a>など）を先に決めて CREATE TABLE で作る。<a class="term-ref" href="#term-firebase">Firestore</a>（NoSQL）でこれに当たるのは「コレクション」。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-10</span></p>
+    <p>knit の本番テーブル <code>tenants</code>（制作会社）。列ごとに型（TEXT／INT…）・NOT NULL・DEFAULT・CHECK 制約を宣言し、「この表にはどんな形のデータしか入らないか」を先に固めている。</p>
+    <pre><code>CREATE TABLE IF NOT EXISTS tenants (
+  id      TEXT PRIMARY KEY,
+  slug    TEXT NOT NULL UNIQUE,
+  name    TEXT NOT NULL,
+  plan    TEXT NOT NULL DEFAULT 'free',
+  ...
+);</code></pre>
+    <p class="src">出典 knit/migrations/0010_init_tenants.sql:9-23（Craftica の SQL 教材も TABLE＝📋「テーブル」と定義＝src/components/crafticaEditor/lessons.ts:749）</p>
+  </div>
+</article>
+
+<!-- 2026-07-10 21:01:14 claude-opus-4-8[1m] セッションターン数：1 -->
+<article class="entry" id="term-er" data-term="ER" data-yomi="いーあーる" data-aliases="Entity-Relationship ER図 実体関連 エンティティ リレーションシップ ERD" data-pj="Kalenex">
+  <header class="entry-head">
+    <h2 class="headword">ER</h2>
+    <p class="fullform">Entity-Relationship（実体関連）</p>
+    <p class="yomi">いーあーる</p>
+  </header>
+  <p class="meta"><span class="tag">データベース</span><span class="date">2026-07-10 追加</span></p>
+  <div class="gloss">
+    <p><strong>Entity-Relationship</strong>（エンティティ＝実体・リレーションシップ＝関連）の略。DB の全体像を「どんなモノ（エンティティ＝<a class="term-ref" href="#term-table">テーブル</a>）があり、それらがどう繋がっているか（関連＝<a class="term-ref" href="#term-foreign-key">参照キー</a>）」で捉える考え方。それを図にしたのが <strong>ER 図</strong>。</p>
+    <p>DB 設計の地図。「利用者」対「注文」は 1 対多、「タスク」対「担当者」は多対多…という繋がりを俯瞰でき、どこに参照キーを張るべきかが見えてくる。<a class="term-ref" href="#term-db">DB</a> を作る前に ER 図で関係を描くのが定石。</p>
+  </div>
+  <div class="example" data-pj="Kalenex">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Kalenex</span><span class="date">2026-07-10</span></p>
+    <p>Kalenex の WorkHub（<code>/workhub</code>）は、ReactFlow による <strong>ER 図</strong>＋自動レイアウト（dagre）で、Service→Project→Task→Staff の各ノードと関連を可視化する画面。これをタスク DB の 1 ビュー種別として取り込む設計になっている。</p>
+    <pre><code>ReactFlow ER 図 + dagre レイアウト・Service→Project→Task→Staff ノード + DnD 連携</code></pre>
+    <p class="src">出典 kalenex/documents/design/task-db-views-expansion.md:26</p>
+  </div>
+</article>
+
+<!-- 2026-07-10 21:01:14 claude-opus-4-8[1m] セッションターン数：1 -->
+<article class="entry" id="term-primary-key" data-term="主キー" data-yomi="しゅきー" data-aliases="primary key PRIMARY KEY プライマリキー 主キー PK 一意" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">主キー</h2>
+    <p class="fullform">primary key</p>
+    <p class="yomi">しゅきー／プライマリキー</p>
+  </header>
+  <p class="meta"><span class="tag">データベース</span><span class="date">2026-07-10 追加</span></p>
+  <div class="gloss">
+    <p><a class="term-ref" href="#term-table">テーブル</a>の中で「その 1 行を一意に指し示す」ための列（＝primary key）。同じ値が 2 つ存在してはならず（重複禁止）、空でもいけない（NOT NULL）。利用者テーブルなら user id、注文テーブルなら order id。「この行はどれ？」に一意で答える<strong>背番号</strong>。</p>
+    <p>主キーがあるからこそ、別のテーブルはそれを<a class="term-ref" href="#term-foreign-key">参照キー</a>で指して繋がれる。<a class="term-ref" href="#term-sql">SQL</a> では列に <code>PRIMARY KEY</code> を付けて宣言する。複数列を組み合わせて主キーにすることもある（→<a class="term-ref" href="#term-composite-key">複合キー</a>）。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-10</span></p>
+    <p>knit の <a class="term-ref" href="#term-table">テーブル</a> <code>tenants</code> は id を主キーにしている。<code>TEXT PRIMARY KEY</code>＝この id が制作会社 1 社を一意に表し、メンバーや請求などの他テーブルはこの id を参照して紐づく。</p>
+    <pre><code>id  TEXT PRIMARY KEY,</code></pre>
+    <p class="src">出典 knit/migrations/0010_init_tenants.sql:10（Craftica の SQL 教材も PRIMARY＝🔑「PRIMARY KEY 主キー」と定義＝src/components/crafticaEditor/lessons.ts:757）</p>
+  </div>
+</article>
+
+<!-- 2026-07-10 21:01:14 claude-opus-4-8[1m] セッションターン数：1 -->
+<article class="entry" id="term-foreign-key" data-term="参照キー" data-yomi="さんしょうきー" data-aliases="foreign key 外部キー FOREIGN KEY REFERENCES 参照キー FK 参照整合性" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">参照キー</h2>
+    <p class="fullform">foreign key（外部キー）</p>
+    <p class="yomi">さんしょうきー／がいぶキー</p>
+  </header>
+  <p class="meta"><span class="tag">データベース</span><span class="date">2026-07-10 追加</span></p>
+  <div class="gloss">
+    <p>別のテーブルの<a class="term-ref" href="#term-primary-key">主キー</a>を指して「この行はあちらのこの行に属する」と繋ぐ列。<strong>外部キー（foreign key）と同じもの</strong>で、参照キー・外部キーはどちらも同じ概念を指す（教科書では「外部キー」表記が一般的）。<a class="term-ref" href="#term-sql">SQL</a> では <code>REFERENCES</code> で参照先を指定する。</p>
+    <p>効能は<strong>参照整合性</strong>＝存在しない相手を指せなくすること。例えばメンバー行の tenant_id は、実在する <a class="term-ref" href="#term-table">テーブル</a> tenants の id しか入れられない。<code>ON DELETE CASCADE</code> を付ければ、親（tenant）が消えたとき子（members）も自動で消える。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-10</span></p>
+    <p>履歴テーブル <code>site_content_history</code> が本体 <code>site_content(key)</code> を参照キー（名前付き制約）で指す例。履歴は必ず実在の本体 key に紐づき、本体が消えれば履歴も CASCADE で一緒に消える。</p>
+    <pre><code>CONSTRAINT fk_site_content_history_key
+  FOREIGN KEY (key) REFERENCES site_content(key) ON DELETE CASCADE</code></pre>
+    <p class="src">出典 knit/migrations/0004_init_site_content.sql:31-32（tenant_members も REFERENCES tenants(id)/users(id)＝0010:27-28。Craftica 教材は FOREIGN＝🔗「FOREIGN KEY 外部キー」/REFERENCES＝「外部キーの参照先」＝lessons.ts:759-760）</p>
+  </div>
+</article>
+
+<!-- 2026-07-10 21:01:14 claude-opus-4-8[1m] セッションターン数：1 -->
+<article class="entry" id="term-composite-key" data-term="複合キー" data-yomi="ふくごうきー" data-aliases="composite key 複合主キー compound key 複合キー 中間テーブル 多対多" data-pj="knit">
+  <header class="entry-head">
+    <h2 class="headword">複合キー</h2>
+    <p class="fullform">composite key（複合主キー）</p>
+    <p class="yomi">ふくごうきー</p>
+  </header>
+  <p class="meta"><span class="tag">データベース</span><span class="date">2026-07-10 追加</span></p>
+  <div class="gloss">
+    <p>1 列では足りず、<strong>複数の列の組み合わせ</strong>で初めて 1 行を一意に決めるキー。「テナント id ＋ 利用者 id の組」で 1 メンバーシップ、のように。この組を<a class="term-ref" href="#term-primary-key">主キー</a>にしたものが複合主キー。</p>
+    <p>典型は<strong>中間テーブル</strong>（多対多の橋渡し）。「どのテナントにどの利用者が居るか」を 1 行＝(tenant_id, user_id) で表し、その組を複合主キーにすると、同じ組の二重登録を <a class="term-ref" href="#term-db">DB</a> が構造で弾く。逆に UUID など単一で全体一意な id があれば複合キーは不要。</p>
+  </div>
+  <div class="example" data-pj="knit">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">knit</span><span class="date">2026-07-10</span></p>
+    <p>knit の中間<a class="term-ref" href="#term-table">テーブル</a> <code>tenant_members</code> は、tenant_id と user_id をそれぞれ<a class="term-ref" href="#term-foreign-key">参照キー</a>で持ち、その 2 列の組を複合主キー（<code>PRIMARY KEY (tenant_id, user_id)</code>）にしている＝「同じ人を同じテナントに二重登録」を構造で禁止。</p>
+    <pre><code>CREATE TABLE IF NOT EXISTS tenant_members (
+  tenant_id  TEXT   NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  user_id    BIGINT NOT NULL REFERENCES users(id)   ON DELETE CASCADE,
+  ...
+  PRIMARY KEY (tenant_id, user_id)
+);</code></pre>
+    <p class="src">出典 knit/migrations/0010_init_tenants.sql:26-33（アプリ層の複合キー例＝kalenex は dedup キーを content+actions で複合キー化・WORKLOG_ARCHIVE_20260419.md:265／「nodeId が UUID 一意なら workspaceId 複合キー不要」＝design/workspace-rbac-spaces.md:93）</p>
+  </div>
+</article>
+
+<!-- 2026-07-10 21:15:17 claude-opus-4-8[1m] セッションターン数：2 -->
+<article class="entry" id="term-normalization" data-term="正規化" data-yomi="せいきか" data-aliases="normalization 正規化 非正規化 denormalization 正規形 正本 SoT ドリフト drift NFKC" data-pj="osada Typolish">
+  <header class="entry-head">
+    <h2 class="headword">正規化</h2>
+    <p class="fullform">normalization</p>
+    <p class="yomi">せいきか</p>
+  </header>
+  <p class="meta"><span class="tag">データベース</span><span class="date">2026-07-10 追加</span></p>
+  <div class="gloss">
+    <p>バラバラな状態を「決めた 1 つの正しい形（正規形）」に揃えること。文脈で対象は変わるが、核は<strong>「表記ゆれ・重複・多様な入力を、比較・保存・処理しやすい単一の形にまとめる」</strong>。</p>
+    <p><strong>DB の正規化</strong>: 1 つの事実は 1 か所（<a class="term-ref" href="#term-source">正本＝Single Source of Truth</a>）にだけ持ち、同じ値を複数<a class="term-ref" href="#term-table">テーブル</a>に重複させない設計。重複を持つと必ず <strong>drift（ズレ）</strong>が起きるため。逆に、あえて重複コピーを持って読み取りを速くする（追加<a class="term-ref" href="#term-query">クエリ</a>を減らす）のが<strong>非正規化（denormalization）</strong>で、両者はトレードオフ＝正規化は書込の一貫性、非正規化は読取の速さに有利。</p>
+    <p><strong>値の正規化</strong>: 入力・IP アドレス・パス・文字列などを、比較や判定の<strong>前に</strong>唯一の正規形へ変換すること。とくにセキュリティでは正規化を怠ると「別表記の同じ危険物」を取り逃す。（画像を 0..1 に揃える、Unicode を NFKC で揃えるのも正規化。）</p>
+  </div>
+  <div class="example" data-pj="osada">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">osada</span><span class="date">2026-07-10</span></p>
+    <p>案件データの設計。顧客名や金額の<strong>正本</strong>は顧客本体／明細（＝正規化された 1 か所）に置き、一覧・KPI 表示を速くするために案件側へ「非正規化ミラー」をコピーして持つ。ただし写しが drift しないよう<strong>サーバーが同期責任を負う</strong>（クライアントから直接書かせない）と決めている。正規化と非正規化のトレードオフを明文化した実例。</p>
+    <pre><code>customerName: string;   // 表示用ミラー（一覧の追加読取回避・NFR-01）。顧客改名時サーバー同期</code></pre>
+    <p class="src">出典 osada/documents/design/system-a-detail-data-model.md:163（設計方針＝同:199「非正規化ミラー…正本は顧客本体／amounts 明細、サーバーが同期責任」）</p>
+  </div>
+  <div class="example" data-pj="Typolish">
+    <p class="example-head"><span class="mark">用例</span><span class="pj">Typolish</span><span class="date">2026-07-10</span></p>
+    <p>SSRF 対策で、渡された host が private / localhost かを判定する<strong>前に</strong> IPv4 を「10 進ドット区切りの正規形」へ揃える関数。16 進 <code>0x7f.0.0.1</code> や整数 <code>2130706433</code> も同じ <code>127.0.0.1</code> に正規化してから弾く。正規化を挟まないと、別表記で内部アドレスへアクセスされる（正規化＝セキュリティの前提）。</p>
+    <pre><code>// IPv4 文字列を 10 進ドット区切り正規形に変換する。
+//   "0x7f.0.0.1" → "127.0.0.1"（16 進）, "2130706433" → "127.0.0.1"（整数）
+export function normalizeIpv4(host: string): string | null {</code></pre>
+    <p class="src">出典 typolish/src/lib/ssrf-guard.ts:32-42</p>
+  </div>
+</article>
+
 <!-- ===== TERMS:END ＝ 新規エントリはこの行の直前に挿入する（この行を削除・変更しない） ===== -->
 
   <div class="empty" id="empty" hidden>
@@ -1520,7 +1933,7 @@ export const READ_TASKNODE_FROM_NODE = true;</code></pre>
   var TAXONOMY = [
     { name: '開発の進めかた', mids: ['Git', '開発フロー', 'レビュー', '現場の英語'] },
     { name: '基盤・インフラ', mids: ['インフラ', 'データベース', '認証・権限'] },
-    { name: 'アプリを作る',   mids: ['Web開発', 'フロントエンド', 'バックエンド・API'] },
+    { name: 'アプリを作る',   mids: ['Web開発', 'フロントエンド', 'バックエンド・API', '設計・アーキテクチャ', '画像・数値処理'] },
     { name: '品質・安全',     mids: ['テスト', 'セキュリティ', 'パフォーマンス'] }
   ];
 
